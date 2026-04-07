@@ -39,7 +39,7 @@ const Sidebar = () => {
   return (
     <div className="w-64 h-screen bg-[#090D14] border-r border-white/[0.04] flex flex-col p-6 sticky top-0">
       <div className="mb-12">
-        <h1 className="text-white text-lg font-bold cursor-pointer" onClick={() => navigate('/')}>Aura AI</h1>
+        <h1 className="text-white text-lg font-bold cursor-pointer" onClick={() => navigate('/')}>APTICA</h1>
         <p className="text-[10px] text-gray-600 uppercase tracking-widest font-semibold mt-0.5">Premium Tier</p>
       </div>
 
@@ -180,7 +180,7 @@ const ResultsSection = () => (
     <div className="grid grid-cols-12 gap-8">
       {/* Compatibility Circle */}
       <div className="col-span-4 bg-[#0D1117] border border-white/[0.04] rounded-[2.5rem] p-12 flex flex-col items-center justify-center text-center shadow-xl shadow-black/10">
-        <p className="text-[11px] font-bold text-gray-700 uppercase tracking-[0.2em] mb-12">ATS Compatibility</p>
+        <p className="text-[11px] font-bold text-gray-700 uppercase tracking-[0.2em] mb-12">Precision Score</p>
         
         <div className="relative w-52 h-52 flex items-center justify-center mb-12">
           <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
@@ -216,7 +216,7 @@ const ResultsSection = () => (
               <div className="w-9 h-9 rounded-xl bg-purple-500/10 flex items-center justify-center">
                 <Sparkles className="w-5 h-5 text-purple-500 fill-purple-500" />
               </div>
-              <h4 className="text-[15px] font-bold text-white tracking-tight">Critical Missing Keywords</h4>
+              <h4 className="text-[15px] font-bold text-white tracking-tight">Critical Insights</h4>
             </div>
             <span className="text-[11px] font-black text-purple-400 uppercase tracking-widest">+12% Score Potential</span>
           </div>
@@ -357,9 +357,9 @@ const Upload = () => {
                 <span key={l} className="hover:text-gray-400 transition-colors cursor-pointer">{l}</span>
               ))}
             </div>
-            <div className="space-y-1.5">
-              <p className="text-base font-black text-white tracking-tight">AuraResume AI</p>
-              <p className="text-[11px] font-bold text-gray-800 tracking-widest uppercase">© 2024 AuraResume AI. ALL RIGHTS RESERVED.</p>
+            <div className="flex flex-col">
+              <p className="text-base font-black text-white tracking-tight">APTICA AI</p>
+              <p className="text-[11px] font-bold text-gray-800 tracking-widest uppercase">© 2024 APTICA AI. ALL RIGHTS RESERVED.</p>
             </div>
           </div>
         </main>

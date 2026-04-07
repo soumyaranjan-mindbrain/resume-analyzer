@@ -40,8 +40,8 @@ const Sidebar = () => {
   return (
     <div className="w-64 h-screen bg-[#090D14] border-r border-white/[0.04] flex flex-col p-6 sticky top-0">
       <div className="mb-12">
-        <h1 className="text-white text-lg font-bold cursor-pointer" onClick={() => navigate('/')}>Aura AI</h1>
-        <p className="text-[10px] text-gray-600 uppercase tracking-widest font-semibold mt-0.5 tracking-[0.25em]">Premium Tier</p>
+        <h1 className="text-white text-lg font-bold cursor-pointer" onClick={() => navigate('/')}>APTICA</h1>
+        <p className="text-[10px] text-gray-600 uppercase tracking-widest font-semibold mt-0.5">Premium Tier</p>
       </div>
 
       <nav className="flex-1 space-y-1">
@@ -217,7 +217,7 @@ const Matcher = () => {
     },
     { 
       title: 'Machine Learning Engineer', 
-      company: 'Aura Core', 
+      company: 'Aptica Core', 
       match: 85, 
       location: 'Austin, TX', 
       salary: '$155k - $200k', 
@@ -301,9 +301,9 @@ const Matcher = () => {
             <div className="space-y-1.5 flex flex-col items-center">
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 rounded bg-gradient-to-br from-[#00D2FF] to-[#3A7BD5] flex items-center justify-center" />
-                <p className="text-base font-black text-white tracking-tight">AuraResume AI</p>
+                <p className="text-base font-black text-white tracking-tight">ApticaResume AI</p>
               </div>
-              <p className="text-[11px] font-bold text-gray-800 tracking-widest uppercase">© 2024 AuraResume AI. ALL RIGHTS RESERVED.</p>
+              <p className="text-[11px] font-bold text-gray-800 tracking-widest uppercase">© 2024 ApticaResume AI. ALL RIGHTS RESERVED.</p>
             </div>
           </footer>
         </main>

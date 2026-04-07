@@ -127,7 +127,7 @@ const SignInForm = ({ onSwitch }) => {
       </div>
 
       <p className="text-center text-[10px] text-gray-700 leading-relaxed">
-        By signing in, you agree to AuraResume AI's{' '}
+        By signing in, you agree to ApticaResume AI's{' '}
         <a href="#" className="text-[#00D2FF]/70 hover:text-[#00D2FF] transition-colors">Terms of Service</a>{' '}
         and{' '}
         <a href="#" className="text-[#00D2FF]/70 hover:text-[#00D2FF] transition-colors">Privacy Policy</a>
@@ -178,7 +178,7 @@ const CreateForm = () => {
       <OAuthButtons />
 
       <p className="text-center text-[10px] text-gray-700 leading-relaxed">
-        By creating an account, you agree to AuraResume AI's{' '}
+        By creating an account, you agree to ApticaResume AI's{' '}
         <a href="#" className="text-[#00D2FF]/70 hover:text-[#00D2FF] transition-colors">Terms of Service</a>{' '}
         and{' '}
         <a href="#" className="text-[#00D2FF]/70 hover:text-[#00D2FF] transition-colors">Privacy Policy</a>
@@ -269,7 +269,7 @@ const LeftPanel = () => (
       <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#00D2FF] to-[#7C4DFF] flex items-center justify-center shadow-[0_0_16px_rgba(0,210,255,0.4)]">
         <Layout className="text-black w-4 h-4" strokeWidth={2.5} />
       </div>
-      <span className="text-base font-semibold text-white tracking-tight">Aura AI</span>
+      <span className="text-base font-semibold text-white tracking-tight">Aptica AI</span>
     </div>
 
     {/* Heading */}
@@ -350,7 +350,7 @@ const Auth = () => (
             </a>
           ))}
         </div>
-        <p className="text-[10px] text-gray-700">© 2024 AuraResume AI. All rights reserved.</p>
+        <p className="text-[10px] text-gray-700">© 2024 ApticaResume AI. All rights reserved.</p>
       </div>
     </footer>
   </div>

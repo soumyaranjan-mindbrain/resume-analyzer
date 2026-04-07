@@ -37,7 +37,7 @@ const Sidebar = () => {
     <div className="w-64 h-screen bg-[#090D14] border-r border-white/[0.04] flex flex-col p-6 sticky top-0">
       {/* Logo */}
       <div className="mb-12">
-        <h1 className="text-white text-lg font-bold cursor-pointer" onClick={() => navigate('/')}>Aura AI</h1>
+        <h1 className="text-white text-lg font-bold cursor-pointer" onClick={() => navigate('/')}>Aptica AI</h1>
         <p className="text-[10px] text-gray-600 uppercase tracking-widest font-semibold mt-0.5">Premium Tier</p>
       </div>
 
@@ -310,7 +310,7 @@ const Dashboard = () => {
             {/* Top Cards Row */}
             <div className="grid grid-cols-3 gap-8">
               <StatCard 
-                title="Current ATS Score" 
+                title="Precision Score" 
                 value="85%" 
                 sub="+5.2%" 
                 icon={BarChart2} 
@@ -318,7 +318,7 @@ const Dashboard = () => {
                 progress={85}
               />
               <StatCard 
-                title="Keywords Missing" 
+                title="Critical Insights" 
                 value="12" 
                 sub="Critical" 
                 icon={TrendingDown} 
@@ -351,8 +351,8 @@ const Dashboard = () => {
               ))}
             </div>
             <div className="space-y-1.5">
-              <p className="text-base font-black text-white tracking-tight">AuraResume AI</p>
-              <p className="text-[11px] font-bold text-gray-800 tracking-widest uppercase">© 2024 AuraResume AI. ALL RIGHTS RESERVED.</p>
+              <p className="text-base font-black text-white tracking-tight">ApticaResume AI</p>
+              <p className="text-[11px] font-bold text-gray-800 tracking-widest uppercase">© 2024 ApticaResume AI. ALL RIGHTS RESERVED.</p>
             </div>
           </div>
         </main>

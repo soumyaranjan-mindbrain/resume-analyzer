@@ -1,12 +1,12 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Landing from './pages/Landing.jsx';
 import Auth from './pages/Auth.jsx';
-import Dashboard from './pages/Dashboard.jsx';
-import Upload from './pages/Upload.jsx';
-import Profile from './pages/Profile.jsx';
-import Admin from './pages/Admin.jsx';
-import Matcher from './pages/Matcher.jsx';
-import Saved from './pages/Saved.jsx';
+import Dashboard from './pages/user/Dashboard.jsx';
+import Upload from './pages/user/Upload.jsx';
+import Profile from './pages/user/Profile.jsx';
+import Admin from './pages/admin/Admin.jsx';
+import Matcher from './pages/user/Matcher.jsx';
+import Saved from './pages/user/Saved.jsx';
 
 function App() {
   return (
