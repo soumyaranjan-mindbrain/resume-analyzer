@@ -1,0 +1,83 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-[#030712] text-white antialiased;
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+@layer components {
+  .glass {
+    @apply bg-white/[0.04] border border-white/[0.08] backdrop-blur-xl;
+  }
+
+  .glass-card {
+    @apply bg-[#0D1117] border border-white/[0.06] rounded-2xl p-6;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center gap-2 px-6 py-3 bg-[#00D2FF] text-black text-sm font-bold rounded-full 
+           hover:bg-[#00D2FF]/90 hover:shadow-[0_0_24px_rgba(0,210,255,0.4)] 
+           transition-all duration-300 hover:scale-105 active:scale-95;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center gap-2 px-6 py-3 border border-white/[0.12] text-sm font-medium 
+           text-gray-300 rounded-full bg-white/[0.03]
+           hover:border-white/30 hover:text-white 
+           transition-all duration-300 hover:scale-105 active:scale-95;
+  }
+
+  .gradient-text {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-[#00D2FF] to-[#3A7BD5];
+  }
+}
+
+/* ── Glow animation on hero heading ── */
+.animate-glow {
+  animation: subtleGlow 6s ease-in-out infinite;
+}
+
+@keyframes subtleGlow {
+  0%, 100% { filter: drop-shadow(0 0 12px rgba(0, 210, 255, 0.25)); }
+  50%       { filter: drop-shadow(0 0 28px rgba(0, 210, 255, 0.5));  }
+}
+
+/* ── Scrollbar ── */
+@keyframes draw {
+  from { stroke-dasharray: 0 1000; }
+  to { stroke-dasharray: 1000 0; }
+}
+
+.animate-draw {
+  animation: draw 2.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 20px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
