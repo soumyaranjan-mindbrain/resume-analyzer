@@ -98,20 +98,28 @@ const AppLayout = ({ children }) => {
             })}
           </nav>
 
-          {/* Bottom Support Button */}
-          <div className="px-6 mt-auto shrink-0 w-full">
+          {/* Sidebar Footer Actions */}
+          <div className="px-5 mt-auto shrink-0 w-full space-y-2">
              <NavLink 
                to="/support"
                className={({ isActive }) => cn(
-                "flex items-center gap-3 w-full px-4 py-3 border rounded-2xl font-semibold text-sm transition-all",
+                "flex items-center gap-3 w-full px-4 py-3 border rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all",
                 isActive 
-                  ? "bg-[#4b7bff] text-white shadow-lg border-transparent shadow-blue-500/20" 
-                  : "bg-white shadow-sm border-slate-100 text-[#64748b] hover:text-[#334155] hover:shadow-md"
+                  ? "bg-[#4b7bff] text-white shadow-lg border-transparent shadow-blue-500/10" 
+                  : "bg-white/40 shadow-sm border-white/60 text-[#64748b] hover:text-[#334155] hover:bg-white/60"
               )}
              >
               <HelpCircle className="w-5 h-5" />
               Support
             </NavLink>
+
+            <button 
+              onClick={() => navigate('/')}
+              className="flex items-center gap-3 w-full px-4 py-3 border border-red-100/30 bg-red-50/10 rounded-2xl font-black text-[11px] uppercase tracking-widest text-red-500/80 hover:bg-red-500 hover:text-white transition-all group shadow-sm hover:shadow-red-500/20"
+            >
+              <LogOut className="w-5 h-5 transition-transform group-hover:-translate-x-1" />
+              Sign Out
+            </button>
           </div>
         </aside>
 
