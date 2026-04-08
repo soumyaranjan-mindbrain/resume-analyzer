@@ -1,552 +1,221 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
+import React, { useRef, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import {
-  FileText,
-  Search,
   ArrowRight,
-  Layout,
-  Globe,
-  Share2,
-  BarChart2,
+  CheckCircle2,
   Sparkles,
-  TrendingUp,
-  X,
+  Zap,
+  ShieldCheck,
+  BarChart3,
+  Target,
+  FileSearch,
+  ChevronRight,
   Menu,
+  X,
+  User
 } from 'lucide-react';
+import { cn } from '../utils/cn';
 
 gsap.registerPlugin(ScrollTrigger);
 
+// Pro-level ease
+gsap.registerEase('jarvisSnap', (progress) => {
+  return progress < 0.5
+    ? 4 * progress * progress * progress
+    : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+});
+
+/* ─────────────────────────────────────────────
+   NAVBAR COMPONENT
+───────────────────────────────────────────── */
 const Navbar = () => {
-  const [scrolled, setScrolled] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
   const navigate = useNavigate();
-  const navRef = useRef(null);
+  const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener('scroll', onScroll);
-
-    gsap.fromTo(navRef.current,
-      { y: -100, opacity: 0 },
-      { y: 0, opacity: 1, duration: 1.2, ease: 'expo.out', delay: 0.5 }
-    );
-
-    return () => window.removeEventListener('scroll', onScroll);
+    const handleScroll = () => setIsScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   return (
-    <nav
-      ref={navRef}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled
-        ? 'bg-[#030712]/80 backdrop-blur-xl shadow-[0_4px_30px_rgba(0,0,0,0.6)]'
-        : 'bg-transparent'
-        }`}
-    >
-      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-        {/* Logo */}
-        <div className="flex items-center gap-2.5 cursor-pointer" onClick={() => navigate('/')}>
-          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#00D2FF] to-[#3A7BD5] flex items-center justify-center shadow-[0_0_12px_rgba(0,210,255,0.4)]">
-            <Layout className="text-black w-4 h-4" strokeWidth={2.5} />
+    <nav className={cn(
+      "fixed top-0 left-0 right-0 z-[100] transition-all duration-300 px-6",
+      isScrolled ? "py-4" : "py-8"
+    )}>
+      <div className={cn(
+        "container mx-auto max-w-7xl rounded-2xl flex items-center justify-between px-8 py-4 transition-all duration-500",
+        isScrolled ? "bg-white/60 backdrop-blur-xl border border-white/20 shadow-lg" : "bg-transparent"
+      )}>
+        <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate('/')}>
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-600 to-indigo-600 flex items-center justify-center shadow-lg">
+            <Sparkles className="w-5 h-5 text-white" />
           </div>
-          <span className="text-[15px] font-semibold tracking-tight text-white">Aptica</span>
+          <span className="text-xl font-display font-black tracking-tighter text-[var(--neutral-900)]">
+            Aptica<span className="text-purple-600">.</span>
+          </span>
         </div>
 
+        <div className="hidden md:flex items-center gap-10">
+          {/* Nav links removed as per user request */}
+        </div>
 
-
-        {/* Right */}
-        <div className="hidden md:flex items-center gap-4">
-          <button
-            onClick={() => navigate('/auth')}
-            className="text-[13px] font-medium text-gray-400 hover:text-white transition-colors"
-          >
-            Sign In
+        <div className="flex items-center gap-6">
+          <button onClick={() => navigate('/auth')} className="hidden sm:block text-sm font-black text-[var(--neutral-900)] uppercase tracking-widest">
+            Login
           </button>
           <button
             onClick={() => navigate('/auth')}
-            className="px-4 py-2 bg-[#00D2FF] text-black text-[13px] font-bold rounded-full hover:bg-[#00D2FF]/90 hover:shadow-[0_0_18px_rgba(0,210,255,0.4)] transition-all"
+            className="btn-aptica !py-3 !px-8 shadow-purple-500/20"
           >
             Get Started
           </button>
         </div>
-
-        {/* Mobile toggle */}
-        <button className="md:hidden text-gray-400" onClick={() => setMobileOpen(!mobileOpen)}>
-          {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-        </button>
       </div>
-
-      {/* Mobile menu */}
-      <AnimatePresence>
-        {mobileOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-[#030712]/95 backdrop-blur-xl border-t border-white/5 px-6 pb-6"
-          >
-
-            <div className="flex gap-3 mt-4">
-              <button
-                onClick={() => { navigate('/auth'); setMobileOpen(false); }}
-                className="flex-1 py-2 border border-white/10 rounded-full text-sm text-gray-400"
-              >
-                Sign In
-              </button>
-              <button
-                onClick={() => { navigate('/auth'); setMobileOpen(false); }}
-                className="flex-1 py-2 bg-[#00D2FF] text-black text-sm font-bold rounded-full"
-              >
-                Get Started
-              </button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </nav>
   );
 };
 
-
 /* ─────────────────────────────────────────────
-   PREMIUM FLOATING PARTICLES (GLOBAL BACKGROUND)
-───────────────────────────────────────────── */
-const FloatingParticles = () => {
-  const canvasRef = useRef(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    let animationFrameId;
-    let particles = [];
-    let mouse = { x: -1000, y: -1000 };
-
-    const resize = () => {
-      const dpr = window.devicePixelRatio || 1;
-      canvas.width = window.innerWidth * dpr;
-      canvas.height = window.innerHeight * dpr;
-      ctx.scale(dpr, dpr);
-      canvas.style.width = `${window.innerWidth}px`;
-      canvas.style.height = `${window.innerHeight}px`;
-      init();
-    };
-
-    class Particle {
-      constructor() {
-        this.x = Math.random() * window.innerWidth;
-        this.y = Math.random() * window.innerHeight;
-        // Depth-based layers
-        this.depth = Math.random() * 0.85 + 0.15; // Closer dots move faster
-        this.size = (Math.random() * 1.0 + 0.45) * (this.depth + 0.5); // Slightly larger
-        this.baseSize = this.size;
-        
-        this.velocity = {
-          x: (Math.random() - 0.5) * 0.25 * (1 + this.depth),
-          y: (Math.random() - 0.5) * 0.25 * (1 + this.depth)
-        };
-        
-        const isCyan = Math.random() > 0.88;
-        this.color = isCyan ? '0, 210, 255' : '255, 255, 255';
-        this.baseAlpha = (Math.random() * 0.18 + 0.08) * this.depth; // Reverted visibility
-        this.alpha = this.baseAlpha;
-        this.glow = isCyan;
-      }
-
-      draw() {
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
-        ctx.fillStyle = `rgba(${this.color}, ${this.alpha})`;
-        ctx.fill();
-
-        // Glow Logic (Subtle spotlight) - reduced footprint
-        const isInteractive = this.alpha > this.baseAlpha + 0.05;
-        if ((this.glow || isInteractive) && this.alpha > 0.05) {
-          const glowIntensity = isInteractive ? this.alpha * 0.4 : this.alpha * 0.12;
-          ctx.beginPath();
-          ctx.arc(this.x, this.y, this.size * 2.2, 0, Math.PI * 2, false); // Much tighter glow
-          ctx.fillStyle = `rgba(${this.color}, ${glowIntensity})`;
-          ctx.fill();
-        }
-      }
-
-      update() {
-        // Drift
-        this.x += this.velocity.x;
-        this.y += this.velocity.y;
-
-        // Mouse Spotlight & Parallax
-        const dx = mouse.x - this.x;
-        const dy = mouse.y - this.y;
-        const distance = Math.sqrt(dx * dx + dy * dy);
-        
-        // Parallax Shift (subtle 3D feel)
-        if (mouse.x !== -1000) {
-          const parallaxX = (mouse.x - window.innerWidth / 2) * 0.015 * this.depth;
-          const parallaxY = (mouse.y - window.innerHeight / 2) * 0.015 * this.depth;
-          this.x += parallaxX * 0.05;
-          this.y += parallaxY * 0.05;
-        }
-
-        // Spotlight Feedback (Brightness ONLY, no size growth)
-        if (distance < 120) {
-          const force = (120 - distance) / 120;
-          this.alpha = Math.min(0.85, this.baseAlpha + force * 0.65);
-          
-          // Smooth Magnetism
-          this.x -= dx * force * 0.025;
-          this.y -= dy * force * 0.025;
-        } else {
-          // Reset alpha
-          if (this.alpha > this.baseAlpha) this.alpha -= (this.alpha - this.baseAlpha) * 0.1;
-        }
-
-        // Wraparound
-        if (this.x > window.innerWidth + 50) this.x = -50;
-        else if (this.x < -50) this.x = window.innerWidth + 50;
-        if (this.y > window.innerHeight + 50) this.y = -50;
-        else if (this.y < -50) this.y = window.innerHeight + 50;
-
-        this.draw();
-      }
-    }
-
-    const init = () => {
-      particles = [];
-      // Much higher count, much higher density
-      const count = Math.min(2500, Math.floor((window.innerWidth * window.innerHeight) / 1200));
-      for (let i = 0; i < count; i++) {
-        particles.push(new Particle());
-      }
-    };
-
-    const animate = () => {
-      ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
-      for (let i = 0; i < particles.length; i++) {
-        particles[i].update();
-      }
-      animationFrameId = requestAnimationFrame(animate);
-    };
-
-    const onMouseMove = (e) => {
-      mouse.x = e.clientX;
-      mouse.y = e.clientY;
-    };
-
-    window.addEventListener('resize', resize);
-    window.addEventListener('mousemove', onMouseMove);
-    window.addEventListener('mouseout', () => {
-      mouse.x = -1000;
-      mouse.y = -1000;
-    });
-
-    resize();
-    animate();
-
-    return () => {
-      window.removeEventListener('resize', resize);
-      window.removeEventListener('mousemove', onMouseMove);
-      cancelAnimationFrame(animationFrameId);
-    };
-  }, []);
-
-  return (
-    <canvas
-      ref={canvasRef}
-      className="fixed inset-0 pointer-events-none"
-      style={{ zIndex: 0 }}
-    />
-  );
-};
-
-
-/* ─────────────────────────────────────────────
-   HERO
+   HERO SECTION
 ───────────────────────────────────────────── */
 const Hero = () => {
   const navigate = useNavigate();
   const heroRef = useRef(null);
-
-  const titleRef = useRef(null);
-  const subtextRef = useRef(null);
-  const ctaRef = useRef(null);
-  const microRef = useRef(null);
-  const contentWrapperRef = useRef(null);
+  const mockupRef = useRef(null);
+  const textGroupRef = useRef(null);
 
   useEffect(() => {
-    const tl = gsap.timeline({ defaults: { ease: 'expo.out' } });
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({ defaults: { ease: 'jarvisSnap', duration: 1.2 } });
 
-    // Word Entrance Animation
-    const wordSpans = titleRef.current.querySelectorAll('span > span > span, span > span');
-    tl.fromTo(wordSpans,
-      {
-        y: 100,
+      tl.from('.hero-animate', {
+        y: 40,
         opacity: 0,
-        filter: 'blur(10px)',
-        rotateX: -40
-      },
-      {
-        y: 0,
-        opacity: 1,
-        filter: 'blur(0px)',
-        rotateX: 0,
-        duration: 1.5,
-        stagger: 0.12
-      },
-      '+=0.1'
-    )
-      .fromTo(subtextRef.current,
-        { y: 20, opacity: 0, filter: 'blur(5px)' },
-        { y: 0, opacity: 1, filter: 'blur(0px)', duration: 1.2 },
-        '-=1'
-      )
-      .fromTo(ctaRef.current,
-        { scale: 0.9, opacity: 0 },
-        { scale: 1, opacity: 1, duration: 0.8 },
-        '-=0.8'
-      );
+        stagger: 0.1,
+      })
+        .from(mockupRef.current, {
+          x: 100,
+          opacity: 0,
+          rotateY: -20,
+          duration: 1.5
+        }, '-=1');
 
-    // Premium Scroll-based Text Fade/Scale Up
-    // Applied strictly to the wrapper so it doesn't conflict with the fromTo entrance logic above
-    gsap.to(contentWrapperRef.current, {
-      y: -80,
-      opacity: 0,
-      scale: 0.9,
-      scrollTrigger: {
-        trigger: heroRef.current,
-        start: 'top top',
-        end: 'bottom center',
-        scrub: true
-      }
-    });
+      gsap.to('.hero-float', {
+        y: -15,
+        stagger: 0.2,
+        duration: 3,
+        repeat: -1,
+        yoyo: true,
+        ease: 'power1.inOut'
+      });
+    }, heroRef);
 
-    // Clean up if necessary
-
+    return () => ctx.revert();
   }, []);
 
   return (
-    <section
-      ref={heroRef}
-      className="relative min-h-screen flex flex-col items-center justify-center pt-24 pb-12 overflow-hidden"
-    >
-      {/* Background glows */}
-      <div className="absolute inset-0 -z-10 pointer-events-none">
-        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[600px] bg-[#3A7BD5]/10 blur-[130px] rounded-full" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 w-[500px] h-[300px] bg-[#00D2FF]/5 blur-[100px] rounded-full" />
+    <section ref={heroRef} className="relative min-h-[100vh] pt-40 pb-20 overflow-hidden px-6">
+      {/* Blurred Blobs */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute -top-20 -left-20 w-[600px] h-[600px] bg-purple-200/40 blur-[120px] rounded-full" />
+        <div className="absolute top-1/2 -right-20 w-[500px] h-[500px] bg-cyan-200/30 blur-[100px] rounded-full" />
+        <div className="absolute -bottom-20 left-1/2 w-[600px] h-[600px] bg-pink-200/40 blur-[120px] rounded-full" />
       </div>
 
-      <div ref={contentWrapperRef} className="container mx-auto px-6 text-center max-w-4xl relative z-10">
+      <div className="container mx-auto max-w-7xl grid grid-cols-1 lg:grid-cols-2 gap-20 items-center relative z-10">
+        <div ref={textGroupRef} className="space-y-8">
+          <h1 className="hero-animate text-6xl md:text-8xl font-display font-black leading-[1.15] tracking-tighter text-[var(--neutral-900)]">
+            Land more <br />
+            <span className="aptica-text inline-block py-1">Interview Calls</span> <br />
+            with Aptica.
+          </h1>
 
-        {/* Heading */}
-        <h1
-          ref={titleRef}
-          className="text-[clamp(2.5rem,8vw,5.5rem)] font-extrabold leading-[1.05] tracking-tight mb-6 overflow-hidden flex flex-wrap justify-center font-inter min-h-[1.1em] md:min-h-[2.2em]"
-        >
-          {"Turn Your Resume Into Interview Calls".split(" ").map((word, i) => (
-            <span key={i} className={`inline-block ${word === "Calls" ? "mr-0" : "mr-[0.2em]"} overflow-hidden py-1`}>
-              <span className="inline-block">
-                {(word === "Interview" || word === "Calls") ? (
-                  <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#00D2FF] to-[#3A7BD5]">
-                    {word}
-                  </span>
-                ) : word}
-              </span>
-            </span>
-          ))}
-        </h1>
+          <p className="hero-animate text-xl text-[var(--neutral-900)]/70 max-w-xl leading-relaxed font-bold">
+            Optimize your professional identity against 240+ market variables. Our neural engine ensures your resume is visible to both Humans and ATS algorithms.
+          </p>
 
-        {/* Subtext */}
-        <p
-          ref={subtextRef}
-          className="text-white/70 text-base md:text-lg mb-10 max-w-2xl mx-auto leading-loose"
-        >
-          AI-powered resume analysis that boosts your ATS score and helps you land more interviews.
-        </p>
+          {/* Decorative Background Elements based on reference image */}
+          <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none -z-10">
+            <div className="absolute top-[10%] left-[5%] w-64 h-64 bg-primary-100 rounded-full blur-[80px] opacity-40 animate-float" />
+            <div className="absolute bottom-[20%] right-[10%] w-96 h-96 bg-white rounded-full blur-[100px] opacity-60 animate-float" style={{ animationDelay: '-3s' }} />
+            <div className="absolute top-[40%] right-[30%] w-48 h-48 bg-primary-200 rounded-full blur-[60px] opacity-30 animate-float" style={{ animationDelay: '-1.5s' }} />
+          </div>
 
-        {/* CTAs */}
-        <div
-          ref={ctaRef}
-          className="flex flex-col sm:flex-row items-center justify-center gap-3"
-        >
-          <button
-            onClick={() => navigate('/auth')}
-            className="flex items-center gap-2 px-6 py-3 bg-[#00D2FF] text-black text-sm font-bold rounded-full hover:bg-[#00D2FF]/90 hover:shadow-[0_0_24px_rgba(0,210,255,0.4)] transition-all duration-300 hover:scale-105 active:scale-95"
-          >
-            Start Analysis
-            <ArrowRight className="w-4 h-4" />
-          </button>
-          <button
-            className="flex items-center gap-2 px-6 py-3 border border-white/[0.12] text-sm font-medium text-gray-300 rounded-full hover:border-white/30 hover:text-white transition-all duration-300 hover:scale-105 active:scale-95 bg-white/[0.03]"
-          >
-            Check Compatibility
-          </button>
+
+
+          {/* Analysis count removed as per user request */}
         </div>
 
-        {/* Micro Copy */}
-        <p
-          ref={microRef}
-          className="mt-8 text-[10px] text-gray-600 font-bold uppercase tracking-[0.25em]"
-        >
-          No unnecessary steps • Fast and seamless analysis
-        </p>
-      </div>
-    </section>
-  );
-};
-
-/* ─────────────────────────────────────────────
-   PRODUCT PREVIEW (App Mockup)
-───────────────────────────────────────────── */
-const ProductPreview = () => {
-  const containerRef = useRef(null);
-  const cardRef = useRef(null);
-
-  useEffect(() => {
-    // Pure Expand to Full Screen Scroll Animation
-    gsap.fromTo(cardRef.current,
-      {
-        scale: 0.65,
-        opacity: 0.3
-      },
-      {
-        scale: 1,
-        opacity: 1,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: 'top 90%', // Start expanding slightly before it reaches the center
-          end: 'top 20%',   // Fully expanded by the time it reaches the upper quarter
-          scrub: true,      // Lock perfectly to scroll
-        }
-      }
-    );
-  }, []);
-
-  return (
-    <section ref={containerRef} className="pb-32 px-4 md:px-8 perspective-1000">
-      <div className="w-full max-w-6xl mx-auto">
-        <div
-          ref={cardRef}
-          className="relative rounded-[1.75rem] p-[1px] bg-gradient-to-b from-gray-700/60 via-gray-800/30 to-transparent shadow-[0_40px_100px_rgba(0,0,0,0.5)] transform-gpu origin-center"
-        >
-          <div className="bg-[#0D1117] rounded-[1.7rem] overflow-hidden">
-            {/* Window chrome */}
-            <div className="flex items-center gap-2 px-5 py-3 border-b border-white/[0.05] bg-[#0D1117]">
-              <div className="flex gap-1.5">
-                <div className="w-3 h-3 rounded-full bg-[#FF5F56]" />
-                <div className="w-3 h-3 rounded-full bg-[#FFBD2E]" />
-                <div className="w-3 h-3 rounded-full bg-[#27C93F]" />
-              </div>
-              <div className="flex-1 flex justify-center">
-                <div className="bg-[#1C2333] rounded-md px-8 py-1 text-[10px] text-gray-500 font-mono">
-                  https://aptica.com
-                </div>
-              </div>
-            </div>
-
-            {/* App content */}
-            <div className="grid grid-cols-12 gap-0 min-h-[360px]">
-              {/* Sidebar */}
-              <div className="col-span-3 border-r border-white/[0.04] bg-[#090D14] p-4 flex flex-col gap-2">
-                {/* Search bar */}
-                <div className="flex items-center gap-2 bg-white/[0.04] rounded-lg px-3 py-2 mb-3">
-                  <Search className="w-3 h-3 text-gray-600" />
-                  <div className="h-2 flex-1 bg-white/5 rounded" />
-                </div>
-                {['Dashboard', 'Resumes', 'Analysis', 'Jobs', 'Settings'].map((item, i) => (
-                  <div
-                    key={item}
-                    className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-[10px] ${i === 1
-                      ? 'bg-[#00D2FF]/10 text-[#00D2FF]'
-                      : 'text-gray-600 hover:text-gray-400'
-                      }`}
-                  >
-                    <div className={`w-1.5 h-1.5 rounded-full ${i === 1 ? 'bg-[#00D2FF]' : 'bg-gray-700'}`} />
-                    {item}
+        {/* Right side Visual */}
+        <div ref={mockupRef} className="relative flex items-center justify-center p-10">
+          <div className="relative w-full max-w-[450px]">
+            {/* Main Resume Card */}
+            <div className="hero-float relative z-20 clay-card !p-10 rotate-[-4deg] border-white/60 shadow-2xl">
+              <div className="space-y-8">
+                {/* Resume Header */}
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h4 className="text-2xl font-black text-[var(--neutral-900)] tracking-tighter mb-1">Alex Rivera</h4>
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-purple-600">Senior Systems Architect</p>
                   </div>
-                ))}
-              </div>
-
-              {/* Main panel */}
-              <div className="col-span-6 border-r border-white/[0.04] bg-[#0D1117] p-5">
-                <div className="flex items-center gap-2 mb-4">
-                  <FileText className="w-3.5 h-3.5 text-gray-600" />
-                  <span className="text-[10px] font-mono text-gray-500">Resume.pdf</span>
-                  <div className="ml-auto px-2 py-0.5 bg-[#00D2FF]/10 rounded text-[9px] text-[#00D2FF]">Analyzing...</div>
-                </div>
-
-                {/* Resume mock content */}
-                <div className="space-y-2.5">
-                  <div className="h-4 w-2/5 bg-white/[0.08] rounded" />
-                  <div className="h-2.5 w-1/3 bg-white/[0.04] rounded" />
-                  <div className="h-px bg-white/[0.04] my-3" />
-                  <div className="h-2.5 w-full bg-white/[0.04] rounded" />
-                  <div className="h-2.5 w-5/6 bg-white/[0.04] rounded" />
-                  <div className="h-2.5 w-4/5 bg-white/[0.04] rounded" />
-                  <div className="h-px bg-white/[0.04] my-3" />
-                  <div className="space-y-2">
-                    {[1, 0.8, 0.9, 0.7].map((w, i) => (
-                      <div key={i} className="h-2 rounded" style={{ width: `${w * 100}%`, background: 'rgba(255,255,255,0.03)' }} />
-                    ))}
+                  <div className="w-12 h-12 rounded-2xl bg-[var(--neutral-50)] border border-white flex items-center justify-center shadow-inner">
+                    <User className="w-6 h-6 text-purple-200" />
                   </div>
                 </div>
 
-                {/* AI scan overlay */}
-                <motion.div
-                  animate={{ top: ['10%', '85%', '10%'] }}
-                  transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-                  className="absolute left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#00D2FF]/30 to-transparent"
-                  style={{ position: 'relative', marginTop: 12 }}
-                />
-              </div>
-
-              {/* Right stats panel */}
-              <div className="col-span-3 bg-[#090D14] p-4 flex flex-col gap-3">
-                {/* Precision Score */}
-                <div className="bg-[#111827]/80 rounded-xl p-3 border border-white/[0.04]">
-                  <div className="text-[9px] text-gray-500 mb-2 uppercase tracking-wider">Precision Score</div>
-                  <div className="flex items-center gap-2">
-                    <div className="text-2xl font-bold text-white">78</div>
-                    <div className="text-[9px] text-[#00D2FF] bg-[#00D2FF]/10 px-1.5 py-0.5 rounded">%</div>
-                  </div>
-                  <div className="mt-2 h-1.5 bg-white/5 rounded-full overflow-hidden">
-                    <motion.div
-                      initial={{ width: 0 }}
-                      whileInView={{ width: '78%' }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 1.5, delay: 0.5 }}
-                      className="h-full bg-gradient-to-r from-[#00D2FF] to-[#3A7BD5] rounded-full"
-                    />
-                  </div>
+                {/* Resume Summary */}
+                <div className="space-y-2">
+                  <div className="text-[8px] font-black uppercase tracking-widest text-[var(--neutral-400)]">Professional Matrix</div>
+                  <p className="text-[11px] font-bold text-[var(--neutral-900)]/70 leading-relaxed italic">
+                    "Driving technical excellence through neural-informed architecture and scalable cloud ecosystems. 8+ years of high-frequency engineering."
+                  </p>
                 </div>
 
-                {/* Keywords */}
-                <div className="bg-[#111827]/80 rounded-xl p-3 border border-white/[0.04]">
-                  <div className="text-[9px] text-gray-500 mb-2 uppercase tracking-wider">Keywords</div>
-                  <div className="flex flex-wrap gap-1">
-                    {['React', 'AI/ML', 'Python'].map(k => (
-                      <span key={k} className="px-1.5 py-0.5 bg-[#3A7BD5]/20 border border-[#3A7BD5]/30 rounded text-[8px] text-[#3A7BD5]">
-                        {k}
-                      </span>
-                    ))}
+                {/* Experience Block */}
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <div className="h-[1px] flex-grow bg-[var(--neutral-100)]" />
+                    <span className="text-[8px] font-black uppercase tracking-widest text-[var(--neutral-300)]">Recent Nodes</span>
+                    <div className="h-[1px] flex-grow bg-[var(--neutral-100)]" />
                   </div>
-                </div>
 
-                {/* Suggestions */}
-                <div className="bg-[#111827]/80 rounded-xl p-3 border border-white/[0.04] flex-1">
-                  <div className="text-[9px] text-gray-500 mb-2 uppercase tracking-wider">Suggestions</div>
-                  {[80, 60, 45].map((w, i) => (
-                    <div key={i} className="mb-1.5">
-                      <div className="h-1.5 bg-white/[0.04] rounded-full overflow-hidden">
-                        <div className="h-full bg-white/10 rounded-full" style={{ width: `${w}%` }} />
-                      </div>
+                  <div className="space-y-1">
+                    <div className="flex justify-between items-end">
+                      <span className="text-xs font-black text-[var(--neutral-900)]">Lead Developer @ QuantumFlow</span>
+                      <span className="text-[9px] font-bold text-[var(--neutral-400)]">2021 — PRESENT</span>
                     </div>
+                    <p className="text-[10px] font-bold text-[var(--neutral-900)]/60 leading-relaxed">
+                      • Orchestrated a 45% reduction in latent system overhead using AI-driven routing.<br />
+                      • Scaled micro-service architecture to handle 1.2M concurrent data points.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Skill Tags */}
+                <div className="flex flex-wrap gap-2 pt-4">
+                  {['React', 'Node.js', 'PyTorch', 'AWS'].map(skill => (
+                    <span key={skill} className="px-3 py-1.5 rounded-lg bg-white border border-[var(--neutral-100)] text-[8px] font-black text-[var(--neutral-900)] shadow-sm uppercase tracking-tighter">
+                      {skill}
+                    </span>
                   ))}
                 </div>
               </div>
+
+              {/* ATS SCORE BADGE */}
+              <div className="absolute -top-10 -right-10 w-32 h-32 rounded-[2.5rem] bg-white shadow-2xl flex flex-col items-center justify-center border-4 border-white z-30 group hover:scale-110 transition-all duration-700">
+                <div className="text-4xl font-display font-black text-purple-600">78<span className="text-lg">%</span></div>
+                <div className="text-[8px] font-black text-[var(--neutral-400)] uppercase tracking-widest">ATS Match</div>
+                <div className="mt-2 text-[9px] font-bold text-emerald-500 bg-emerald-50 px-2 py-0.5 rounded-full">Optimal</div>
+              </div>
             </div>
+
+
+
+            {/* Decorative background cards */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[110%] h-[110%] bg-white/20 backdrop-blur-3xl rounded-[4rem] -z-10 rotate-6 border border-white/10" />
           </div>
         </div>
       </div>
@@ -555,244 +224,111 @@ const ProductPreview = () => {
 };
 
 /* ─────────────────────────────────────────────
-   TRUSTED BY
-───────────────────────────────────────────── */
-const TrustedBy = () => {
-  const containerRef = useRef(null);
-
-  useEffect(() => {
-    gsap.fromTo(containerRef.current.children,
-      { y: 30, opacity: 0 },
-      {
-        y: 0,
-        opacity: 1,
-        duration: 1,
-        stagger: 0.1,
-        ease: 'power3.out',
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: 'top 90%',
-        }
-      }
-    );
-  }, []);
-
-  return (
-    <section className="py-16 px-6">
-      <div className="max-w-5xl mx-auto text-center">
-        <p className="text-[11px] font-semibold text-gray-600 uppercase tracking-[0.25em] mb-10">
-          Trusted by 100+ professionals at
-        </p>
-        <div ref={containerRef} className="flex flex-wrap justify-center items-center gap-10 md:gap-16">
-          {['Google', 'Stripe', 'Linear', 'Meta', 'Airbnb'].map((brand) => (
-            <span
-              key={brand}
-              className="text-xl md:text-2xl font-bold text-gray-700 hover:text-gray-400 transition-colors duration-300 cursor-default tracking-tight"
-            >
-              {brand}
-            </span>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-};
-
-/* ─────────────────────────────────────────────
-   FEATURES
+   FEATURES SECTION
 ───────────────────────────────────────────── */
 const Features = () => {
-  const features = [
+  const containerRef = useRef(null);
+
+  const cards = [
     {
-      icon: <BarChart2 className="w-5 h-5 text-[#00D2FF]" />,
-      iconBg: 'bg-[#00D2FF]/10',
-      title: 'Precision-based scoring',
-      desc: 'Beyond basic resume checking. Our advanced optimization engine ensures real-world hiring alignment.',
-      visual: (
-        <div className="relative w-28 h-28 flex items-center justify-center mt-6 mx-auto">
-          <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
-            <circle cx="50" cy="50" r="42" fill="none" stroke="#1F2937" strokeWidth="7" />
-            <motion.circle
-              cx="50" cy="50" r="42"
-              fill="none"
-              stroke="url(#atsGrad)"
-              strokeWidth="7"
-              strokeDasharray={`${2 * Math.PI * 42}`}
-              initial={{ strokeDashoffset: 2 * Math.PI * 42 }}
-              whileInView={{ strokeDashoffset: 2 * Math.PI * 42 * (1 - 0.78) }}
-              viewport={{ once: true }}
-              transition={{ duration: 1.8, ease: 'easeOut' }}
-              strokeLinecap="round"
-            />
-            <defs>
-              <linearGradient id="atsGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#00D2FF" />
-                <stop offset="100%" stopColor="#3A7BD5" />
-              </linearGradient>
-            </defs>
-          </svg>
-          <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className="text-2xl font-bold text-white">78</span>
-            <span className="text-[10px] text-gray-500">/ 100</span>
-          </div>
-        </div>
-      ),
+      title: "Contextual Intelligence",
+      value: "0.8s",
+      desc: "Neural-sweep speed across your entire professional identity. Decodes engineering logic in real-time.",
+      icon: <Target className="w-6 h-6 text-purple-600" />,
+      tag: "Neural"
     },
     {
-      icon: <Search className="w-5 h-5 text-[#7C4DFF]" />,
-      iconBg: 'bg-[#7C4DFF]/10',
-      title: 'Context-aware analysis',
-      desc: 'Smart job description matching and deep resume intelligence to identify critical gaps and high-impact insights.',
-      visual: (
-        <div className="mt-6 space-y-3">
-          <div className="flex flex-wrap gap-2">
-            {['Product Strategy', 'TypeScript'].map(tag => (
-              <span key={tag} className="px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-[10px] text-gray-400">
-                {tag}
-              </span>
-            ))}
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {['AI Models', 'Scalability'].map(tag => (
-              <span key={tag} className="px-2.5 py-1 rounded-full bg-[#00D2FF]/5 border border-[#00D2FF]/20 text-[10px] text-[#00D2FF]">
-                {tag}
-              </span>
-            ))}
-          </div>
-        </div>
-      ),
+      title: "ATS Optimization",
+      value: "98%",
+      desc: "Success rate across major Tier-1 Recruitment platforms. Direct calibration for algorithmic visibility.",
+      icon: <Zap className="w-6 h-6 text-yellow-500" />,
+      tag: "Visibility"
     },
     {
-      icon: <TrendingUp className="w-5 h-5 text-[#00D2FF]" />,
-      iconBg: 'bg-[#00D2FF]/10',
-      title: 'Personalized roadmap',
-      desc: 'Data-driven optimization and skill gap detection for long-term career readiness and industry-aligned insights.',
-      visual: (
-        <div className="mt-6 space-y-3">
-          {[
-            { label: 'Leadership', val: 75, color: '#00D2FF' },
-            { label: 'System Design', val: 45, color: '#3A7BD5' },
-          ].map(({ label, val, color }) => (
-            <div key={label} className="space-y-1">
-              <div className="flex justify-between text-[10px]">
-                <span className="text-gray-500">{label}</span>
-                <span className="text-gray-400">{val}%</span>
-              </div>
-              <div className="h-1.5 w-full bg-white/[0.06] rounded-full overflow-hidden">
-                <motion.div
-                  initial={{ width: 0 }}
-                  whileInView={{ width: `${val}%` }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 1, delay: 0.3 }}
-                  className="h-full rounded-full"
-                  style={{ background: color }}
-                />
-              </div>
-            </div>
-          ))}
-        </div>
-      ),
+      title: "Market Resonance",
+      value: "240+",
+      desc: "Variable checks comparing your resume against successful hires at firms like Google, OpenAI, and Linear.",
+      icon: <BarChart3 className="w-6 h-6 text-cyan-600" />,
+      tag: "Insight"
     },
+    {
+      title: "Semantic Analysis",
+      value: "85%",
+      desc: "Average lift in candidate response rates via high-frequency impactful verb and phrase suggestion.",
+      icon: <FileSearch className="w-6 h-6 text-indigo-600" />,
+      tag: "Precision"
+    },
+    {
+      title: "Placement Velocity",
+      value: "3.2x",
+      desc: "Faster hiring cycle achievement through real-time compatibility scores and targeted improvement paths.",
+      icon: <Sparkles className="w-6 h-6 text-pink-600" />,
+      tag: "Speed"
+    },
+    {
+      title: "Secure Architecture",
+      value: "12k+",
+      desc: "Global network nodes ensuring end-to-end encrypted profile data via enterprise-grade protocols.",
+      icon: <ShieldCheck className="w-6 h-6 text-emerald-600" />,
+      tag: "Privacy"
+    }
   ];
 
-  const containerRef = useRef(null);
-
   useEffect(() => {
-    const cards = containerRef.current.querySelectorAll('.feature-card');
-    gsap.fromTo(cards,
-      { y: 50, opacity: 0 },
-      {
-        y: 0,
-        opacity: 1,
-        duration: 1,
-        stagger: 0.2,
-        ease: 'power3.out',
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: 'top 80%',
-        }
-      }
-    );
+    // Animations disabled for static alignment verification
   }, []);
 
   return (
-    <section id="product" className="py-24 px-6">
-      <div className="max-w-6xl mx-auto">
-        {/* Section header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="mb-16"
-        >
-          <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">Why Aptica AI?</h2>
-          <p className="text-gray-500 max-w-lg leading-relaxed">
-            Smarter way to improve your resume. Designed for clarity and focused on real results with modern AI insights.
-          </p>
-        </motion.div>
+    <section id="product" ref={containerRef} className="pt-60 pb-32 px-6 relative z-10">
+      <div className="container mx-auto max-w-7xl">
+        <div className="mb-32 text-center max-w-4xl mx-auto">
+          <div className="space-y-16">
+            <div>
+              <h2 className="text-5xl md:text-7xl font-display font-black text-[var(--neutral-900)] tracking-tighter leading-[0.9] mb-8">
+                Professional Edge, <br /> Engineering Precision.
+              </h2>
+              <p className="text-xl text-[var(--neutral-900)]/60 font-bold leading-relaxed max-w-2xl mx-auto">
+                Stop guessing. Use the data-driven insights recruiters use to find you. Upgrade your professional matrix today.
+              </p>
+            </div>
 
-        {/* Feature cards */}
-        <div ref={containerRef} className="grid md:grid-cols-3 gap-5">
-          {features.map((f, i) => (
-            <div
-              key={f.title}
-              className="feature-card group relative bg-[#0D1117] border border-white/[0.06] rounded-2xl p-6 hover:border-white/[0.12] transition-all duration-300 hover:shadow-[0_8px_40px_rgba(0,0,0,0.3)] cursor-default overflow-hidden"
-            >
-              {/* Subtle hover glow */}
-              <div className="absolute inset-0 bg-gradient-to-br from-[#00D2FF]/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl" />
+            <div className="flex flex-col items-center gap-4 pt-12 border-t border-[var(--neutral-100)]">
+              <span className="px-5 py-2 rounded-full bg-purple-50 text-[10px] font-black uppercase tracking-[0.3em] text-purple-600">The Neural Methodology</span>
+              <h3 className="text-3xl font-black text-[var(--neutral-900)] tracking-tight">Engineered for the Elite Tier.</h3>
+              <p className="text-[var(--neutral-900)]/50 font-bold max-w-2xl leading-relaxed">
+                Aptica processes your document through 240+ validation nodes. We don't just check for keywords; we analyze semantic resonance, layout heatmaps, and role-specific density to ensure your resume dominates the recruitment funnel.
+              </p>
+            </div>
+          </div>
+        </div>
 
-              <div className={`w-10 h-10 rounded-xl ${f.iconBg} flex items-center justify-center mb-5`}>
-                {f.icon}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+          {cards.map((card, i) => (
+            <div key={i} className="feature-card clay-card !p-5 group min-h-[280px] flex flex-col">
+              <div className="flex justify-between items-center mb-6">
+                <div className="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center border border-purple-100 shadow-sm transition-all duration-700 group-hover:scale-110 group-hover:rotate-6">
+                  {React.cloneElement(card.icon, { className: 'w-4 h-4 ' + card.icon.props.className.split(' ').slice(2).join(' ') })}
+                </div>
+                <span className="px-2.5 py-1 rounded-md bg-[var(--neutral-100)]/50 border border-[var(--neutral-200)]/30 text-[7px] font-black uppercase tracking-[0.2em] text-[var(--neutral-600)] shadow-sm">
+                  {card.tag}
+                </span>
               </div>
-              <h3 className="text-lg font-bold mb-2 text-white">{f.title}</h3>
-              <p className="text-sm text-gray-500 leading-relaxed">{f.desc}</p>
-              {f.visual}
+
+              <div className="mb-4">
+                <div className="text-3xl font-display font-black text-purple-600 tracking-tighter leading-none mb-1">{card.value}</div>
+                <div className="min-h-[3rem] flex items-center">
+                  <h4 className="text-[17px] font-black leading-tight text-[var(--neutral-900)] tracking-tight">{card.title}</h4>
+                </div>
+              </div>
+
+              <div className="mt-auto">
+                <p className="text-[var(--neutral-600)] leading-relaxed font-bold text-[13px]">
+                  {card.desc}
+                </p>
+              </div>
             </div>
           ))}
         </div>
-      </div>
-    </section>
-  );
-};
-
-/* ─────────────────────────────────────────────
-   STATS STRIP
-───────────────────────────────────────────── */
-const Stats = () => {
-  const containerRef = useRef(null);
-
-  useEffect(() => {
-    gsap.fromTo(containerRef.current.children,
-      { y: 20, opacity: 0 },
-      {
-        y: 0,
-        opacity: 1,
-        duration: 0.8,
-        stagger: 0.2,
-        ease: 'back.out(1.7)',
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: 'top 90%',
-        }
-      }
-    );
-  }, []);
-
-  return (
-    <section className="py-16 px-6">
-      <div ref={containerRef} className="max-w-4xl mx-auto grid grid-cols-3 gap-6">
-        {[
-          { number: '3x', label: 'More interview callbacks' },
-          { number: '98%', label: 'ATS pass rate' },
-          { number: '10k+', label: 'Resumes optimized' },
-        ].map(({ number, label }) => (
-          <div key={label} className="text-center">
-            <div className="text-3xl md:text-4xl font-extrabold bg-clip-text text-transparent bg-gradient-to-b from-white to-gray-400">
-              {number}
-            </div>
-            <div className="text-xs text-gray-600 mt-1">{label}</div>
-          </div>
-        ))}
       </div>
     </section>
   );
@@ -803,48 +339,29 @@ const Stats = () => {
 ───────────────────────────────────────────── */
 const CTA = () => {
   const navigate = useNavigate();
-  const bannerRef = useRef(null);
-
-  useEffect(() => {
-    gsap.fromTo(bannerRef.current,
-      { scale: 0.8, opacity: 0 },
-      {
-        scale: 1,
-        opacity: 1,
-        duration: 1.2,
-        ease: 'expo.out',
-        scrollTrigger: {
-          trigger: bannerRef.current,
-          start: 'top 90%',
-        }
-      }
-    );
-  }, []);
-
   return (
-    <section className="py-24 px-6">
-      <div
-        ref={bannerRef}
-        className="max-w-4xl mx-auto relative rounded-[2rem] overflow-hidden shadow-[0_0_50px_rgba(0,210,255,0.1)]"
-      >
-        {/* BG */}
-        <div className="absolute inset-0 bg-[#0D1117] border border-white/[0.07]" />
-        <div className="absolute inset-0 bg-gradient-to-br from-[#3A7BD5]/10 via-transparent to-[#00D2FF]/5" />
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#00D2FF]/40 to-transparent" />
+    <section className="py-32 px-6 mb-20">
+      <div className="container mx-auto max-w-7xl">
+        <div className="relative clay-card !p-20 overflow-hidden text-center border-white/60 bg-white/40 backdrop-blur-md">
+          {/* Blob */}
+          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary-200/40 blur-[100px] rounded-full -translate-y-1/2 translate-x-1/2" />
 
-        <div className="relative z-10 py-20 px-8 text-center">
-          <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight mb-4 text-white">
-            Turn your resume into a strong profile.
-          </h2>
-          <p className="text-gray-500 text-base mb-10 max-w-md mx-auto leading-relaxed">
-            Fast and seamless analysis with an intelligent feedback system. Join thousands for real-world results.
-          </p>
-          <button
-            onClick={() => navigate('/auth')}
-            className="px-8 py-3.5 bg-[#00D2FF] text-black text-sm font-bold rounded-full hover:bg-[#00D2FF]/90 hover:shadow-[0_0_28px_rgba(0,210,255,0.4)] transition-all duration-300 hover:scale-105 active:scale-95"
-          >
-            Optimize Now
-          </button>
+          <div className="relative z-10 max-w-4xl mx-auto">
+            <h2 className="text-5xl md:text-7xl font-display font-black text-[var(--neutral-900)] tracking-tighter mb-10 leading-[0.9]">
+              Accelerate Your <br /> Career Trajectory.
+            </h2>
+            <p className="text-lg text-[var(--neutral-900)]/60 font-bold mb-12 max-w-2xl mx-auto">
+              Join 10,000+ candidates who have optimized their resumes to land roles at the world's most innovative firms.
+            </p>
+            <div className="flex flex-wrap justify-center items-center gap-6">
+              <button onClick={() => navigate('/auth')} className="btn-aptica !px-14 !py-7 text-sm">
+                Analyze My Resume Today →
+              </button>
+              <button className="px-10 py-7 rounded-2xl border-2 border-white/50 bg-white/10 backdrop-blur-md text-sm font-black text-[var(--neutral-900)] uppercase tracking-widest hover:bg-white/30 transition-all">
+                View Sample Results
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -852,76 +369,19 @@ const CTA = () => {
 };
 
 /* ─────────────────────────────────────────────
-   FOOTER
+   LANDING COMPONENT
 ───────────────────────────────────────────── */
-const Footer = () => {
-  const navigate = useNavigate();
+const Landing = () => {
   return (
-    <footer className="border-t border-white/[0.05] bg-[#030712]">
-      <div className="max-w-6xl mx-auto px-6">
-        {/* Top row */}
-        <div className="flex flex-col md:flex-row items-center justify-between gap-8 py-12">
-          {/* Logo */}
-          <div className="flex items-center gap-2.5 cursor-pointer" onClick={() => navigate('/')}>
-            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#00D2FF] to-[#3A7BD5] flex items-center justify-center">
-              <Layout className="text-black w-4 h-4" strokeWidth={2.5} />
-            </div>
-            <span className="text-sm font-semibold text-white">Aptica</span>
-          </div>
+    <div className="relative min-h-screen">
+      <Hero />
+      <Features />
+      <CTA />
 
-          {/* Links */}
-          <div className="flex gap-8 text-[13px] text-gray-600">
-            {['Product', 'Solutions', 'Pricing', 'About'].map(l => (
-              <a key={l} href={`#${l.toLowerCase()}`} className="hover:text-gray-300 transition-colors">
-                {l}
-              </a>
-            ))}
-          </div>
-
-          {/* Social */}
-          <div className="flex items-center gap-4">
-            {[Globe, Share2, X].map((Icon, i) => (
-              <button
-                key={i}
-                className="w-8 h-8 rounded-full bg-white/[0.03] border border-white/[0.06] flex items-center justify-center text-gray-600 hover:text-white hover:border-white/20 transition-all"
-              >
-                <Icon className="w-3.5 h-3.5" />
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Bottom row */}
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4 py-5 border-t border-white/[0.04] text-[11px] text-gray-700">
-          <p>© 2026 Aptica. All rights reserved.</p>
-          <div className="flex gap-6">
-            {['Privacy Policy', 'Terms of Service', 'Cookie Policy', 'Contact'].map(l => (
-              <a key={l} href="#" className="hover:text-gray-400 transition-colors">
-                {l}
-              </a>
-            ))}
-          </div>
-        </div>
-      </div>
-    </footer>
+      {/* Visual Depth: Perspective Overlay */}
+      <div className="fixed inset-0 pointer-events-none z-50 border-[24px] border-white/10" />
+    </div>
   );
 };
-
-/* ─────────────────────────────────────────────
-   ROOT
-───────────────────────────────────────────── */
-const Landing = () => (
-  <div className="min-h-screen bg-[#030712] text-white selection:bg-[#00D2FF]/20 selection:text-white overflow-x-hidden">
-    <FloatingParticles />
-    <Navbar />
-    <Hero />
-    <ProductPreview />
-    <TrustedBy />
-    <Features />
-    <Stats />
-    <CTA />
-    <Footer />
-  </div>
-);
 
 export default Landing;
