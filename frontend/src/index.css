@@ -1,8 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Inter:wght@100..900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
 
 @layer base {
   :root {
@@ -54,7 +54,8 @@
   }
 
   body {
-    @apply antialiased;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-smoothing: grayscale;
     font-family: 'Inter', sans-serif;
     background: linear-gradient(135deg, #f0f7ff 0%, #e0efff 50%, #f8faff 100%);
     background-attachment: fixed;
@@ -104,7 +105,8 @@
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Plus Jakarta Sans', sans-serif;
     letter-spacing: -0.02em;
-    @apply text-[var(--neutral-900)] font-black;
+    color: var(--neutral-900);
+    font-weight: 900;
   }
 }
 
@@ -142,16 +144,35 @@
   }
 
   .btn-kredo {
-    @apply inline-flex items-center justify-center gap-3 px-8 py-4 rounded-2xl 
-           bg-gradient-to-r from-purple-600 to-indigo-600 text-white 
-           font-black text-[11px] uppercase tracking-[0.2em] shadow-lg hover:shadow-purple-500/20 
-           hover:scale-[1.02] active:scale-[0.98] transition-all;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 1rem 2rem;
+    border-radius: 1rem;
+    background-image: linear-gradient(to right, #9333ea, #4f46e5);
+    color: #ffffff;
+    font-weight: 900;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    box-shadow: 0 10px 15px -3px rgba(139, 92, 246, 0.2);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .btn-outline {
-    @apply relative inline-flex items-center justify-center gap-2 px-8 py-4 
-           bg-[var(--neutral-100)] text-sm font-bold text-[var(--neutral-900)] rounded-2xl
-           transition-all duration-300 ease-out hover:scale-[1.02] active:scale-95;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1rem 2rem;
+    background-color: var(--neutral-100);
+    color: var(--neutral-900);
+    font-size: 0.875rem;
+    font-weight: 700;
+    border-radius: 1rem;
+    transition: all 0.3s cubic-bezier(0, 0, 0.2, 1);
     box-shadow: var(--clay-shadow-1);
   }
 
@@ -160,11 +181,21 @@
   }
 
   .kredo-text {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500;
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    background-image: linear-gradient(to right, #9333ea, #4f46e5, #06b6d4);
   }
 
   .input-clay {
-    @apply w-full px-6 py-4 rounded-2xl bg-[#fafbff] border border-white transition-all font-bold text-[var(--neutral-900)];
+    width: 100%;
+    padding: 1rem 1.5rem;
+    border-radius: 1rem;
+    background-color: #fafbff;
+    border: 1px solid #ffffff;
+    font-weight: 700;
+    color: var(--neutral-900);
+    transition: all 0.2s;
     box-shadow: 
       inset 4px 4px 8px rgba(163, 177, 198, 0.2), 
       inset -4px -4px 8px rgba(255, 255, 255, 0.7),
@@ -172,7 +203,8 @@
   }
 
   .input-clay:focus {
-    @apply outline-none border-[var(--primary-200)];
+    outline: none;
+    border-color: var(--primary-200);
     box-shadow: 
       inset 2px 2px 4px rgba(163, 177, 198, 0.1), 
       inset -2px -2px 4px rgba(255, 255, 255, 0.5),
