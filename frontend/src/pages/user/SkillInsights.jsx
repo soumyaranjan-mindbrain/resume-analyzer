@@ -36,7 +36,7 @@ const SkillInsights = () => {
 
   return (
     <div className="max-w-[1400px] mx-auto pb-8 px-4">
-      {/* Tabs */}
+      
       <div className="p-1.5 bg-slate-200/40 backdrop-blur-xl rounded-2xl flex items-center gap-1 border border-white/50 w-fit mb-10">
         {tabs.map((tab) => (
           <button
@@ -54,9 +54,9 @@ const SkillInsights = () => {
         ))}
       </div>
 
-      {/* Top Grid Area */}
+      
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-        {/* Main Hero Card: Missing Skills Summary */}
+        
         <div className="lg:col-span-2 bg-white/25 backdrop-blur-3xl rounded-[2.5rem] p-10 border border-white/70 relative overflow-hidden group shadow-[0_50px_100px_-20px_rgba(15,23,42,0.3),inset_0_1px_4px_rgba(255,255,255,0.6)]">
           <div className="absolute inset-0 bg-gradient-to-br from-[#4b7bff]/5 via-transparent to-slate-900/[0.05] pointer-events-none" />
           <div className="relative z-10 flex flex-col md:flex-row items-center gap-10">
@@ -78,10 +78,10 @@ const SkillInsights = () => {
               </button>
             </div>
 
-            {/* Visual/Chart Section */}
+            
             <div className="relative flex flex-col items-center gap-8">
                <div className="relative w-48 h-48 flex items-center justify-center">
-                  {/* Simplified Donut Chart Representation */}
+                  
                   <svg className="w-full h-full transform -rotate-90">
                     <circle cx="96" cy="96" r="80" fill="none" stroke="currentColor" strokeWidth="24" className="text-orange-100/50" />
                     <circle cx="96" cy="96" r="80" fill="none" stroke="currentColor" strokeWidth="24" className="text-orange-400" strokeDasharray={502} strokeDashoffset={502 * 0.4} strokeLinecap="round" />
@@ -106,7 +106,7 @@ const SkillInsights = () => {
           </div>
         </div>
 
-        {/* Sidebar Card: Thy Missing Skills */}
+        
         <div className="bg-white/25 backdrop-blur-3xl rounded-[2.5rem] p-8 border border-white/70 relative overflow-hidden shadow-[0_50px_100px_-20px_rgba(15,23,42,0.3),inset_0_1px_4px_rgba(255,255,255,0.6)]">
           <div className="flex items-center gap-4 mb-8">
              <div className="w-10 h-10 bg-blue-500/10 rounded-xl flex items-center justify-center text-blue-500">
@@ -142,10 +142,10 @@ const SkillInsights = () => {
         </div>
       </div>
 
-      {/* Middle Grid Area */}
+      
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         
-        {/* Top In-Demand Skills */}
+        
         <div className="bg-white/25 backdrop-blur-3xl rounded-[2.5rem] p-10 border border-white/70 relative overflow-hidden shadow-[0_50px_100px_-20px_rgba(15,23,42,0.3),inset_0_1px_4px_rgba(255,255,255,0.6)] flex flex-col">
           <h3 className="text-2xl font-black text-[#1e293b] tracking-tight mb-8">Top In-Demand Skills</h3>
           <div className="flex-1 space-y-8">
@@ -174,11 +174,11 @@ const SkillInsights = () => {
           </button>
         </div>
 
-        {/* Skill Demand vs Supply Chart Placeholder */}
+        
         <div className="bg-white/25 backdrop-blur-3xl rounded-[2.5rem] p-10 border border-white/70 relative overflow-hidden shadow-[0_50px_100px_-20px_rgba(15,23,42,0.3),inset_0_1px_4px_rgba(255,255,255,0.6)] flex flex-col">
           <h3 className="text-2xl font-black text-[#1e293b] tracking-tight mb-8">Skill Demand vs. Supply</h3>
           <div className="flex-1 flex items-center justify-center min-h-[300px] relative">
-             {/* Realistic Grid Lines */}
+             
              <div className="absolute inset-0 flex flex-col justify-between py-2">
                 {[...Array(5)].map((_, i) => (
                   <div key={i} className="w-full border-t border-slate-200/50 relative">
@@ -186,29 +186,29 @@ const SkillInsights = () => {
                   </div>
                 ))}
              </div>
-             {/* Simplified Data Lines Visualization */}
+             
              <svg className="w-full h-full relative z-10 overflow-visible" viewBox="0 0 400 200">
-                {/* Demand Line */}
+                
                 <path d="M 0,150 C 100,100 200,80 400,30" fill="none" stroke="#4b7bff" strokeWidth="4" strokeLinecap="round" className="drop-shadow-lg" />
                 <circle cx="400" cy="30" r="6" fill="#4b7bff" stroke="white" strokeWidth="2" />
-                {/* Supply Line */}
+                
                 <path d="M 0,170 C 100,140 200,130 400,120" fill="none" stroke="#10b981" strokeWidth="4" strokeLinecap="round" className="opacity-60" />
                 <circle cx="400" cy="120" r="6" fill="#10b981" stroke="white" strokeWidth="2" />
              </svg>
-             {/* Bottom Months */}
+             
              <div className="absolute -bottom-4 inset-x-0 flex justify-between px-2 text-[10px] font-black text-slate-400">
                 {['Jan', 'Feb', 'Mar', 'Apr', 'May'].map(m => <span key={m}>{m}</span>)}
              </div>
-             {/* Floating Info Badge */}
+             
              <div className="absolute top-[20px] right-2 px-3 py-1.5 bg-[#4b7bff] text-white rounded-lg text-xs font-black shadow-lg">110%</div>
           </div>
         </div>
       </div>
 
-      {/* Bottom Row */}
+      
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
         
-        {/* Mini Recommended Course Cards */}
+        
         <div className="lg:col-span-2 bg-white/25 backdrop-blur-3xl rounded-[2.5rem] p-10 border border-white/70 relative overflow-hidden shadow-[0_50px_100px_-20px_rgba(15,23,42,0.3),inset_0_1px_4px_rgba(255,255,255,0.6)]">
            <div className="flex items-center justify-between mb-8">
               <h3 className="text-2xl font-black text-[#1e293b] tracking-tight">Recommended Courses</h3>
@@ -238,7 +238,7 @@ const SkillInsights = () => {
            </div>
         </div>
 
-        {/* Next Steps List */}
+        
         <div className="bg-white/25 backdrop-blur-3xl rounded-[2.5rem] p-10 border border-white/70 relative overflow-hidden shadow-[0_50px_100px_-20px_rgba(15,23,42,0.3),inset_0_1px_4px_rgba(255,255,255,0.6)]">
            <h3 className="text-2xl font-black text-[#1e293b] tracking-tight mb-8">Next Steps</h3>
            <div className="space-y-6">
@@ -266,3 +266,4 @@ const SkillInsights = () => {
 };
 
 export default SkillInsights;
+

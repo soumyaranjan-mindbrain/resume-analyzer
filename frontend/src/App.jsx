@@ -25,11 +25,11 @@ function App() {
   return (
     <Router>
       <Routes>
-        {/* Public Routes (Redirect to dashboard if logged in) */}
+        
         <Route path="/" element={<PublicRoute><BaseLayout><Landing /></BaseLayout></PublicRoute>} />
         <Route path="/auth" element={<PublicRoute><BaseLayout><Auth /></BaseLayout></PublicRoute>} />
         
-        {/* Private User Routes */}
+        
         <Route path="/dashboard" element={<ProtectedRoute allowedRoles={['user']}><AppLayout><Dashboard /></AppLayout></ProtectedRoute>} />
         <Route path="/history" element={<ProtectedRoute allowedRoles={['user']}><AppLayout><History /></AppLayout></ProtectedRoute>} />
         <Route path="/matches" element={<ProtectedRoute allowedRoles={['user']}><AppLayout><JobMatches /></AppLayout></ProtectedRoute>} />
@@ -38,7 +38,7 @@ function App() {
         <Route path="/support" element={<ProtectedRoute allowedRoles={['user']}><AppLayout><Support /></AppLayout></ProtectedRoute>} />
         <Route path="/profile" element={<ProtectedRoute allowedRoles={['user', 'admin']}><AppLayout><Profile /></AppLayout></ProtectedRoute>} />
 
-        {/* Admin Routes */}
+        
         <Route path="/admin" element={<ProtectedRoute allowedRoles={['admin']}><AppLayout><AdminDashboard /></AppLayout></ProtectedRoute>} />
         <Route path="/admin/students" element={<ProtectedRoute allowedRoles={['admin']}><AppLayout><Students /></AppLayout></ProtectedRoute>} />
         <Route path="/admin/reports" element={<ProtectedRoute allowedRoles={['admin']}><AppLayout><Reports /></AppLayout></ProtectedRoute>} />
@@ -53,3 +53,4 @@ function App() {
 }
 
 export default App;
+

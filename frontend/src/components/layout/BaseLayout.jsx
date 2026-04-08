@@ -27,3 +27,4 @@ const BaseLayout = ({ children }) => {
 };
 
 export default BaseLayout;
+

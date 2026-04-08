@@ -24,21 +24,21 @@ const Dashboard = () => {
   return (
     <div className="space-y-6 max-w-[1400px] mx-auto pb-10 px-4 sm:px-0">
 
-      {/* Welcome Banner */}
+      
       <div className="relative overflow-hidden rounded-[2.5rem] bg-white border border-slate-100 flex shadow-[0_10px_40px_-15px_rgba(0,0,0,0.08)] min-h-[300px]">
         
-        {/* Full Seamless Banner Image */}
+        
         <div className="absolute inset-0 w-full h-full">
            <img 
              src={dashboardBanner} 
              alt="Welcome Banner" 
              className="w-full h-full object-cover object-center" 
            />
-           {/* Refined overlays for seamless text integration */}
+           
            <div className="absolute inset-0 bg-gradient-to-r from-white/60 via-white/10 to-transparent" />
         </div>
 
-        {/* Text Content Overlay */}
+        
         <div className="relative z-10 space-y-4 p-12 flex flex-col justify-center w-full max-w-2xl">
           <h1 className="text-5xl font-black text-[#1e293b] tracking-tighter">Welcome, <span className="text-[#4b7bff]">James</span>!</h1>
           <p className="text-[#64748b] text-base font-medium max-w-md leading-relaxed">
@@ -61,10 +61,10 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* KPI Cards Row */}
+      
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 
-        {/* Card 1: ATS Score - Pastel Blue */}
+        
         <div className="bg-[#f0f7ff]/25 backdrop-blur-3xl rounded-[2.8rem] p-7 border border-white/60 relative overflow-hidden group shadow-[0_45px_100px_-20px_rgba(15,23,42,0.35),inset_0_1px_3px_rgba(255,255,255,0.5)] hover:shadow-blue-500/30 transition-all duration-700">
           <div className="absolute inset-0 bg-gradient-to-br from-slate-900/[0.12] to-transparent pointer-events-none" />
           <div className="absolute top-0 right-0 p-6 cursor-pointer">
@@ -86,7 +86,7 @@ const Dashboard = () => {
           <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl" />
         </div>
 
-        {/* Card 2: Job Ready - Pastel Emerald */}
+        
         <div className="bg-[#f0fff4]/25 backdrop-blur-3xl rounded-[2.8rem] p-7 border border-white/60 relative overflow-hidden group shadow-[0_45px_100px_-20px_rgba(15,23,42,0.35),inset_0_1px_3px_rgba(255,255,255,0.5)] hover:shadow-emerald-500/30 transition-all duration-700">
           <div className="absolute inset-0 bg-gradient-to-br from-slate-900/[0.12] to-transparent pointer-events-none" />
           <div className="absolute top-0 right-0 p-6 cursor-pointer">
@@ -105,7 +105,7 @@ const Dashboard = () => {
           <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl" />
         </div>
 
-        {/* Card 3: Missing Skills - Pastel Orange */}
+        
         <div className="bg-[#fffcf0]/25 backdrop-blur-3xl rounded-[2.8rem] p-7 border border-white/60 relative overflow-hidden group shadow-[0_45px_100px_-20px_rgba(15,23,42,0.35),inset_0_1px_3px_rgba(255,255,255,0.5)] hover:shadow-orange-500/30 transition-all duration-700">
           <div className="absolute inset-0 bg-gradient-to-br from-slate-900/[0.12] to-transparent pointer-events-none" />
           <div className="absolute top-0 right-0 p-6 cursor-pointer">
@@ -124,7 +124,7 @@ const Dashboard = () => {
           <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-orange-500/10 rounded-full blur-2xl" />
         </div>
 
-        {/* Card 4: Job Matches - Pastel Purple */}
+        
         <div className="bg-[#f7f0ff]/25 backdrop-blur-3xl rounded-[2.8rem] p-7 border border-white/60 relative overflow-hidden group shadow-[0_45px_100px_-20px_rgba(15,23,42,0.35),inset_0_1px_3px_rgba(255,255,255,0.5)] hover:shadow-purple-500/30 transition-all duration-700">
           <div className="absolute inset-0 bg-gradient-to-br from-slate-900/[0.12] to-transparent pointer-events-none" />
           <div className="absolute top-0 right-0 p-6 cursor-pointer">
@@ -145,10 +145,10 @@ const Dashboard = () => {
 
       </div>
 
-      {/* Bottom Main Content - Unified Grid for perfect alignment */}
+      
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
 
-        {/* Card 1: Performance */}
+        
         <div className="bg-white/25 backdrop-blur-[40px] rounded-[2.8rem] p-8 shadow-[0_60px_100px_-20px_rgba(15,23,42,0.4),inset_0_1px_4px_rgba(255,255,255,0.6)] border border-white/70 h-full relative overflow-hidden group transition-all duration-700 flex flex-col">
           <div className="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-slate-900/[0.15] pointer-events-none" />
           <div className="flex items-center justify-between mb-8 relative z-10">
@@ -205,7 +205,7 @@ const Dashboard = () => {
           <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-bl-[100px] pointer-events-none group-hover:scale-110 transition-transform" />
         </div>
 
-        {/* Card 2: Skill Breakdown */}
+        
         <div className="bg-[#fcfaff]/25 backdrop-blur-[40px] rounded-[2.8rem] p-8 shadow-[0_60px_100px_-20px_rgba(15,23,42,0.4),inset_0_1px_4px_rgba(255,255,255,0.6)] border border-white/70 h-full relative overflow-hidden group transition-all duration-700 flex flex-col">
           <div className="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-slate-900/[0.15] pointer-events-none" />
           <div className="flex items-center justify-between mb-8 relative z-10">
@@ -247,7 +247,7 @@ const Dashboard = () => {
           <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/5 rounded-bl-[100px] pointer-events-none group-hover:scale-110 transition-transform" />
         </div>
 
-        {/* Card 3: Next Steps */}
+        
         <div className="bg-[#fffdf0]/25 backdrop-blur-[40px] rounded-[2.8rem] p-8 shadow-[0_60px_100px_-20px_rgba(15,23,42,0.4),inset_0_1px_4px_rgba(255,255,255,0.6)] border border-white/70 h-full relative overflow-hidden group transition-all duration-700 flex flex-col justify-between">
           <div className="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-slate-900/[0.15] pointer-events-none" />
           <div className="flex items-center justify-between relative z-10 shrink-0 mb-6">
@@ -285,7 +285,7 @@ const Dashboard = () => {
           <div className="absolute right-0 top-0 w-48 h-48 bg-yellow-500/10 rounded-bl-[150px] pointer-events-none group-hover:scale-105 transition-transform" />
         </div>
 
-        {/* Card 4: Activity */}
+        
         <div className="bg-[#f8f9fc]/25 backdrop-blur-[40px] rounded-[2.8rem] p-8 shadow-[0_60px_100px_-20px_rgba(15,23,42,0.4),inset_0_1px_4px_rgba(255,255,255,0.6)] border border-white/70 h-full group transition-all duration-700 relative overflow-hidden flex flex-col">
           <div className="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-slate-900/[0.15] pointer-events-none" />
           <div className="flex items-center justify-between mb-8 relative z-10">
@@ -324,3 +324,4 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+

@@ -38,7 +38,7 @@ const Students = () => {
   return (
     <div className="space-y-6 animate-in fade-in duration-700">
       
-      {/* Page Actions Only */}
+      
       <div className="flex justify-end gap-3 mb-4">
         <button className="flex items-center gap-2 px-5 py-3 bg-white border border-slate-200 rounded-2xl font-black text-xs uppercase tracking-widest text-slate-600 hover:bg-slate-50 transition-all shadow-sm">
           <Download className="w-4 h-4" /> Export CSV
@@ -48,7 +48,7 @@ const Students = () => {
         </button>
       </div>
 
-      {/* Stats Quick View */}
+      
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat, i) => (
           <div key={i} className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm relative overflow-hidden group">
@@ -69,9 +69,9 @@ const Students = () => {
         ))}
       </div>
 
-      {/* Table Section */}
+      
       <div className="bg-white rounded-[2rem] border border-slate-100 shadow-sm overflow-hidden">
-        {/* Table Controls */}
+        
         <div className="p-6 border-b border-slate-50 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-4 overflow-x-auto pb-2 md:pb-0 hide-scrollbar">
             {['All', 'Active', 'Hired', 'Needs Review'].map((tab) => (
@@ -105,7 +105,7 @@ const Students = () => {
           </div>
         </div>
 
-        {/* Table Content */}
+        
         <div className="overflow-x-auto min-h-[400px]">
           <table className="w-full text-left border-collapse">
             <thead>
@@ -182,7 +182,7 @@ const Students = () => {
           </table>
         </div>
 
-        {/* Pagination Placeholder */}
+        
         <div className="p-8 bg-slate-50/50 flex items-center justify-between">
            <p className="text-xs font-bold text-slate-400">Showing 5 of 1,284 students</p>
            <div className="flex gap-2">
@@ -196,5 +196,6 @@ const Students = () => {
 };
 
 export default Students;
+
 
 

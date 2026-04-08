@@ -27,16 +27,16 @@ const JobDescriptions = () => {
   return (
     <div className="space-y-6 animate-in fade-in duration-700">
       
-      {/* Page Actions */}
+      
       <div className="flex justify-end mb-4">
         <button className="flex items-center gap-2 px-8 py-4 bg-cyan-500 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-cyan-500/20">
           <Plus className="w-5 h-5" /> New Job Role
         </button>
       </div>
 
-      {/* Grid of Job Cards */}
+      
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-         {/* Simple Stats Sidebar for JD */}
+         
           <div className="lg:col-span-1 space-y-4">
             <div className="bg-white rounded-[2rem] p-6 border border-slate-100 shadow-sm relative overflow-hidden group">
                <div className="absolute inset-0 bg-gradient-to-br from-emerald-50 to-transparent opacity-50" />
@@ -67,7 +67,7 @@ const JobDescriptions = () => {
             </div>
          </div>
 
-         {/* Job List Table */}
+         
          <div className="lg:col-span-2 bg-white rounded-[3rem] border border-slate-100 shadow-sm flex flex-col min-h-[600px]">
             <div className="p-8 border-b border-slate-50 flex flex-col md:flex-row md:items-center justify-between gap-6">
                <h3 className="text-xl font-black text-slate-900 tracking-tight">Active Job Catalog</h3>
@@ -147,5 +147,6 @@ const JobDescriptions = () => {
 };
 
 export default JobDescriptions;
+
 
 

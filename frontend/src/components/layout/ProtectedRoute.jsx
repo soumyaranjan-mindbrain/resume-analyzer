@@ -15,12 +15,12 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
   }
 
   if (!user) {
-    // Redirect to login but save the current location they were trying to go to
+    
     return <Navigate to="/auth" state={{ from: location }} replace />;
   }
 
   if (allowedRoles && !allowedRoles.includes(user.role)) {
-    // If user role is not allowed, redirect to their respective dashboard
+    
     const redirectPath = user.role === 'admin' ? '/admin' : '/dashboard';
     return <Navigate to={redirectPath} replace />;
   }
@@ -29,3 +29,4 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
 };
 
 export default ProtectedRoute;
+

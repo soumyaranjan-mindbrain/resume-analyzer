@@ -6,7 +6,7 @@
 
 @layer base {
   :root {
-    /* Premium Claymorphism Palette (Soft Purple-Blue) */
+    
     --primary-50: #EEF2FF;
     --primary-100: #E0E7FF;
     --primary-200: #C7D2FE;
@@ -19,12 +19,12 @@
     --primary-900: #312E81;
     --primary-950: #1E1B4B;
 
-    /* Intensified Clay Shadows for maximum depth */
+    
     --clay-shadow-1: 20px 20px 40px rgba(163, 177, 198, 0.5), -20px -20px 40px rgba(255, 255, 255, 1);
     --clay-shadow-2: 12px 12px 25px rgba(163, 177, 198, 0.4), -12px -12px 25px rgba(255, 255, 255, 1);
     --clay-shadow-3: inset 6px 6px 12px rgba(163, 177, 198, 0.3), inset -6px -6px 12px rgba(255, 255, 255, 0.8);
 
-    /* Claymorphism Surface Scale */
+    
     --neutral-50: #f5f7fb;
     --neutral-100: #eef1f6;
     --neutral-200: #e2e8f0;
@@ -36,12 +36,12 @@
     --neutral-800: #1e293b;
     --neutral-900: #0f172a;
 
-    /* Gradients */
+    
     --brand-gradient: linear-gradient(135deg, #7b61ff 0%, #4da3ff 100%);
     --kredo-gradient: linear-gradient(135deg, #fbcfe8 0%, #c4b5fd 50%, #67e8f9 100%);
     --surface-gradient: linear-gradient(145deg, #f0f3f8, #e6eaf0);
     
-    /* Fluid Typography Scale */
+    
     --text-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.8125rem);
     --text-sm: clamp(0.875rem, 0.825rem + 0.3vw, 0.9375rem);
     --text-base: clamp(1rem, 0.95rem + 0.4vw, 1.0625rem);
@@ -78,14 +78,14 @@
   }
 
   body::before {
-    background: #7dd3fc30; /* Soft Sky Blue */
+    background: #7dd3fc30; 
     top: -200px;
     right: -100px;
     animation: float-blob 25s infinite alternate;
   }
 
   body::after {
-    background: #ffffff; /* White soft glow */
+    background: #ffffff; 
     bottom: -200px;
     left: -100px;
     animation: float-blob 30s infinite alternate-reverse;
@@ -109,7 +109,7 @@
 }
 
 @layer components {
-  /* Glassmorphism Logic */
+  
   .glass-card {
     background: rgba(255, 255, 255, 0.45);
     backdrop-filter: blur(16px);
@@ -126,8 +126,8 @@
   }
 
   .clay-card {
-    background: #ffffff; /* Solid white for better definition */
-    border-radius: 40px; /* More modern, pill-like corners */
+    background: #ffffff; 
+    border-radius: 40px; 
     box-shadow: 
       20px 20px 60px rgba(163, 177, 198, 0.4), 
       -20px -20px 60px rgba(255, 255, 255, 1),
@@ -180,7 +180,7 @@
   }
 }
 
-/* ── Custom Animations ── */
+
 @keyframes float {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-15px); }
@@ -190,7 +190,7 @@
   animation: float 6s ease-in-out infinite;
 }
 
-/* ── Custom Scrollbar ── */
+
 ::-webkit-scrollbar {
   width: 8px;
 }
@@ -209,3 +209,4 @@
 .mask-fade {
   mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
 }
+

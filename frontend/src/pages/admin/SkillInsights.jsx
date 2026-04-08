@@ -24,10 +24,10 @@ const SkillInsights = () => {
 
   return (
     <div className="space-y-6 animate-in fade-in duration-700 pb-8">
-      {/* Page Starts Here */}
+      
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-         {/* Demand vs Supply Chart Area */}
+         
          <div className="bg-white rounded-[2rem] p-8 border border-slate-100 shadow-sm relative overflow-hidden flex flex-col justify-between group min-h-[450px]">
             <div className="absolute top-0 right-0 w-48 h-48 bg-amber-50 rounded-bl-[8rem] -mr-12 -mt-12 transition-all group-hover:bg-amber-100/50" />
             <div className="relative z-10 space-y-2">
@@ -64,7 +64,7 @@ const SkillInsights = () => {
             </div>
          </div>
 
-         {/* Recommendation Cards */}
+         
          <div className="space-y-8">
             <div className="bg-cyan-50 border border-cyan-100 rounded-[2rem] p-8 text-cyan-900 relative overflow-hidden group shadow-2xl">
                <div className="absolute bottom-0 right-0 w-full h-1/2 bg-gradient-to-t from-amber-500/20 to-transparent" />
@@ -110,4 +110,5 @@ const SkillInsights = () => {
 };
 
 export default SkillInsights;
+
 

@@ -36,7 +36,7 @@ const AdminDashboard = () => {
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-1000">
       
-      {/* KPI Cards */}
+      
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat, i) => (
           <div key={i} className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-xl transition-all group overflow-hidden relative">
@@ -56,7 +56,7 @@ const AdminDashboard = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Main Chart/Analytics Brief */}
+        
         <div className="lg:col-span-2 bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm relative overflow-hidden group min-h-[450px] flex flex-col justify-between">
            <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-50 rounded-bl-[8rem] -mr-20 -mt-20 opacity-50" />
            <div className="relative z-10 flex items-center justify-between mb-8">
@@ -70,7 +70,7 @@ const AdminDashboard = () => {
               </div>
            </div>
 
-           {/* Simple Mock Chart */}
+           
            <div className="relative h-64 flex items-end gap-3 pb-4">
               {[40, 70, 45, 90, 65, 80, 55, 95, 75, 40, 85, 100].map((h, i) => (
                 <div key={i} className="flex-1 bg-blue-500/10 hover:bg-blue-500 rounded-2xl transition-all duration-700 ease-out origin-bottom cursor-pointer group/bar" style={{ height: `${h}%` }}>
@@ -102,9 +102,9 @@ const AdminDashboard = () => {
            </div>
         </div>
 
-        {/* Sidebar Cards */}
+        
         <div className="space-y-8">
-           {/* Recent Activity */}
+           
            <div className="bg-white rounded-[2rem] p-6 border border-slate-100 shadow-sm">
               <div className="flex items-center justify-between mb-8">
                  <h4 className="text-lg font-black text-slate-900 tracking-tight">Recent Activity</h4>
@@ -138,7 +138,7 @@ const AdminDashboard = () => {
               </button>
            </div>
 
-           {/* Health Monitor */}
+           
            <div className="bg-cyan-50 border border-cyan-100 rounded-[2rem] p-6 text-cyan-900 shadow-sm relative overflow-hidden shadow-2xl">
               <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/10 blur-[50px] rounded-full -mr-16 -mt-16" />
               <div className="relative z-10 flex items-center gap-4 mb-6">
@@ -170,6 +170,7 @@ const AdminDashboard = () => {
 };
 
 export default AdminDashboard;
+
 
 
 

@@ -30,7 +30,7 @@ const Navbar = () => {
       )}
     >
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
-        {/* Logo */}
+        
         <div 
           className="flex items-center gap-3 cursor-pointer group" 
           onClick={() => navigate('/')}
@@ -45,7 +45,7 @@ const Navbar = () => {
           </span>
         </div>
 
-        {/* Desktop Links */}
+        
         {isLandingPage && (
           <div className="hidden md:flex items-center gap-8">
             {navLinks.map((link) => (
@@ -61,7 +61,7 @@ const Navbar = () => {
           </div>
         )}
 
-        {/* Desktop Actions */}
+        
         <div className="hidden md:flex items-center gap-6">
           <button
             onClick={() => navigate('/auth')}
@@ -78,7 +78,7 @@ const Navbar = () => {
           </button>
         </div>
 
-        {/* Mobile Toggle */}
+        
         <button 
           className="md:hidden p-2 text-[var(--neutral-500)] hover:text-[var(--primary-500)] transition-colors" 
           onClick={() => setMobileOpen(!mobileOpen)}
@@ -88,7 +88,7 @@ const Navbar = () => {
       </div>
 
 
-      {/* Mobile Menu */}
+      
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
@@ -132,3 +132,4 @@ const Navbar = () => {
 };
 
 export default Navbar;
+

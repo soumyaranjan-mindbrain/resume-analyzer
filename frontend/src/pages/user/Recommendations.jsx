@@ -77,9 +77,9 @@ const Recommendations = () => {
   return (
     <div className="max-w-[1400px] mx-auto pb-8">
       <div className="flex flex-col lg:flex-row gap-8">
-        {/* Main Content Area */}
+        
         <div className="flex-1 space-y-8">
-          {/* Tabs */}
+          
           <div className="p-1.5 bg-slate-200/40 backdrop-blur-xl rounded-2xl flex items-center gap-1 border border-white/50 w-fit">
             {tabs.map((tab) => (
               <button
@@ -97,7 +97,7 @@ const Recommendations = () => {
             ))}
           </div>
 
-          {/* Recommendations List */}
+          
           <div className="space-y-4">
             {recommendations.map((rec) => (
               <div 
@@ -123,11 +123,11 @@ const Recommendations = () => {
             ))}
           </div>
 
-          {/* Quick Actions Grid */}
+          
           <div>
             <h2 className="text-2xl font-black text-[#1e293b] tracking-tight mb-6">Quick Actions</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* AI Suggestions Action */}
+              
               <div className="bg-white/25 backdrop-blur-3xl rounded-[2.5rem] p-8 border border-white/70 relative overflow-hidden group shadow-[0_30px_60px_-15px_rgba(15,23,42,0.2),inset_0_1px_3px_rgba(255,255,255,0.5)] transition-all">
                 <div className="absolute inset-0 bg-gradient-to-br from-[#4b7bff]/5 to-transparent pointer-events-none" />
                 <div className="relative z-10">
@@ -146,7 +146,7 @@ const Recommendations = () => {
                 </div>
               </div>
 
-              {/* Compare Action */}
+              
               <div className="bg-white/25 backdrop-blur-3xl rounded-[2.5rem] p-8 border border-white/70 relative overflow-hidden group shadow-[0_30px_60px_-15px_rgba(15,23,42,0.2),inset_0_1px_3px_rgba(255,255,255,0.5)] transition-all">
                 <div className="absolute inset-0 bg-gradient-to-br from-[#6366f1]/5 to-transparent pointer-events-none" />
                 <div className="relative z-10">
@@ -168,9 +168,9 @@ const Recommendations = () => {
           </div>
         </div>
 
-        {/* Sidebar */}
+        
         <div className="w-full lg:w-[380px] space-y-8">
-          {/* Resume Checklist */}
+          
           <div className="bg-white/25 backdrop-blur-3xl rounded-[2.5rem] p-8 border border-white/70 relative overflow-hidden shadow-[0_40px_80px_-20px_rgba(15,23,42,0.3),inset_0_1px_4px_rgba(255,255,255,0.6)]">
             <div className="absolute inset-0 bg-gradient-to-br from-blue-500/[0.05] to-transparent pointer-events-none" />
             <div className="relative z-10">
@@ -196,7 +196,7 @@ const Recommendations = () => {
             </div>
           </div>
 
-          {/* Suggested Skill Courses */}
+          
           <div className="bg-white/25 backdrop-blur-3xl rounded-[2.5rem] p-8 border border-white/70 relative overflow-hidden shadow-[0_40px_80px_-20px_rgba(15,23,42,0.3),inset_0_1px_4px_rgba(255,255,255,0.6)]">
             <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/[0.05] to-transparent pointer-events-none" />
             <div className="relative z-10">
@@ -237,3 +237,4 @@ const Recommendations = () => {
 };
 
 export default Recommendations;
+

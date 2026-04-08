@@ -30,7 +30,7 @@ const Reports = () => {
 
   return (
     <div className="space-y-6 animate-in fade-in duration-700">
-      {/* View Options */}
+      
       <div className="flex justify-end mb-4">
         <div className="flex items-center gap-3 bg-white p-1.5 rounded-2xl border border-slate-100 shadow-sm w-fit">
            <button 
@@ -48,7 +48,7 @@ const Reports = () => {
         </div>
       </div>
 
-      {/* Filters & Search */}
+      
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
          <div className="lg:col-span-2 relative group">
             <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-purple-500 transition-colors" />
@@ -73,7 +73,7 @@ const Reports = () => {
       </div>
 
       {viewMode === 'list' ? (
-        /* List View */
+        
         <div className="bg-white rounded-[2rem] border border-slate-100 shadow-sm overflow-hidden min-h-[450px]">
           <div className="overflow-x-auto">
             <table className="w-full text-left order-collapse">
@@ -142,7 +142,7 @@ const Reports = () => {
           </div>
         </div>
       ) : (
-        /* Grid View */
+        
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
            {reports.map((report) => (
              <div key={report.id} className="bg-white rounded-[2.5rem] border border-slate-100 p-8 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all group relative overflow-hidden">
@@ -178,7 +178,7 @@ const Reports = () => {
         </div>
       )}
 
-      {/* Load More */}
+      
       <div className="flex justify-center pt-8">
          <button className="px-12 py-4 bg-white border border-slate-200 rounded-2xl font-black text-xs uppercase tracking-widest text-slate-500 hover:bg-cyan-500 hover:text-white hover:border-slate-900 transition-all shadow-sm">
             Load More Reports
@@ -190,5 +190,6 @@ const Reports = () => {
 };
 
 export default Reports;
+
 
 

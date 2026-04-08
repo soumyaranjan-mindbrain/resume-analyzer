@@ -77,7 +77,7 @@ const JobMatches = () => {
 
   return (
     <div className="max-w-[1200px] mx-auto py-8">
-      {/* Sorting & Tags Area */}
+      
       <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-8">
         <div className="flex flex-wrap items-center gap-3">
           {filterTags.map((tag) => (
@@ -107,20 +107,20 @@ const JobMatches = () => {
         </div>
       </div>
 
-      {/* Job Matches List */}
+      
       <div className="space-y-6">
         {jobs.map((job) => (
           <div 
             key={job.id}
             className="bg-white/25 backdrop-blur-3xl rounded-[2.5rem] p-8 border border-white/70 relative overflow-hidden group shadow-[0_50px_100px_-20px_rgba(15,23,42,0.3),inset_0_1px_4px_rgba(255,255,255,0.6)] hover:shadow-blue-500/15 transition-all duration-500"
           >
-            {/* Liquid glass weighted gradient */}
+            
             <div className="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-slate-900/[0.12] pointer-events-none" />
             
             <div className="relative z-10">
               <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
                 <div className="flex items-start gap-6">
-                  {/* Company Logo with Glass Effect */}
+                  
                   <div className="w-20 h-20 bg-white/60 backdrop-blur-lg border border-white/80 rounded-3xl flex items-center justify-center p-4 shrink-0 shadow-lg group-hover:scale-105 transition-transform duration-500">
                      <img src={job.logo} alt={job.company} className="w-full h-full object-contain" />
                   </div>
@@ -138,7 +138,7 @@ const JobMatches = () => {
                       </div>
                     </div>
 
-                    {/* Job Details Row */}
+                    
                     <div className="flex flex-wrap items-center gap-x-8 gap-y-3 mb-8 text-sm font-bold text-slate-600">
                        <div className="flex items-center gap-2">
                           <Briefcase className="w-4 h-4 text-slate-400" />
@@ -158,7 +158,7 @@ const JobMatches = () => {
                        </div>
                     </div>
 
-                    {/* Skills Chips */}
+                    
                     <div className="flex flex-wrap items-center gap-3">
                         {job.skills.map((skill, idx) => (
                            <div key={idx} className="flex items-center gap-2 px-4 py-2 bg-slate-900/[0.04] backdrop-blur-sm rounded-full border border-white/40 text-[#1e293b] font-bold text-xs group-hover:bg-white/60 transition-all">
@@ -198,3 +198,4 @@ const JobMatches = () => {
 };
 
 export default JobMatches;
+

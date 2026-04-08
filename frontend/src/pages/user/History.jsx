@@ -56,9 +56,9 @@ const History = () => {
 
   return (
     <div className="max-w-[1200px] mx-auto py-8">
-      {/* Filters Area */}
+      
       <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-8">
-        {/* Tabs */}
+        
         <div className="p-1.5 bg-slate-200/40 backdrop-blur-xl rounded-2xl flex items-center gap-1 border border-white/50 w-full md:w-auto">
           {tabs.map((tab) => (
             <button
@@ -79,7 +79,7 @@ const History = () => {
           </button>
         </div>
 
-        {/* Search Bar */}
+        
         <div className="flex items-center gap-3 w-full md:max-w-md">
           <div className="relative flex-1 group">
             <Search className="w-5 h-5 text-slate-400 absolute left-5 top-1/2 -translate-y-1/2 group-focus-within:text-[#4b7bff] transition-colors" />
@@ -97,21 +97,21 @@ const History = () => {
         </div>
       </div>
 
-      {/* Resumes List */}
+      
       <div className="space-y-6">
         {resumes.map((resume) => (
           <div 
             key={resume.id}
             className="bg-white/20 backdrop-blur-3xl rounded-[2.8rem] p-8 border border-white/60 relative overflow-hidden group shadow-[0_40px_80px_-20px_rgba(15,23,42,0.3),inset_0_1px_4px_rgba(255,255,255,0.6)] hover:shadow-blue-500/10 transition-all duration-500"
           >
-            {/* Dark glass weighted gradient */}
+            
             <div className="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-slate-900/[0.1] pointer-events-none" />
             
             <div className="relative z-10">
-              {/* Card Top Row */}
+              
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
                 <div className="flex items-start gap-6">
-                  {/* File Icon with Glass Backdrop */}
+                  
                   <div className="w-20 h-24 bg-blue-50/20 backdrop-blur-md border border-white/40 rounded-[1.2rem] flex flex-col items-center justify-center relative overflow-hidden shrink-0 shadow-inner group-hover:scale-110 transition-transform duration-500">
                      <FileText className="w-10 h-10 text-[#4b7bff]/80" />
                      {resume.status === 'Analyzed' && (
@@ -169,7 +169,7 @@ const History = () => {
                 </div>
               </div>
 
-              {/* Card Actions Bottom Row */}
+              
               <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-8 border-t border-white/40">
                  <div className="flex items-center gap-3 w-full sm:w-auto">
                     {resume.status === 'Analyzed' ? (
@@ -212,3 +212,4 @@ const History = () => {
 };
 
 export default History;
+

@@ -71,7 +71,7 @@ const AppLayout = ({ children }) => {
   return (
     <div className="min-h-screen bg-[#f4f7fc] flex font-sans w-full h-[100dvh] overflow-hidden">
         
-      {/* Mobile Sidebar Overlay */}
+      
       {sidebarOpen && (
         <div 
           className="absolute inset-0 bg-slate-900/40 z-40 lg:hidden backdrop-blur-sm"
@@ -79,14 +79,14 @@ const AppLayout = ({ children }) => {
         />
       )}
 
-      {/* Sidebar */}
+      
       <aside 
         className={cn(
           "absolute lg:static top-0 left-0 z-50 h-full w-64 bg-[#f8fafe] border-r border-[#e2e8f0] transform transition-transform duration-300 ease-spring flex flex-col pt-8 pb-8 shrink-0",
           sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         )}
       >
-          {/* Logo Area */}
+          
           <div className="flex items-center gap-3 px-8 mb-10 shrink-0">
             <BrainCircuit className="w-8 h-8 text-[#4169e1] fill-[#4169e1]/20" />
             <span className="font-display font-black text-2xl tracking-tight text-[#1e293b]">Kredo</span>
@@ -98,7 +98,7 @@ const AppLayout = ({ children }) => {
             </button>
           </div>
 
-          {/* Navigation */}
+          
           <nav className="flex-1 px-4 space-y-2 overflow-y-auto w-full">
             {navItems.map((item) => {
               const isActive = location.pathname === item.path;
@@ -122,7 +122,7 @@ const AppLayout = ({ children }) => {
             })}
           </nav>
 
-          {/* Sidebar Footer Actions */}
+          
           <div className="px-5 mt-auto shrink-0 w-full space-y-2">
              <NavLink 
                to="/support"
@@ -147,21 +147,21 @@ const AppLayout = ({ children }) => {
           </div>
         </aside>
 
-        {/* Main Content Area */}
+        
         <main className="flex-1 flex flex-col min-w-0 h-full relative overflow-hidden bg-slate-50/80">
-          {/* Dynamic Mesh Background Blooms */}
+          
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             <div className="absolute -top-[10%] -right-[5%] w-[70%] h-[70%] bg-cyan-200/40 blur-[130px] rounded-full animate-pulse" style={{ animationDuration: '8s' }} />
             <div className="absolute -bottom-[10%] -left-[5%] w-[65%] h-[65%] bg-lime-200/40 blur-[130px] rounded-full animate-pulse shadow-[0_0_100px_rgba(190,242,100,0.3)]" style={{ animationDuration: '12s' }} />
             <div className="absolute top-[20%] left-[10%] w-[50%] h-[50%] bg-blue-100/30 blur-[100px] rounded-full" />
             
-            {/* Base Overlay Gradient */}
+            
             <div className="absolute inset-0 bg-gradient-to-br from-white/60 via-transparent to-white/40 opacity-70" />
           </div>
 
           <div className="relative z-10 flex flex-col h-full">
           
-          {/* Topbar */}
+          
           <header className="h-24 px-8 shrink-0 flex items-center justify-between z-30">
             
             <div className="flex items-center gap-4 flex-1">
@@ -173,7 +173,7 @@ const AppLayout = ({ children }) => {
               )}
             </div>
 
-            {/* Profile & Actions */}
+            
             <div className="flex items-center gap-4">
               <div className="relative">
                 <button 
@@ -213,14 +213,14 @@ const AppLayout = ({ children }) => {
             </div>
           </header>
 
-          {/* Page Content */}
+          
           <div className="flex-1 overflow-y-auto px-6 pb-6 custom-scrollbar">
             {children}
           </div>
         </div>
       </main>
       
-      {/* Scrollbar CSS */}
+      
       <style dangerouslySetInnerHTML={{__html: `
         .custom-scrollbar::-webkit-scrollbar {
           width: 6px;
@@ -238,3 +238,5 @@ const AppLayout = ({ children }) => {
 };
 
 export default AppLayout;
+
+

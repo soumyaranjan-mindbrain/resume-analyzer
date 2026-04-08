@@ -7,7 +7,7 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check localStorage for existing session
+    
     const savedUser = localStorage.getItem('kredo_user');
     if (savedUser) {
       try {
@@ -43,3 +43,4 @@ export const useAuth = () => {
   }
   return context;
 };
+

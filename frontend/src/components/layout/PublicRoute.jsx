@@ -14,7 +14,7 @@ const PublicRoute = ({ children }) => {
   }
 
   if (user) {
-    // If user is already logged in, redirect away from public pages
+    
     const redirectPath = user.role === 'admin' ? '/admin' : '/dashboard';
     return <Navigate to={redirectPath} replace />;
   }
@@ -23,3 +23,4 @@ const PublicRoute = ({ children }) => {
 };
 
 export default PublicRoute;
+

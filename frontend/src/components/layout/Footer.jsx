@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Layout, Mail } from 'lucide-react';
 
-// Custom SVG Icons for brands not available in current lucide-react version
+
 const TwitterIcon = ({ className }) => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
     <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z" />
@@ -35,12 +35,12 @@ const Footer = () => {
 
   return (
     <footer className="bg-[var(--neutral-100)] border-t border-white pt-20 pb-10 overflow-hidden relative">
-      {/* Background soft glow */}
+      
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-gradient-to-b from-white/10 to-transparent pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         <div className="grid grid-cols-2 md:grid-cols-5 gap-12 md:gap-8 mb-20">
-          {/* Brand Column */}
+          
           <div className="col-span-2 md:col-span-1 space-y-6">
             <div 
               className="flex items-center gap-3 cursor-pointer group" 
@@ -72,7 +72,7 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Link Columns */}
+          
           {Object.entries(footerLinks).map(([title, links]) => (
             <div key={title} className="space-y-6">
                 <h4 className="text-xs font-black text-[var(--neutral-900)] uppercase tracking-widest">{title}</h4>
@@ -92,7 +92,7 @@ const Footer = () => {
           ))}
         </div>
 
-        {/* Bottom Bar */}
+        
         <div className="pt-10 border-t border-white/40 flex flex-col md:flex-row items-center justify-between gap-6">
           <p className="text-[11px] text-[var(--neutral-400)] font-black uppercase tracking-widest">
             © {currentYear} Kredo AI Technologies.
@@ -111,3 +111,4 @@ const Footer = () => {
 };
 
 export default Footer;
+

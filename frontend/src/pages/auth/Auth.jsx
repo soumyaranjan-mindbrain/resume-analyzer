@@ -21,7 +21,7 @@ const Auth = () => {
   const { login, user } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
 
-  // Auth checks are now handled by PublicRoute in App.jsx
+  
   const [showPassword, setShowPassword] = useState(false);
   const [id, setId] = useState('');
   const [password, setPassword] = useState('');
@@ -33,13 +33,13 @@ const Auth = () => {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Entrance for left panel
+      
       gsap.fromTo(leftPanelRef.current, 
         { opacity: 0, x: -50 },
         { opacity: 1, x: 0, duration: 1.5, ease: 'power3.out' }
       );
       
-      // Entrance for form
+      
       gsap.fromTo(formPanelRef.current, 
         { opacity: 0, x: 50 },
         { opacity: 1, x: 0, duration: 1.5, ease: 'power3.out', delay: 0.2 }
@@ -53,7 +53,7 @@ const Auth = () => {
     setLoading(true);
     setError('');
     
-    // Simulating Auth logic with hardcoded credentials
+    
     setTimeout(() => {
       if (id === 'admin' && password === '000000') {
         login({ id: 'admin', role: 'admin', name: 'James (Admin)' });
@@ -74,7 +74,7 @@ const Auth = () => {
     <div className="min-h-screen flex items-center justify-center p-6 bg-transparent">
       <div className="max-w-6xl w-full grid lg:grid-cols-2 gap-12 items-center">
         
-        {/* Left Visual Panel */}
+        
         <div ref={leftPanelRef} className="hidden lg:block space-y-12">
           <div className="space-y-6">
             <h1 className="text-6xl font-display font-black tracking-tighter text-[var(--neutral-900)] leading-[1.1]">
@@ -89,7 +89,7 @@ const Auth = () => {
 
         </div>
 
-        {/* Right Form Panel */}
+        
         <div ref={formPanelRef} className="clay-card !p-8 md:!p-12 relative max-w-md mx-auto w-full lg:max-w-none">
           <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--primary-200)] blur-[120px] rounded-full opacity-40 -translate-y-1/2 translate-x-1/4 pointer-events-none" />
           
@@ -207,3 +207,4 @@ const Auth = () => {
 };
 
 export default Auth;
+

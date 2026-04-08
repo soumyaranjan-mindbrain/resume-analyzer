@@ -28,9 +28,9 @@ const JobReadiness = () => {
 
   return (
     <div className="space-y-8 animate-in fade-in duration-700">
-      {/* Page Content Starts Here */}
+      
 
-      {/* Overview Cards */}
+      
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {readinessStats.map((stat, i) => (
           <div key={i} className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm overflow-hidden relative group">
@@ -58,7 +58,7 @@ const JobReadiness = () => {
         ))}
       </div>
 
-      {/* Main Analysis Section */}
+      
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
          <div className="bg-white rounded-[3rem] p-10 border border-slate-100 shadow-sm space-y-8">
             <div className="flex items-center justify-between">
@@ -124,4 +124,5 @@ const JobReadiness = () => {
 };
 
 export default JobReadiness;
+
 

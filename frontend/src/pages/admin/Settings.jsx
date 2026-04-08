@@ -28,10 +28,10 @@ const Settings = () => {
 
   return (
     <div className="space-y-6 animate-in fade-in duration-700 pb-8">
-      {/* Page Content Starts Here */}
+      
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-         {/* Vertical Tabs */}
+         
          <div className="lg:col-span-1 space-y-2">
             {tabs.map((tab) => (
               <button
@@ -62,7 +62,7 @@ const Settings = () => {
             </div>
          </div>
 
-         {/* Settings Content */}
+         
           <div className="lg:col-span-3 bg-white rounded-[2.5rem] border border-slate-100 shadow-sm p-8 min-h-[550px] relative overflow-hidden">
             <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-50 rounded-bl-[8rem] -mr-20 -mt-20 opacity-50" />
             
@@ -144,7 +144,7 @@ const Settings = () => {
                  </div>
                )}
 
-               {/* Add more tabs as needed... */}
+               
             </div>
 
             <div className="mt-12 pt-8 border-t border-slate-50 flex items-center justify-end gap-3 relative z-10">
@@ -162,5 +162,6 @@ const Settings = () => {
 };
 
 export default Settings;
+
 
 

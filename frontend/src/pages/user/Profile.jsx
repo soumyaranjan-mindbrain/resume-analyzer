@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
 
-// Custom SVG Icons for brands not available in current lucide-react version
+
 const TwitterIcon = ({ className }) => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
     <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z" />
@@ -37,7 +37,7 @@ const Profile = () => {
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
         
-        {/* Left Card: Profile Overview */}
+        
         <div className="lg:col-span-1 bg-white/30 backdrop-blur-3xl rounded-[2.8rem] p-8 shadow-[0_40px_80px_-20px_rgba(15,23,42,0.15)] border border-white/70 relative overflow-hidden flex flex-col items-center h-full">
           <div className="absolute inset-0 bg-gradient-to-br from-white/40 via-transparent to-[#4b7bff]/5 pointer-events-none" />
           
@@ -85,7 +85,7 @@ const Profile = () => {
           </div>
         </div>
 
-        {/* Right Card: Account Settings */}
+        
         <div className="lg:col-span-2 bg-white/30 backdrop-blur-3xl rounded-[2.8rem] p-8 shadow-[0_40px_80px_-20px_rgba(15,23,42,0.15)] border border-white/70 relative flex flex-col h-full">
           <h3 className="text-xl font-black text-[#1e293b] mb-8 tracking-tight">Account Settings</h3>
             
@@ -121,3 +121,4 @@ const Profile = () => {
 };
 
 export default Profile;
+
