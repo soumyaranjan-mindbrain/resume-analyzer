@@ -13,15 +13,20 @@ import {
   Cpu, 
   Zap 
 } from 'lucide-react';
-import { cn } from '../utils/cn';
+import { cn } from '../../utils/cn';
+import { useAuth } from '../../context/AuthContext';
 
 const Auth = () => {
   const navigate = useNavigate();
+  const { login, user } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
+
+  // Auth checks are now handled by PublicRoute in App.jsx
   const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState('');
+  const [id, setId] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   
   const leftPanelRef = useRef(null);
   const formPanelRef = useRef(null);
@@ -46,12 +51,23 @@ const Auth = () => {
   const handleAuth = (e) => {
     e.preventDefault();
     setLoading(true);
+    setError('');
     
-    // Simulating Auth logic
+    // Simulating Auth logic with hardcoded credentials
     setTimeout(() => {
-      navigate('/dashboard');
-      setLoading(false);
-    }, 1500);
+      if (id === 'admin' && password === '000000') {
+        login({ id: 'admin', role: 'admin', name: 'James (Admin)' });
+        navigate('/admin', { replace: true });
+        setLoading(false);
+      } else if (id === 'user' && password === '000000') {
+        login({ id: 'user', role: 'user', name: 'James Anderson' });
+        navigate('/dashboard', { replace: true });
+        setLoading(false);
+      } else {
+        setError('Invalid ID or Password. Try user/admin with 000000.');
+        setLoading(false);
+      }
+    }, 1200);
   };
 
   return (
@@ -63,7 +79,7 @@ const Auth = () => {
           <div className="space-y-6">
             <h1 className="text-6xl font-display font-black tracking-tighter text-[var(--neutral-900)] leading-[1.1]">
               Elevate your <br />
-              <span className="aptica-text">Professional</span> <br />
+              <span className="kredo-text">Professional</span> <br />
               frequency.
             </h1>
             <p className="text-xl text-[var(--neutral-500)] font-bold max-w-md leading-relaxed">
@@ -83,9 +99,16 @@ const Auth = () => {
                 {isLogin ? 'Sign In' : 'Create Account'}
               </h2>
               <p className="text-slate-500 font-bold text-sm">
-                {isLogin ? 'Welcome back. Please enter your details.' : 'Join Aptica to optimize your career.'}
+                {isLogin ? 'Welcome back. Please enter your details.' : 'Join Kredo to optimize your career.'}
               </p>
             </div>
+
+            {error && (
+              <div className="bg-red-50 border border-red-100 p-4 rounded-2xl flex items-center gap-3 text-red-500 text-xs font-bold animate-in fade-in slide-in-from-top-2">
+                <div className="w-5 h-5 bg-red-100 rounded-lg flex items-center justify-center shrink-0">!</div>
+                {error}
+              </div>
+            )}
 
             <form onSubmit={handleAuth} className="space-y-4">
               {!isLogin && (
@@ -104,14 +127,14 @@ const Auth = () => {
               )}
 
               <div className="space-y-2">
-                <label className="text-[11px] font-black uppercase tracking-widest text-slate-500 ml-1">Email Address</label>
+                <label className="text-[11px] font-black uppercase tracking-widest text-slate-500 ml-1">Email or ID</label>
                 <div className="relative">
                   <Mail className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                   <input 
-                    type="email" 
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="john@example.com"
+                    type="text" 
+                    value={id}
+                    onChange={(e) => setId(e.target.value)}
+                    placeholder="user or admin"
                     className="input-clay !pl-14 !bg-slate-50 !border-slate-200 focus:!bg-white transition-all shadow-sm"
                     required
                   />
@@ -151,7 +174,7 @@ const Auth = () => {
                 <button 
                   type="submit"
                   disabled={loading}
-                  className="btn-aptica w-full !py-4 flex items-center justify-center gap-3 relative overflow-hidden group"
+                  className="btn-kredo w-full !py-4 flex items-center justify-center gap-3 relative overflow-hidden group"
                 >
                   <span className={cn("transition-all duration-300", loading ? "opacity-0 scale-90" : "opacity-100 scale-100")}>
                     {isLogin ? 'Sign In' : 'Sign Up'}

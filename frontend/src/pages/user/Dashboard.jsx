@@ -14,7 +14,7 @@ import {
   ListChecks
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import dashboardBanner from '../assets/dashboard-banner-seamless.png';
+import dashboardBanner from '../../assets/dashboard-banner-seamless.png';
 
 const cn = (...classes) => classes.filter(Boolean).join(' ');
 

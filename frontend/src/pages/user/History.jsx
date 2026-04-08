@@ -16,7 +16,7 @@ import {
   GitCompare,
   PlayCircle
 } from 'lucide-react';
-import { cn } from '../utils/cn';
+import { cn } from '../../utils/cn';
 
 const History = () => {
   const [activeTab, setActiveTab] = useState('All');

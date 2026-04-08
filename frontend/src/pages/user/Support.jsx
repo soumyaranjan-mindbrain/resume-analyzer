@@ -14,7 +14,7 @@ import {
   Globe,
   ArrowRight
 } from 'lucide-react';
-import { cn } from '../utils/cn';
+import { cn } from '../../utils/cn';
 
 const Support = () => {
   const [activeFaq, setActiveFaq] = useState(null);
@@ -182,7 +182,7 @@ const Support = () => {
                Secure SSL Encrypted
             </div>
          </div>
-         <p className="text-slate-400 font-bold text-sm">© 2026 Aptica AI Help Center</p>
+         <p className="text-slate-400 font-bold text-sm">© 2026 Kredo AI Help Center</p>
       </div>
     </div>
   );

@@ -12,7 +12,7 @@ import {
   Zap,
   Star
 } from 'lucide-react';
-import { cn } from '../utils/cn';
+import { cn } from '../../utils/cn';
 
 const JobMatches = () => {
   const [activeFilter, setActiveFilter] = useState('Software Engineer');

@@ -41,7 +41,7 @@ const Navbar = () => {
             </div>
           </div>
           <span className="text-xl font-display font-black tracking-tight text-[var(--neutral-900)]">
-            Aptica
+            Kredo
           </span>
         </div>
 
@@ -71,7 +71,7 @@ const Navbar = () => {
           </button>
           <button
             onClick={() => navigate('/auth')}
-            className="btn-aptica !py-2.5 !px-6 !text-xs !rounded-xl"
+            className="btn-kredo !py-2.5 !px-6 !text-xs !rounded-xl"
           >
             Get Started
             <ArrowRight className="w-3.5 h-3.5" />
@@ -118,7 +118,7 @@ const Navbar = () => {
                 </button>
                 <button
                   onClick={() => { navigate('/auth'); setMobileOpen(false); }}
-                  className="btn-aptica w-full"
+                  className="btn-kredo w-full"
                 >
                   Get Started
                 </button>

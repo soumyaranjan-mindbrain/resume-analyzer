@@ -14,7 +14,7 @@ import {
   Award,
   Star
 } from 'lucide-react';
-import { cn } from '../utils/cn';
+import { cn } from '../../utils/cn';
 
 const SkillInsights = () => {
   const [activeTab, setActiveTab] = useState('Missing Skills');

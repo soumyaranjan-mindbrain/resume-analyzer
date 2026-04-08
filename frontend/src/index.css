@@ -38,7 +38,7 @@
 
     /* Gradients */
     --brand-gradient: linear-gradient(135deg, #7b61ff 0%, #4da3ff 100%);
-    --aptica-gradient: linear-gradient(135deg, #fbcfe8 0%, #c4b5fd 50%, #67e8f9 100%);
+    --kredo-gradient: linear-gradient(135deg, #fbcfe8 0%, #c4b5fd 50%, #67e8f9 100%);
     --surface-gradient: linear-gradient(145deg, #f0f3f8, #e6eaf0);
     
     /* Fluid Typography Scale */
@@ -141,7 +141,7 @@
     box-shadow: var(--clay-shadow-2);
   }
 
-  .btn-aptica {
+  .btn-kredo {
     @apply inline-flex items-center justify-center gap-3 px-8 py-4 rounded-2xl 
            bg-gradient-to-r from-purple-600 to-indigo-600 text-white 
            font-black text-[11px] uppercase tracking-[0.2em] shadow-lg hover:shadow-purple-500/20 
@@ -159,7 +159,7 @@
     box-shadow: var(--clay-shadow-3);
   }
 
-  .aptica-text {
+  .kredo-text {
     @apply bg-clip-text text-transparent bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500;
   }
 

@@ -5,6 +5,7 @@ import {
   FileText, 
   Briefcase, 
   ShieldCheck,
+  BarChart3,
   CloudLightning,
   HelpCircle,
   Bell,
@@ -17,14 +18,16 @@ import {
   LogOut
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
+import { useAuth } from '../../context/AuthContext';
 
 const AppLayout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  const { user, logout } = useAuth();
 
-  const navItems = [
+  const userNavItems = [
     { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { path: '/history', label: 'My Resumes', icon: FileText },
     { path: '/matches', label: 'Job Matches', icon: Briefcase },
@@ -33,6 +36,19 @@ const AppLayout = ({ children }) => {
     { path: '/profile', label: 'Profile', icon: User },
   ];
 
+  const adminNavItems = [
+    { path: '/admin', label: 'Dashboard', icon: LayoutDashboard },
+    { path: '/admin/students', label: 'Students', icon: User },
+    { path: '/admin/reports', label: 'Reports', icon: FileText },
+    { path: '/admin/jobs', label: 'Job Descriptions', icon: Briefcase },
+    { path: '/admin/readiness', label: 'Job Readiness', icon: ShieldCheck },
+    { path: '/admin/analytics', label: 'Analytics', icon: BarChart3 },
+    { path: '/admin/insights', label: 'Skill Insights', icon: CloudLightning },
+    { path: '/admin/settings', label: 'Settings', icon: HelpCircle },
+  ];
+
+  const navItems = user?.role === 'admin' ? adminNavItems : userNavItems;
+
   const pageInfo = {
     '/history': { title: 'My Resumes', subtitle: 'Manage and track all your analyzed documents.' },
     '/matches': { title: 'Job Matches', subtitle: 'High-probability career opportunities for you.' },
@@ -40,6 +56,14 @@ const AppLayout = ({ children }) => {
     '/insights': { title: 'Skill Insights', subtitle: 'Detailed breakdown of your professional expertise.' },
     '/profile': { title: 'My Profile', subtitle: 'Manage your personal information and settings.' },
     '/support': { title: 'Help & Support', subtitle: 'Need assistance? We are here to help.' },
+    '/admin': { title: 'Admin Dashboard', subtitle: 'Platform overview and system metrics.' },
+    '/admin/students': { title: 'Student Management', subtitle: 'Manage student accounts and records.' },
+    '/admin/reports': { title: 'Global Reports', subtitle: 'Analyze student resume performance data.' },
+    '/admin/jobs': { title: 'Job Descriptions', subtitle: 'Manage available job roles and requirements.' },
+    '/admin/readiness': { title: 'Job Readiness', subtitle: 'Monitor students ready for the industry.' },
+    '/admin/analytics': { title: 'System Analytics', subtitle: 'Deep dive into platform usage trends.' },
+    '/admin/insights': { title: 'Market Insights', subtitle: 'Global skill gaps and demand trends.' },
+    '/admin/settings': { title: 'Admin Settings', subtitle: 'Configure platform parameters and users.' },
   };
 
   const currentPage = pageInfo[location.pathname];
@@ -65,7 +89,7 @@ const AppLayout = ({ children }) => {
           {/* Logo Area */}
           <div className="flex items-center gap-3 px-8 mb-10 shrink-0">
             <BrainCircuit className="w-8 h-8 text-[#4169e1] fill-[#4169e1]/20" />
-            <span className="font-display font-black text-2xl tracking-tight text-[#1e293b]">Aptica</span>
+            <span className="font-display font-black text-2xl tracking-tight text-[#1e293b]">Kredo</span>
             <button 
               className="ml-auto lg:hidden text-slate-400 hover:text-slate-600"
               onClick={() => setSidebarOpen(false)}
@@ -77,7 +101,7 @@ const AppLayout = ({ children }) => {
           {/* Navigation */}
           <nav className="flex-1 px-4 space-y-2 overflow-y-auto w-full">
             {navItems.map((item) => {
-              const isActive = location.pathname.startsWith(item.path);
+              const isActive = location.pathname === item.path;
               const Icon = item.icon;
               
               return (
@@ -87,7 +111,7 @@ const AppLayout = ({ children }) => {
                   className={cn(
                     "flex items-center gap-3 px-4 py-3.5 rounded-2xl font-semibold text-sm transition-all duration-200",
                     isActive 
-                      ? "bg-gradient-to-r from-[#4b7bff] to-[#6a91ff] text-white shadow-md shadow-blue-500/20 translate-x-2" 
+                      ? "bg-cyan-500 text-white shadow-md shadow-cyan-500/20 translate-x-2" 
                       : "text-[#64748b] hover:bg-white hover:text-[#334155] hover:shadow-sm"
                   )}
                 >
@@ -114,7 +138,7 @@ const AppLayout = ({ children }) => {
             </NavLink>
 
             <button 
-              onClick={() => navigate('/')}
+              onClick={() => { logout(); navigate('/auth', { replace: true }); }}
               className="flex items-center gap-3 w-full px-4 py-3 border border-red-100/30 bg-red-50/10 rounded-2xl font-black text-[11px] uppercase tracking-widest text-red-500/80 hover:bg-red-500 hover:text-white transition-all group shadow-sm hover:shadow-red-500/20"
             >
               <LogOut className="w-5 h-5 transition-transform group-hover:-translate-x-1" />
@@ -159,7 +183,7 @@ const AppLayout = ({ children }) => {
                   <div className="w-9 h-9 rounded-xl overflow-hidden shrink-0">
                     <img src="https://i.pravatar.cc/150?img=11" alt="Profile" className="w-full h-full object-cover" />
                   </div>
-                  <span className="text-sm font-bold text-[#334155] hidden sm:block">James Anderson</span>
+                  <span className="text-sm font-bold text-[#334155] hidden sm:block">{user?.name || 'User'}</span>
                   <ChevronDown className={cn("w-4 h-4 text-[#94a3b8] hidden sm:block transition-transform", profileOpen && "rotate-180")} />
                 </button>
 
@@ -176,7 +200,7 @@ const AppLayout = ({ children }) => {
                       </button>
                       <div className="h-[1px] bg-slate-100/50 mx-4 my-1" />
                       <button 
-                        onClick={() => { navigate('/'); setProfileOpen(false); }}
+                        onClick={() => { logout(); navigate('/auth', { replace: true }); setProfileOpen(false); }}
                         className="w-full flex items-center gap-3 px-6 py-3.5 text-sm font-bold text-red-500 hover:bg-white transition-all"
                       >
                         <LogOut className="w-4 h-4" />
@@ -190,7 +214,7 @@ const AppLayout = ({ children }) => {
           </header>
 
           {/* Page Content */}
-          <div className="flex-1 overflow-y-auto px-8 pb-8 custom-scrollbar">
+          <div className="flex-1 overflow-y-auto px-6 pb-6 custom-scrollbar">
             {children}
           </div>
         </div>

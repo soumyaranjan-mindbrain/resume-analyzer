@@ -16,7 +16,7 @@ import {
   X,
   User
 } from 'lucide-react';
-import { cn } from '../utils/cn';
+import { cn } from '../../utils/cn';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -54,7 +54,7 @@ const Navbar = () => {
             <Sparkles className="w-5 h-5 text-white" />
           </div>
           <span className="text-xl font-display font-black tracking-tighter text-[var(--neutral-900)]">
-            Aptica<span className="text-purple-600">.</span>
+            Kredo<span className="text-purple-600">.</span>
           </span>
         </div>
 
@@ -68,7 +68,7 @@ const Navbar = () => {
           </button>
           <button
             onClick={() => navigate('/auth')}
-            className="btn-aptica !py-3 !px-8 shadow-purple-500/20"
+            className="btn-kredo !py-3 !px-8 shadow-purple-500/20"
           >
             Get Started
           </button>
@@ -129,8 +129,8 @@ const Hero = () => {
         <div ref={textGroupRef} className="space-y-8">
           <h1 className="hero-animate text-6xl md:text-8xl font-display font-black leading-[1.15] tracking-tighter text-[var(--neutral-900)]">
             Land more <br />
-            <span className="aptica-text inline-block py-1">Interview Calls</span> <br />
-            with Aptica.
+            <span className="kredo-text inline-block py-1">Interview Calls</span> <br />
+            with Kredo.
           </h1>
 
           <p className="hero-animate text-xl text-[var(--neutral-900)]/70 max-w-xl leading-relaxed font-bold">
@@ -296,7 +296,7 @@ const Features = () => {
               <span className="px-5 py-2 rounded-full bg-purple-50 text-[10px] font-black uppercase tracking-[0.3em] text-purple-600">The Neural Methodology</span>
               <h3 className="text-3xl font-black text-[var(--neutral-900)] tracking-tight">Engineered for the Elite Tier.</h3>
               <p className="text-[var(--neutral-900)]/50 font-bold max-w-2xl leading-relaxed">
-                Aptica processes your document through 240+ validation nodes. We don't just check for keywords; we analyze semantic resonance, layout heatmaps, and role-specific density to ensure your resume dominates the recruitment funnel.
+                Kredo processes your document through 240+ validation nodes. We don't just check for keywords; we analyze semantic resonance, layout heatmaps, and role-specific density to ensure your resume dominates the recruitment funnel.
               </p>
             </div>
           </div>
@@ -354,7 +354,7 @@ const CTA = () => {
               Join 10,000+ candidates who have optimized their resumes to land roles at the world's most innovative firms.
             </p>
             <div className="flex flex-wrap justify-center items-center gap-6">
-              <button onClick={() => navigate('/auth')} className="btn-aptica !px-14 !py-7 text-sm">
+              <button onClick={() => navigate('/auth')} className="btn-kredo !px-14 !py-7 text-sm">
                 Analyze My Resume Today →
               </button>
               <button className="px-10 py-7 rounded-2xl border-2 border-white/50 bg-white/10 backdrop-blur-md text-sm font-black text-[var(--neutral-900)] uppercase tracking-widest hover:bg-white/30 transition-all">

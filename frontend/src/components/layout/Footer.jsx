@@ -49,7 +49,7 @@ const Footer = () => {
               <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-[4px_4px_10px_rgba(0,0,0,0.05)] border border-white">
                 <Layout className="text-[var(--primary-500)] w-5 h-5" strokeWidth={2.5} />
               </div>
-              <span className="text-xl font-display font-black text-[var(--neutral-900)] tracking-tight">Aptica</span>
+              <span className="text-xl font-display font-black text-[var(--neutral-900)] tracking-tight">Kredo</span>
             </div>
             <p className="text-sm text-[var(--neutral-500)] font-medium leading-relaxed max-w-xs">
               AI-driven career acceleration for the modern professional. Built for depth, clarity, and results.
@@ -95,7 +95,7 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="pt-10 border-t border-white/40 flex flex-col md:flex-row items-center justify-between gap-6">
           <p className="text-[11px] text-[var(--neutral-400)] font-black uppercase tracking-widest">
-            © {currentYear} Aptica AI Technologies.
+            © {currentYear} Kredo AI Technologies.
           </p>
           <div className="flex items-center gap-3 px-4 py-2 rounded-full bg-white/50 border border-white shadow-[inset_2px_2px_6px_rgba(0,0,0,0.02)]">
             <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]" />

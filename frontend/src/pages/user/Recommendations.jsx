@@ -15,7 +15,7 @@ import {
   Star,
   RefreshCw
 } from 'lucide-react';
-import { cn } from '../utils/cn';
+import { cn } from '../../utils/cn';
 
 const Recommendations = () => {
   const [activeTab, setActiveTab] = useState('Improvement Tips');

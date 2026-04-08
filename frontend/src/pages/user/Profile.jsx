@@ -7,7 +7,7 @@ import {
   Camera,
   ChevronRight,
 } from 'lucide-react';
-import { cn } from '../utils/cn';
+import { cn } from '../../utils/cn';
 
 // Custom SVG Icons for brands not available in current lucide-react version
 const TwitterIcon = ({ className }) => (
@@ -69,7 +69,7 @@ const Profile = () => {
                 </div>
                 <div className="text-left">
                   <p className="text-[10px] font-black text-[#94a3b8] uppercase tracking-widest">Email Address</p>
-                  <p className="text-sm font-bold text-[#334155]">james.a@aptica.io</p>
+                  <p className="text-sm font-bold text-[#334155]">james.a@kredo.ai</p>
                 </div>
               </div>
               <div className="bg-white/50 p-4 rounded-2xl border border-white flex items-center gap-4 group hover:bg-white transition-all shadow-sm">
@@ -93,7 +93,7 @@ const Profile = () => {
             {[
               { label: "First Name", value: "James" },
               { label: "Last Name", value: "Anderson" },
-              { label: "Email Address", value: "james.a@aptica.io" },
+              { label: "Email Address", value: "james.a@kredo.ai" },
               { label: "Location", value: "San Francisco, CA" },
               { label: "Phone Number", value: "+1 (555) 000-0000" },
               { label: "Job Title", value: "Senior Product Designer" }
