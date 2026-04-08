@@ -35,13 +35,7 @@ const SkillInsights = () => {
   const tabs = ['Missing Skills', 'In-Demand Skills', 'Learning Paths'];
 
   return (
-    <div className="max-w-[1400px] mx-auto py-8 px-4">
-      {/* Header */}
-      <div className="mb-10">
-        <h1 className="text-4xl font-black text-[#1e293b] tracking-tight mb-2">Skill Insights</h1>
-        <p className="text-slate-500 font-medium text-lg">Identify and bridge your skill gaps for better job opportunities.</p>
-      </div>
-
+    <div className="max-w-[1400px] mx-auto pb-8 px-4">
       {/* Tabs */}
       <div className="p-1.5 bg-slate-200/40 backdrop-blur-xl rounded-2xl flex items-center gap-1 border border-white/50 w-fit mb-10">
         {tabs.map((tab) => (

@@ -75,13 +75,7 @@ const Recommendations = () => {
   const tabs = ['Improvement Tips', 'Suggested Jobs', 'Skill Courses'];
 
   return (
-    <div className="max-w-[1400px] mx-auto py-8 px-4">
-      {/* Header */}
-      <div className="mb-10">
-        <h1 className="text-4xl font-black text-[#1e293b] tracking-tight mb-2">Recommendations</h1>
-        <p className="text-slate-500 font-medium text-lg">Personalized suggestions to boost your job prospects.</p>
-      </div>
-
+    <div className="max-w-[1400px] mx-auto pb-8">
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Main Content Area */}
         <div className="flex-1 space-y-8">

@@ -11,7 +11,6 @@ import {
   Search,
   Menu,
   X,
-  Moon,
   BrainCircuit,
   ChevronDown,
   User,
@@ -144,10 +143,6 @@ const AppLayout = ({ children }) => {
 
             {/* Profile & Actions */}
             <div className="flex items-center gap-4">
-              <button className="relative p-2.5 text-[#64748b] bg-white rounded-xl shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] hover:text-[#4b7bff] transition-colors">
-                <Moon className="w-[18px] h-[18px]" />
-              </button>
-              
               <div className="relative">
                 <button 
                   onClick={() => setProfileOpen(!profileOpen)}
