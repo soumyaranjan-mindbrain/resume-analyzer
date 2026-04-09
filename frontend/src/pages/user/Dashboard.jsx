@@ -18,6 +18,66 @@ import dashboardBanner from '../../assets/dashboard-banner-seamless.png';
 
 const cn = (...classes) => classes.filter(Boolean).join(' ');
 
+const summaryCards = [
+  {
+    label: 'ATS Score',
+    value: '78%',
+    tone: 'blue',
+    icon: BarChart3,
+    note: '+ 6% since last week',
+    noteTone: 'text-[#10b981]',
+    noteIcon: ArrowUp
+  },
+  {
+    label: 'Job Ready',
+    value: '92%',
+    tone: 'emerald',
+    icon: ShieldCheck,
+    detail: 'Based on ATS score and overall skill matching algorithms.'
+  },
+  {
+    label: 'Gaps',
+    value: '03',
+    tone: 'orange',
+    icon: AlertTriangle,
+    action: 'View Analysis'
+  },
+  {
+    label: 'Matches',
+    value: '02',
+    tone: 'purple',
+    icon: Briefcase,
+    detail: 'Highly relevant matches found in "Software Engineering".'
+  }
+];
+
+const toneStyles = {
+  blue: {
+    card: 'bg-[#f0f7ff]/25 hover:shadow-blue-500/30',
+    icon: 'text-[#4b7bff]',
+    orb: 'bg-blue-500/10',
+    accent: 'text-blue-300 group-hover:text-blue-500'
+  },
+  emerald: {
+    card: 'bg-[#f0fff4]/25 hover:shadow-emerald-500/30',
+    icon: 'text-[#10b981]',
+    orb: 'bg-emerald-500/10',
+    accent: 'text-emerald-300 group-hover:text-emerald-500'
+  },
+  orange: {
+    card: 'bg-[#fffcf0]/25 hover:shadow-orange-500/30',
+    icon: 'text-[#f59e0b]',
+    orb: 'bg-orange-500/10',
+    accent: 'text-orange-300 group-hover:text-orange-500'
+  },
+  purple: {
+    card: 'bg-[#f7f0ff]/25 hover:shadow-purple-500/30',
+    icon: 'text-[#8b5cf6]',
+    orb: 'bg-purple-500/10',
+    accent: 'text-purple-300 group-hover:text-purple-500'
+  }
+};
+
 const Dashboard = () => {
   const navigate = useNavigate();
 
@@ -63,86 +123,39 @@ const Dashboard = () => {
 
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-
-        
-        <div className="bg-[#f0f7ff]/25 backdrop-blur-3xl rounded-[2.8rem] p-7 border border-white/60 relative overflow-hidden group shadow-[0_45px_100px_-20px_rgba(15,23,42,0.35),inset_0_1px_3px_rgba(255,255,255,0.5)] hover:shadow-blue-500/30 transition-all duration-700">
-          <div className="absolute inset-0 bg-gradient-to-br from-slate-900/[0.12] to-transparent pointer-events-none" />
-          <div className="absolute top-0 right-0 p-6 cursor-pointer">
-            <ChevronRight className="w-4 h-4 text-blue-300 group-hover:text-blue-500 transition-colors" />
-          </div>
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-xl bg-white/80 text-[#4b7bff] flex items-center justify-center shadow-sm backdrop-blur-sm">
-              <BarChart3 className="w-5 h-5" />
+        {summaryCards.map((card) => {
+          const Icon = card.icon;
+          const tone = toneStyles[card.tone];
+          return (
+            <div key={card.label} className={`bg-white/25 backdrop-blur-3xl rounded-[2.8rem] p-7 border border-white/60 relative overflow-hidden group shadow-[0_45px_100px_-20px_rgba(15,23,42,0.35),inset_0_1px_3px_rgba(255,255,255,0.5)] transition-all duration-700 ${tone.card}`}>
+              <div className="absolute inset-0 bg-gradient-to-br from-slate-900/[0.12] to-transparent pointer-events-none" />
+              <div className="absolute top-0 right-0 p-6 cursor-pointer">
+                <ChevronRight className={`w-4 h-4 ${tone.accent} transition-colors`} />
+              </div>
+              <div className="flex items-center gap-3 mb-4">
+                <div className={`w-10 h-10 rounded-xl bg-white/80 ${tone.icon} flex items-center justify-center shadow-sm backdrop-blur-sm`}>
+                  <Icon className="w-5 h-5" />
+                </div>
+                <span className="font-bold text-[#334155] text-sm uppercase tracking-wide">{card.label}</span>
+              </div>
+              <h2 className="text-5xl font-black text-[#1e293b] tracking-tight mb-2">{card.value}</h2>
+              <div className="flex flex-col gap-1">
+                {card.note && (
+                  <span className={card.noteTone + " text-xs font-black inline-flex items-center gap-1"}>
+                    <card.noteIcon className="w-3.5 h-3.5" /> {card.note}
+                  </span>
+                )}
+                {card.detail && <span className="text-[#64748b] text-[11px] font-semibold leading-relaxed max-w-[90%] opacity-70">{card.detail}</span>}
+                {card.action && (
+                  <button className="text-[#4b7bff] text-xs font-black uppercase tracking-wider hover:underline flex items-center gap-1">
+                    {card.action} <ChevronRight className="w-3 h-3" />
+                  </button>
+                )}
+              </div>
+              <div className={`absolute -bottom-6 -right-6 w-32 h-32 ${tone.orb} rounded-full blur-2xl`} />
             </div>
-            <span className="font-bold text-[#334155] text-sm uppercase tracking-wide">ATS Score</span>
-          </div>
-          <h2 className="text-5xl font-black text-[#1e293b] tracking-tight mb-2">78%</h2>
-          <div className="flex flex-col gap-1">
-            <span className="text-[#10b981] text-xs font-black inline-flex items-center gap-1">
-              <ArrowUp className="w-3.5 h-3.5" /> GREAT JOB!
-            </span>
-            <span className="text-[#64748b] text-[11px] font-semibold opacity-70">+ 6% since last week</span>
-          </div>
-          <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl" />
-        </div>
-
-        
-        <div className="bg-[#f0fff4]/25 backdrop-blur-3xl rounded-[2.8rem] p-7 border border-white/60 relative overflow-hidden group shadow-[0_45px_100px_-20px_rgba(15,23,42,0.35),inset_0_1px_3px_rgba(255,255,255,0.5)] hover:shadow-emerald-500/30 transition-all duration-700">
-          <div className="absolute inset-0 bg-gradient-to-br from-slate-900/[0.12] to-transparent pointer-events-none" />
-          <div className="absolute top-0 right-0 p-6 cursor-pointer">
-            <ChevronRight className="w-4 h-4 text-emerald-300 group-hover:text-emerald-500 transition-colors" />
-          </div>
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-xl bg-white/80 text-[#10b981] flex items-center justify-center shadow-sm backdrop-blur-sm">
-              <ShieldCheck className="w-5 h-5" />
-            </div>
-            <span className="font-bold text-[#334155] text-sm uppercase tracking-wide">Job Ready</span>
-          </div>
-          <h2 className="text-5xl font-black text-[#1e293b] tracking-tight mb-2">92%</h2>
-          <p className="text-[#64748b] text-[11px] font-semibold leading-relaxed max-w-[90%] opacity-70">
-            Based on ATS score and overall skill matching algorithms.
-          </p>
-          <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl" />
-        </div>
-
-        
-        <div className="bg-[#fffcf0]/25 backdrop-blur-3xl rounded-[2.8rem] p-7 border border-white/60 relative overflow-hidden group shadow-[0_45px_100px_-20px_rgba(15,23,42,0.35),inset_0_1px_3px_rgba(255,255,255,0.5)] hover:shadow-orange-500/30 transition-all duration-700">
-          <div className="absolute inset-0 bg-gradient-to-br from-slate-900/[0.12] to-transparent pointer-events-none" />
-          <div className="absolute top-0 right-0 p-6 cursor-pointer">
-            <ChevronRight className="w-4 h-4 text-orange-300 group-hover:text-orange-500 transition-colors" />
-          </div>
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-xl bg-white/80 text-[#f59e0b] flex items-center justify-center shadow-sm backdrop-blur-sm">
-              <AlertTriangle className="w-5 h-5" />
-            </div>
-            <span className="font-bold text-[#334155] text-sm uppercase tracking-wide">Gaps</span>
-          </div>
-          <h2 className="text-5xl font-black text-[#1e293b] tracking-tight mb-3">03</h2>
-          <button className="text-[#4b7bff] text-xs font-black uppercase tracking-wider hover:underline flex items-center gap-1">
-            View Analysis <ChevronRight className="w-3 h-3" />
-          </button>
-          <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-orange-500/10 rounded-full blur-2xl" />
-        </div>
-
-        
-        <div className="bg-[#f7f0ff]/25 backdrop-blur-3xl rounded-[2.8rem] p-7 border border-white/60 relative overflow-hidden group shadow-[0_45px_100px_-20px_rgba(15,23,42,0.35),inset_0_1px_3px_rgba(255,255,255,0.5)] hover:shadow-purple-500/30 transition-all duration-700">
-          <div className="absolute inset-0 bg-gradient-to-br from-slate-900/[0.12] to-transparent pointer-events-none" />
-          <div className="absolute top-0 right-0 p-6 cursor-pointer">
-            <ChevronRight className="w-4 h-4 text-purple-300 group-hover:text-purple-500 transition-colors" />
-          </div>
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-xl bg-white/80 text-[#8b5cf6] flex items-center justify-center shadow-sm backdrop-blur-sm">
-              <Briefcase className="w-5 h-5" />
-            </div>
-            <span className="font-bold text-[#334155] text-sm uppercase tracking-wide">Matches</span>
-          </div>
-          <h2 className="text-5xl font-black text-[#1e293b] tracking-tight mb-2">02</h2>
-          <p className="text-[#64748b] text-[11px] font-semibold leading-relaxed max-w-[90%] opacity-70">
-            Highly relevant matches found in "Software Engineering".
-          </p>
-          <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-purple-500/10 rounded-full blur-2xl" />
-        </div>
-
+          );
+        })}
       </div>
 
       

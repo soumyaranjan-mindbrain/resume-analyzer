@@ -3,11 +3,9 @@ import {
   User,
   Mail,
   MapPin,
-  ExternalLink,
   Camera,
   ChevronRight,
 } from 'lucide-react';
-import { cn } from '../../utils/cn';
 
 
 const TwitterIcon = ({ className }) => (
@@ -30,6 +28,15 @@ const LinkedinIcon = ({ className }) => (
     <circle cx="4" cy="4" r="2" />
   </svg>
 );
+
+const profileFields = [
+  { label: "First Name", value: "James" },
+  { label: "Last Name", value: "Anderson" },
+  { label: "Email Address", value: "james.a@kredo.ai" },
+  { label: "Location", value: "San Francisco, CA" },
+  { label: "Phone Number", value: "+1 (555) 000-0000" },
+  { label: "Job Title", value: "Senior Product Designer" }
+];
 
 const Profile = () => {
   return (
@@ -90,14 +97,7 @@ const Profile = () => {
           <h3 className="text-xl font-black text-[#1e293b] mb-8 tracking-tight">Account Settings</h3>
             
           <div className="grid sm:grid-cols-2 gap-6 flex-1">
-            {[
-              { label: "First Name", value: "James" },
-              { label: "Last Name", value: "Anderson" },
-              { label: "Email Address", value: "james.a@kredo.ai" },
-              { label: "Location", value: "San Francisco, CA" },
-              { label: "Phone Number", value: "+1 (555) 000-0000" },
-              { label: "Job Title", value: "Senior Product Designer" }
-            ].map((field, i) => (
+            {profileFields.map((field, i) => (
               <div key={i} className="space-y-2">
                 <label className="text-[11px] font-black text-[#94a3b8] uppercase tracking-widest px-1">{field.label}</label>
                 <input 

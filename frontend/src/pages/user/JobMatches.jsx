@@ -8,7 +8,6 @@ import {
   Clock, 
   CheckCircle2, 
   ChevronRight,
-  ExternalLink,
   Zap,
   Star
 } from 'lucide-react';
@@ -75,6 +74,8 @@ const JobMatches = () => {
 
   const filterTags = ['Software Engineer', 'Analyst', 'Open Now'];
 
+  const getTagIcon = (tag) => (tag === 'Analyst' ? <Star className="w-3.5 h-3.5 inline mr-2 fill-current" /> : null);
+
   return (
     <div className="max-w-[1200px] mx-auto py-8">
       
@@ -91,7 +92,7 @@ const JobMatches = () => {
                   : "bg-white/40 text-slate-500 border-white/60 hover:bg-white/60 hover:text-slate-700"
               )}
             >
-              {tag === 'Analyst' && <Star className="w-3.5 h-3.5 inline mr-2 fill-current" />}
+              {getTagIcon(tag)}
               {tag}
             </button>
           ))}

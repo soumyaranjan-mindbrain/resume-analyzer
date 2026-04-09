@@ -121,7 +121,7 @@ const AdminDashboard = () => {
                          </div>
                          <div>
                             <p className="text-sm font-black text-slate-800 group-hover:text-blue-600 transition-colors">{activity.student}</p>
-                            <p className="text-[10px] font-bold text-cyan-700/60 uppercase tracking-widest">{activity.action} â€¢ {activity.time}</p>
+                            <p className="text-[10px] font-bold text-cyan-700/60 uppercase tracking-widest">{activity.action} • {activity.time}</p>
                          </div>
                       </div>
                       <span className={cn(

@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -221,8 +221,7 @@ const Hero = () => {
 
 const Features = () => {
   const containerRef = useRef(null);
-
-  const cards = [
+  const featureCards = [
     {
       title: "Contextual Intelligence",
       value: "0.8s",
@@ -267,10 +266,6 @@ const Features = () => {
     }
   ];
 
-  useEffect(() => {
-    
-  }, []);
-
   return (
     <section id="product" ref={containerRef} className="pt-60 pb-32 px-6 relative z-10">
       <div className="container mx-auto max-w-7xl">
@@ -296,7 +291,7 @@ const Features = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-          {cards.map((card, i) => (
+          {featureCards.map((card, i) => (
             <div key={i} className="feature-card clay-card !p-5 group min-h-[280px] flex flex-col">
               <div className="flex justify-between items-center mb-6">
                 <div className="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center border border-purple-100 shadow-sm transition-all duration-700 group-hover:scale-110 group-hover:rotate-6">

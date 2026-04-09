@@ -50,6 +50,10 @@ const Support = () => {
     { q: 'Can I integrate with LinkedIn?', a: 'Absolutely. You can import your LinkedIn profile directly or export our generated keywords to your profile.' }
   ];
 
+  const toggleFaq = (index) => {
+    setActiveFaq(activeFaq === index ? null : index);
+  };
+
   return (
     <div className="max-w-[1200px] mx-auto py-10 px-4">
       
@@ -104,10 +108,10 @@ const Support = () => {
             <div className="space-y-4">
                {faqs.map((faq, i) => (
                  <div key={i} className="bg-white/25 backdrop-blur-xl border border-white/60 rounded-3xl overflow-hidden shadow-sm hover:border-blue-500/20 transition-all">
-                    <button 
-                      onClick={() => setActiveFaq(activeFaq === i ? null : i)}
-                      className="w-full flex items-center justify-between p-6 text-left"
-                    >
+                   <button 
+                       onClick={() => toggleFaq(i)}
+                       className="w-full flex items-center justify-between p-6 text-left"
+                     >
                        <span className="font-bold text-[#334155] pr-8">{faq.q}</span>
                        <div className={cn("w-8 h-8 rounded-full border border-slate-200 flex items-center justify-center transition-transform", activeFaq === i ? "rotate-45 text-orange-500 border-orange-200 bg-orange-50" : "text-slate-400")}>
                           <Plus className="w-4 h-4" />

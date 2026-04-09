@@ -17,7 +17,6 @@ import { cn } from '../../utils/cn';
 
 const Reports = () => {
   const [viewMode, setViewMode] = useState('list');
-  const [activeFilter, setActiveFilter] = useState('All');
 
   const reports = [
     { id: 1, student: 'Alex Rivera', role: 'Full Stack Developer', score: 85, date: '2026-04-01', status: 'High' },
@@ -28,6 +27,25 @@ const Reports = () => {
     { id: 6, student: 'James Wilson', role: 'Product Manager', score: 88, date: '2026-04-08', status: 'High' },
   ];
 
+  const viewButtonClass = (mode) =>
+    cn(
+      "p-2.5 rounded-xl transition-all",
+      viewMode === mode ? "bg-cyan-500 text-white shadow-md" : "text-slate-400 hover:text-slate-600"
+    );
+
+  const scoreClass = (score) => {
+    if (score >= 80) return "text-emerald-500";
+    if (score >= 60) return "text-blue-500";
+    return "text-orange-500";
+  };
+
+  const statusClass = (status) => {
+    if (status === 'Exceptional') return "bg-emerald-50 text-emerald-600";
+    if (status === 'High') return "bg-blue-50 text-blue-600";
+    if (status === 'Medium') return "bg-orange-50 text-orange-600";
+    return "bg-red-50 text-red-600";
+  };
+
   return (
     <div className="space-y-6 animate-in fade-in duration-700">
       
@@ -35,13 +53,13 @@ const Reports = () => {
         <div className="flex items-center gap-3 bg-white p-1.5 rounded-2xl border border-slate-100 shadow-sm w-fit">
            <button 
             onClick={() => setViewMode('grid')}
-            className={cn("p-2.5 rounded-xl transition-all", viewMode === 'grid' ? "bg-cyan-500 text-white shadow-md" : "text-slate-400 hover:text-slate-600")}
+            className={viewButtonClass('grid')}
            >
               <LayoutGrid className="w-5 h-5" />
            </button>
            <button 
             onClick={() => setViewMode('list')}
-            className={cn("p-2.5 rounded-xl transition-all", viewMode === 'list' ? "bg-cyan-500 text-white shadow-md" : "text-slate-400 hover:text-slate-600")}
+            className={viewButtonClass('list')}
            >
               <List className="w-5 h-5" />
            </button>
@@ -104,7 +122,7 @@ const Reports = () => {
                        <div className="flex flex-col items-center gap-1">
                           <span className={cn(
                             "text-base font-black",
-                            report.score >= 80 ? "text-emerald-500" : report.score >= 60 ? "text-blue-500" : "text-orange-500"
+                            scoreClass(report.score)
                           )}>{report.score}%</span>
                           <div className="w-16 h-1 bg-slate-100 rounded-full overflow-hidden">
                              <div 
@@ -116,12 +134,9 @@ const Reports = () => {
                     </td>
                     <td className="py-6 px-6">
                        <span className={cn(
-                         "text-[9px] font-black uppercase tracking-widest px-2.5 py-1.5 rounded-lg border",
-                         report.status === 'Exceptional' ? "bg-emerald-50 text-emerald-600 border-emerald-100" :
-                         report.status === 'High' ? "bg-blue-50 text-blue-600 border-blue-100" :
-                         report.status === 'Medium' ? "bg-orange-50 text-orange-600 border-orange-100" :
-                         "bg-red-50 text-red-600 border-red-100"
-                       )}>
+                          "text-[9px] font-black uppercase tracking-widest px-2.5 py-1.5 rounded-lg border",
+                          statusClass(report.status)
+                        )}>
                           {report.status}
                        </span>
                     </td>
