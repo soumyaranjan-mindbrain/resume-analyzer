@@ -68,7 +68,7 @@ const Recommendations = () => {
     'Use a clean and professional format',
     'Include a strong, specific resume summary',
     'Highlight key skills',
-    'Tailior your experience to job roles',
+      'Tailor your experience to job roles',
     'Use relevant keywords'
   ];
 
@@ -138,11 +138,11 @@ const Recommendations = () => {
                    <p className="text-slate-500 font-medium text-sm mb-8 leading-relaxed">
                      Get automated tips for improving your resume content based on industry standards.
                    </p>
-                   <button className="flex items-center gap-3 px-6 py-3 bg-white/60 border border-white/80 rounded-2xl font-black text-sm text-[#1e293b] hover:bg-white shadow-sm transition-all group/btn">
-                      <RefreshCw className="w-4 h-4 text-[#4b7bff] group-hover/btn:rotate-180 transition-transform duration-500" />
-                      Get Resume
-                      <ChevronRight className="w-4 h-4 text-slate-400" />
-                   </button>
+                    <button className="flex items-center gap-3 px-6 py-3 bg-white/60 border border-white/80 rounded-2xl font-black text-sm text-[#1e293b] hover:bg-white shadow-sm transition-all group/btn">
+                       <RefreshCw className="w-4 h-4 text-[#4b7bff] group-hover/btn:rotate-180 transition-transform duration-500" />
+                       Refresh Resume
+                       <ChevronRight className="w-4 h-4 text-slate-400" />
+                    </button>
                 </div>
               </div>
 
@@ -159,9 +159,9 @@ const Recommendations = () => {
                    </p>
                    <button className="flex items-center gap-3 px-6 py-3 bg-white/60 border border-white/80 rounded-2xl font-black text-sm text-[#1e293b] hover:bg-white shadow-sm transition-all">
                       <GitCompare className="w-4 h-4 text-slate-500" />
-                      View Course
-                      <ChevronRight className="w-4 h-4 text-slate-400" />
-                   </button>
+                       Compare Results
+                       <ChevronRight className="w-4 h-4 text-slate-400" />
+                    </button>
                 </div>
               </div>
             </div>

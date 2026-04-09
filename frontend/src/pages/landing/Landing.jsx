@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import {
-  ArrowRight,
   CheckCircle2,
   Sparkles,
   Zap,
@@ -181,11 +180,11 @@ const Hero = () => {
                   <div className="space-y-1">
                     <div className="flex justify-between items-end">
                       <span className="text-xs font-black text-[var(--neutral-900)]">Lead Developer @ QuantumFlow</span>
-                      <span className="text-[9px] font-bold text-[var(--neutral-400)]">2021 — PRESENT</span>
+                      <span className="text-[9px] font-bold text-[var(--neutral-400)]">2021 - PRESENT</span>
                     </div>
                     <p className="text-[10px] font-bold text-[var(--neutral-900)]/60 leading-relaxed">
-                      • Orchestrated a 45% reduction in latent system overhead using AI-driven routing.<br />
-                      • Scaled micro-service architecture to handle 1.2M concurrent data points.
+                      - Orchestrated a 45% reduction in latent system overhead using AI-driven routing.<br />
+                      - Scaled micro-service architecture to handle 1.2M concurrent data points.
                     </p>
                   </div>
                 </div>
@@ -347,7 +346,7 @@ const CTA = () => {
             </p>
             <div className="flex flex-wrap justify-center items-center gap-6">
               <button onClick={() => navigate('/auth')} className="btn-kredo !px-14 !py-7 text-sm">
-                Analyze My Resume Today →
+                Analyze My Resume Today {'->'}
               </button>
               <button className="px-10 py-7 rounded-2xl border-2 border-white/50 bg-white/10 backdrop-blur-md text-sm font-black text-[var(--neutral-900)] uppercase tracking-widest hover:bg-white/30 transition-all">
                 View Sample Results

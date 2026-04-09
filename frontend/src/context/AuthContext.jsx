@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 
 const AuthContext = createContext(null);
 
@@ -7,13 +7,12 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    
     const savedUser = localStorage.getItem('kredo_user');
     if (savedUser) {
       try {
-          setUser(JSON.parse(savedUser));
+        setUser(JSON.parse(savedUser));
       } catch (e) {
-          localStorage.removeItem('kredo_user');
+        localStorage.removeItem('kredo_user');
       }
     }
     setLoading(false);
