@@ -77,14 +77,17 @@ const AppLayout = ({ children }) => {
       )}
 
       
+      {/* Sidebar */}
       <aside 
         className={cn(
-          "absolute lg:static top-0 left-0 z-50 h-full w-64 bg-[#f8fafe] border-r border-[#e2e8f0] transform transition-transform duration-300 ease-spring flex flex-col pt-8 pb-8 shrink-0",
+          "absolute lg:static top-0 left-0 z-50 h-full w-64 bg-white border-r border-slate-200 transform transition-transform duration-300 ease-spring flex flex-col pt-8 pb-8 shrink-0",
           sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         )}
       >
+          {/* Subtle sidebar gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-b from-slate-50/50 to-transparent pointer-events-none" />
           
-          <div className="flex items-center gap-3 px-6 mb-10 shrink-0">
+          <div className="relative z-10 flex items-center gap-3 px-6 mb-10 shrink-0">
             <img 
               src="/Kredo_logo_with_educational_theme-removebg-preview.png" 
               alt="Kredo Logo" 
@@ -99,7 +102,7 @@ const AppLayout = ({ children }) => {
           </div>
 
           
-          <nav className="flex-1 px-4 space-y-2 overflow-y-auto w-full border-b border-slate-100 mb-4 pb-4">
+          <nav className="relative z-10 flex-1 px-4 space-y-2 overflow-y-auto w-full border-b border-slate-100 mb-4 pb-4">
             {navItems.map((item) => {
               const isActive = location.pathname === item.path;
               const Icon = item.icon;
@@ -111,11 +114,11 @@ const AppLayout = ({ children }) => {
                   className={cn(
                     "flex items-center gap-3 px-4 py-3.5 rounded-2xl font-semibold text-sm transition-all duration-200",
                     isActive 
-                      ? "bg-cyan-500 text-white shadow-md shadow-cyan-500/20 translate-x-2" 
-                      : "text-[#64748b] hover:bg-white hover:text-[#334155] hover:shadow-sm"
+                      ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20 translate-x-1" 
+                      : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
                   )}
                 >
-                  <Icon className={cn("w-5 h-5", isActive ? "text-white" : "text-[#94a3b8]")} />
+                  <Icon className={cn("w-5 h-5", isActive ? "text-white" : "text-slate-400")} />
                   {item.label}
                 </NavLink>
               );
@@ -123,7 +126,8 @@ const AppLayout = ({ children }) => {
           </nav>
 
           
-          <div className="px-5 mt-auto shrink-0 w-full space-y-2">
+          {/* Footer Area */}
+          <div className="relative z-10 px-5 mt-auto shrink-0 w-full space-y-2">
             {user?.role !== 'admin' && (
               <NavLink 
                 to="/support"
@@ -131,7 +135,7 @@ const AppLayout = ({ children }) => {
                   "flex items-center gap-3 w-full px-4 py-3 border rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all",
                   isActive 
                     ? "bg-[#4b7bff] text-white shadow-lg border-transparent shadow-blue-500/10" 
-                    : "bg-white/40 shadow-sm border-white/60 text-[#64748b] hover:text-[#334155] hover:bg-white/60"
+                    : "bg-white shadow-sm border-slate-200 text-slate-500 hover:text-slate-900 hover:bg-slate-50"
                 )}
               >
                 <HelpCircle className="w-5 h-5" />
@@ -141,7 +145,7 @@ const AppLayout = ({ children }) => {
 
             <button 
               onClick={() => { logout(); navigate('/auth', { replace: true }); }}
-              className="flex items-center gap-3 w-full px-4 py-3 border border-red-100/30 bg-red-50/10 rounded-2xl font-black text-[11px] uppercase tracking-widest text-red-500/80 hover:bg-red-500 hover:text-white transition-all group shadow-sm hover:shadow-red-500/20"
+              className="flex items-center gap-3 w-full px-4 py-3 border border-red-100 bg-red-50/30 rounded-2xl font-black text-[11px] uppercase tracking-widest text-red-600 hover:bg-red-600 hover:text-white transition-all group shadow-sm"
             >
               <LogOut className="w-5 h-5 transition-transform group-hover:-translate-x-1" />
               Sign Out
@@ -150,16 +154,20 @@ const AppLayout = ({ children }) => {
         </aside>
 
         
-        <main className="flex-1 flex flex-col min-w-0 h-full relative overflow-hidden bg-slate-50/80">
+        <main className="flex-1 flex flex-col min-w-0 h-full relative overflow-hidden bg-[#f8fafc]">
           
-          {user?.role !== 'admin' && (
+          {user?.role !== 'admin' ? (
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
               <div className="absolute -top-[10%] -right-[5%] w-[70%] h-[70%] bg-cyan-200/40 blur-[130px] rounded-full animate-pulse" style={{ animationDuration: '8s' }} />
               <div className="absolute -bottom-[10%] -left-[5%] w-[65%] h-[65%] bg-lime-200/40 blur-[130px] rounded-full animate-pulse shadow-[0_0_100px_rgba(190,242,100,0.3)]" style={{ animationDuration: '12s' }} />
               <div className="absolute top-[20%] left-[10%] w-[50%] h-[50%] bg-blue-100/30 blur-[100px] rounded-full" />
-              
-              
               <div className="absolute inset-0 bg-gradient-to-br from-white/60 via-transparent to-white/40 opacity-70" />
+            </div>
+          ) : (
+            <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-[0.4]">
+               {/* Very subtle secondary tint for admin to avoid pure white */}
+               <div className="absolute top-0 right-0 w-[50%] h-[50%] bg-blue-50/50 blur-[120px] rounded-full" />
+               <div className="absolute bottom-0 left-0 w-[50%] h-[50%] bg-slate-100/50 blur-[120px] rounded-full" />
             </div>
           )}
 

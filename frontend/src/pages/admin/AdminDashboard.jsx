@@ -42,7 +42,7 @@ const AdminDashboard = () => {
       {/* Stats Row */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat, i) => (
-          <div key={i} className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+          <div key={i} className="admin-card p-5">
             <div className="flex items-center justify-between mb-4">
               <div className={cn("w-10 h-10 rounded-lg flex items-center justify-center", stat.bg, stat.color)}>
                 <stat.icon className="w-5 h-5" />
