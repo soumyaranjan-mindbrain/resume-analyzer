@@ -4,173 +4,155 @@ import {
   FileCheck, 
   Target, 
   Trophy, 
-  TrendingUp, 
-  Clock, 
-  Settings, 
-  Search, 
-  Bell, 
-  ArrowUpRight, 
-  Cpu, 
-  Zap, 
-  ShieldCheck,
-  MoreHorizontal,
-  ChevronRight
+  ArrowUpRight 
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
 
 const AdminDashboard = () => {
   const stats = [
-    { label: 'Total Students', value: '1,284', trend: '+12.5%', icon: Users, color: 'text-blue-500', bg: 'bg-blue-50' },
-    { label: 'Resumes Analyzed', value: '3,842', trend: '+18.2%', icon: FileCheck, color: 'text-purple-500', bg: 'bg-purple-50' },
-    { label: 'Average Score', value: '74%', trend: '+4.5%', icon: Target, color: 'text-emerald-500', bg: 'bg-emerald-50' },
-    { label: 'Job Readiness', value: '42%', trend: '+2.1%', icon: Trophy, color: 'text-amber-500', bg: 'bg-amber-50' },
+    { label: 'Total Students', value: '1,284', trend: '+12.5%', icon: Users, color: 'text-blue-600', bg: 'bg-blue-50' },
+    { label: 'Resumes Analyzed', value: '3,842', trend: '+18.2%', icon: FileCheck, color: 'text-purple-600', bg: 'bg-purple-50' },
+    { label: 'Average Score', value: '74%', trend: '+4.5%', icon: Target, color: 'text-emerald-600', bg: 'bg-emerald-50' },
+    { label: 'Job Readiness', value: '42%', trend: '+2.1%', icon: Trophy, color: 'text-amber-600', bg: 'bg-amber-50' },
   ];
 
-  const recentActivity = [
-    { id: 1, student: 'Alex Rivera', action: 'Rescore', score: 92, time: '2m ago' },
-    { id: 2, student: 'Sarah Chen', action: 'Uploaded', score: 85, time: '12m ago' },
-    { id: 3, student: 'Marcus Bell', action: 'Rescore', score: 64, time: '1h ago' },
-    { id: 4, student: 'Elena Vance', action: 'Created', score: 45, time: '3h ago' },
+  // Variations in data to make the demo look more realistic and dynamic
+  const chartData = [
+    { month: 'Jan', resumes: 25, analyzed: 35, matched: 18 },
+    { month: 'Feb', resumes: 32, analyzed: 28, matched: 22 },
+    { month: 'Mar', resumes: 45, analyzed: 58, matched: 35 },
+    { month: 'Apr', resumes: 42, analyzed: 65, matched: 32 },
+    { month: 'Mei', resumes: 68, analyzed: 50, matched: 40 }, 
+    { month: 'Jun', resumes: 50, analyzed: 72, matched: 45 },
+    { month: 'Jul', resumes: 48, analyzed: 45, matched: 38 },
+    { month: 'Aug', resumes: 55, analyzed: 52, matched: 42 },
+    { month: 'Sep', resumes: 60, analyzed: 58, matched: 48 },
+    { month: 'Oct', resumes: 52, analyzed: 75, matched: 44 },
+    { month: 'Nov', resumes: 75, analyzed: 78, matched: 55 },
+    { month: 'Dec', resumes: 68, analyzed: 70, matched: 50 },
   ];
+
+  const maxVal = 80;
+  const yAxisTicks = [80, 60, 40, 20, 0];
 
   return (
-    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+    <div className="space-y-6 animate-in fade-in duration-500">
       
-      
+      {/* Stats Row */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat, i) => (
-          <div key={i} className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-xl transition-all group overflow-hidden relative">
-            <div className="absolute top-0 right-0 w-24 h-24 bg-cyan-50 rounded-bl-[4rem] -mr-4 -mt-4 transition-all group-hover:bg-opacity-80" />
-            <div className="relative z-10">
-              <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center mb-6 transition-all group-hover:scale-110", stat.bg, stat.color)}>
-                <stat.icon className="w-6 h-6" />
+          <div key={i} className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+            <div className="flex items-center justify-between mb-4">
+              <div className={cn("w-10 h-10 rounded-lg flex items-center justify-center", stat.bg, stat.color)}>
+                <stat.icon className="w-5 h-5" />
               </div>
-              <p className="text-[10px] font-black text-cyan-700/60 uppercase tracking-widest mb-1">{stat.label}</p>
-              <div className="flex items-baseline gap-2">
-                <h3 className="text-4xl font-black text-slate-900 tracking-tighter">{stat.value}</h3>
-                <span className="text-[10px] font-black text-emerald-500 bg-emerald-50 px-1.5 py-0.5 rounded-md">{stat.trend}</span>
-              </div>
+              <span className="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">{stat.trend}</span>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-slate-500 mb-1">{stat.label}</p>
+              <h3 className="text-2xl font-bold text-slate-900">{stat.value}</h3>
             </div>
           </div>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
-        <div className="lg:col-span-2 bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm relative overflow-hidden group min-h-[450px] flex flex-col justify-between">
-           <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-50 rounded-bl-[8rem] -mr-20 -mt-20 opacity-50" />
-           <div className="relative z-10 flex items-center justify-between mb-8">
-              <div>
-                 <h3 className="text-2xl font-black text-slate-900 tracking-tight">Platform Growth</h3>
-                 <p className="text-cyan-700/60 text-sm font-bold mt-1">Daily analysis trends across all branches.</p>
-              </div>
-              <div className="flex gap-2">
-                 <button className="px-5 py-2.5 bg-cyan-50 text-slate-500 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-cyan-500 hover:text-white transition-all">Week</button>
-                 <button className="px-5 py-2.5 bg-cyan-500 text-white rounded-xl font-black text-xs uppercase tracking-widest shadow-lg shadow-cyan-500/20 transition-all">Month</button>
-              </div>
-           </div>
+      {/* Grouped Bar Chart Section */}
+      <div className="bg-white rounded-xl p-8 border border-slate-200 shadow-sm flex flex-col min-h-[550px] relative overflow-hidden">
+          {/* Dotted Background Pattern like in image */}
+          <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 0)', backgroundSize: '24px 24px' }} />
 
-           
-           <div className="relative h-64 flex items-end gap-3 pb-4">
-              {[40, 70, 45, 90, 65, 80, 55, 95, 75, 40, 85, 100].map((h, i) => (
-                <div key={i} className="flex-1 bg-blue-500/10 hover:bg-blue-500 rounded-2xl transition-all duration-700 ease-out origin-bottom cursor-pointer group/bar" style={{ height: `${h}%` }}>
-                   <div className="absolute top-0 -translate-y-8 opacity-0 group-hover/bar:opacity-100 transition-opacity bg-cyan-500 text-white text-[10px] font-black px-2 py-1 rounded">
-                      {h}%
-                   </div>
-                </div>
+          <div className="flex items-center justify-between mb-12 relative z-10">
+            <div>
+                <h3 className="text-lg font-bold text-slate-900">Platform Growth Analysis</h3>
+                <p className="text-slate-500 text-sm mt-1">Detailed monthly metrics for resume processing and success rates.</p>
+            </div>
+            <div className="flex gap-2 bg-slate-50 p-1 rounded-lg border border-slate-200">
+                <button className="px-4 py-1.5 text-slate-600 rounded-md font-medium text-sm hover:bg-white transition-all">Week</button>
+                <button className="px-4 py-1.5 bg-white text-slate-900 rounded-md font-medium text-sm shadow-sm border border-slate-200 transition-all">Month</button>
+            </div>
+          </div>
+
+          {/* Chart Area Container */}
+          <div className="flex-1 flex gap-4 relative z-10">
+            
+            {/* Y-Axis Ticks */}
+            <div className="flex flex-col justify-between text-[10px] font-bold text-slate-400 pb-10 pr-2">
+              {yAxisTicks.map(tick => (
+                <span key={tick} className="h-0 flex items-center justify-end">{tick}</span>
               ))}
-           </div>
+            </div>
 
-           <div className="relative z-10 flex items-center justify-between pt-10 border-t border-slate-50">
-              <div className="flex items-center gap-6">
-                 <div>
-                    <p className="text-[10px] font-black text-cyan-700/60 uppercase tracking-widest mb-1">Peak Time</p>
-                    <p className="text-xl font-black text-slate-900">14:00 - 16:00</p>
-                 </div>
-                 <div className="w-[1px] h-10 bg-slate-100" />
-                 <div>
-                    <p className="text-[10px] font-black text-cyan-700/60 uppercase tracking-widest mb-1">Status</p>
-                    <div className="flex items-center gap-2">
-                       <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
-                       <p className="text-xl font-black text-emerald-500 uppercase tracking-tight text-sm">System Optimal</p>
+            {/* Bars and Grid */}
+            <div className="flex-1 flex flex-col relative h-[350px]">
+              
+              {/* Horizontal Grid Lines - Light Dotted */}
+              <div className="absolute inset-0 flex flex-col justify-between pb-10 pointer-events-none z-0">
+                {yAxisTicks.map(tick => (
+                  <div key={tick} className="w-full border-t border-slate-100 border-dashed h-0" />
+                ))}
+              </div>
+
+              {/* The Bars */}
+              <div className="relative h-full flex items-end justify-between px-4 pb-10 z-10">
+                {chartData.map((data, i) => (
+                  <div key={i} className="flex flex-col items-center gap-2 group/month h-full justify-end">
+                    <div className="flex items-end gap-1 px-1">
+                      {/* Orange Bar - Resumes */}
+                      <div 
+                        className="w-3 sm:w-4 bg-[#ee844a] rounded-t-sm transition-all duration-500 hover:brightness-110 relative group/bar shadow-sm"
+                        style={{ height: `${(data.resumes / maxVal) * 100}%`, minHeight: '4px' }}
+                      >
+                        <div className="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover/bar:opacity-100 transition-opacity bg-slate-800 text-white text-[10px] font-bold px-2 py-1 rounded shadow-lg pointer-events-none whitespace-nowrap z-30">
+                          {data.resumes} Resumes
+                        </div>
+                      </div>
+                      {/* Teal Bar - Analyzed */}
+                      <div 
+                        className="w-3 sm:w-4 bg-[#26d0ce] rounded-t-sm transition-all duration-500 hover:brightness-110 relative group/bar shadow-sm"
+                        style={{ height: `${(data.analyzed / maxVal) * 100}%`, minHeight: '4px' }}
+                      >
+                        <div className="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover/bar:opacity-100 transition-opacity bg-slate-800 text-white text-[10px] font-bold px-2 py-1 rounded shadow-lg pointer-events-none whitespace-nowrap z-30">
+                          {data.analyzed} Analyzed
+                        </div>
+                      </div>
+                      {/* Blue Bar - Matched */}
+                      <div 
+                        className="w-3 sm:w-4 bg-[#2563eb] rounded-t-sm transition-all duration-500 hover:brightness-110 relative group/bar shadow-sm"
+                        style={{ height: `${(data.matched / maxVal) * 100}%`, minHeight: '4px' }}
+                      >
+                        <div className="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover/bar:opacity-100 transition-opacity bg-slate-800 text-white text-[10px] font-bold px-2 py-1 rounded shadow-lg pointer-events-none whitespace-nowrap z-30">
+                          {data.matched} Matched
+                        </div>
+                      </div>
                     </div>
-                 </div>
+                    {/* X-Axis Labels */}
+                    <span className="text-[10px] font-bold text-slate-400 absolute -bottom-7">
+                      {data.month}
+                    </span>
+                  </div>
+                ))}
               </div>
-              <button className="p-4 bg-cyan-50 rounded-2xl text-cyan-700/60 hover:text-slate-900 hover:bg-slate-100 transition-all">
-                 <ArrowUpRight className="w-6 h-6" />
-              </button>
-           </div>
-        </div>
+            </div>
+          </div>
 
-        
-        <div className="space-y-8">
-           
-           <div className="bg-white rounded-[2rem] p-6 border border-slate-100 shadow-sm">
-              <div className="flex items-center justify-between mb-8">
-                 <h4 className="text-lg font-black text-slate-900 tracking-tight">Recent Activity</h4>
-                 <button className="p-2 text-cyan-700/60 hover:text-slate-900 hover:bg-cyan-50 rounded-xl transition-all">
-                    <MoreHorizontal className="w-5 h-5" />
-                 </button>
-              </div>
-              <div className="space-y-6">
-                 {recentActivity.map((activity) => (
-                   <div key={activity.id} className="flex items-center justify-between group cursor-pointer">
-                      <div className="flex items-center gap-4">
-                         <div className="w-10 h-10 rounded-xl bg-cyan-50 flex items-center justify-center text-cyan-700/60 font-black group-hover:bg-blue-50 group-hover:text-blue-500 transition-all">
-                            {activity.student.charAt(0)}
-                         </div>
-                         <div>
-                            <p className="text-sm font-black text-slate-800 group-hover:text-blue-600 transition-colors">{activity.student}</p>
-                            <p className="text-[10px] font-bold text-cyan-700/60 uppercase tracking-widest">{activity.action} • {activity.time}</p>
-                         </div>
-                      </div>
-                      <span className={cn(
-                        "text-[10px] font-black px-2 py-1 rounded-lg",
-                        activity.score >= 80 ? 'bg-emerald-50 text-emerald-500' : 'bg-orange-50 text-orange-500'
-                      )}>
-                        {activity.score}%
-                      </span>
-                   </div>
-                 ))}
-              </div>
-              <button className="w-full mt-10 py-4 bg-cyan-50 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] text-cyan-700/60 hover:bg-cyan-500 hover:text-white transition-all shadow-inner">
-                 View Audit Log
-              </button>
-           </div>
-
-           
-           <div className="bg-cyan-50 border border-cyan-100 rounded-[2rem] p-6 text-cyan-900 shadow-sm relative overflow-hidden shadow-2xl">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/10 blur-[50px] rounded-full -mr-16 -mt-16" />
-              <div className="relative z-10 flex items-center gap-4 mb-6">
-                 <div className="w-10 h-10 bg-cyan-500/10 rounded-xl flex items-center justify-center">
-                    <Cpu className="w-5 h-5 text-cyan-600" />
-                 </div>
-                 <h4 className="font-black tracking-tight">System Health</h4>
-              </div>
-              <div className="relative z-10 space-y-4">
-                 {[
-                   { label: 'Cloud API', status: 'Online', color: 'bg-blue-400' },
-                   { label: 'DB Latency', status: '12ms', color: 'bg-blue-400' },
-                   { label: 'Storage', status: '82%', color: 'bg-emerald-400' }
-                 ].map((h, i) => (
-                   <div key={i} className="flex justify-between items-center px-4 py-3 bg-white/50 border border-cyan-100/30 rounded-2xl">
-                      <span className="text-[10px] font-black uppercase tracking-widest text-cyan-700/60">{h.label}</span>
-                      <div className="flex items-center gap-2">
-                         <span className={cn("w-1.5 h-1.5 rounded-full animate-pulse", h.color)} />
-                         <span className="text-xs font-black uppercase tracking-tighter">{h.status}</span>
-                      </div>
-                   </div>
-                 ))}
-              </div>
-           </div>
-        </div>
+          {/* Legend Area */}
+          <div className="flex flex-wrap items-center justify-center gap-10 pt-12 border-t border-slate-100 mt-4 relative z-10">
+            <div className="flex items-center gap-3">
+              <div className="w-5 h-5 rounded-lg bg-[#f38d49]" />
+              <span className="text-xs font-bold text-slate-600">Resumes Uploaded</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="w-5 h-5 rounded-lg bg-[#26d0ce]" />
+              <span className="text-xs font-bold text-slate-600">AI Analyzed</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="w-5 h-5 rounded-lg bg-[#2563eb]" />
+              <span className="text-xs font-bold text-slate-600">Job Matched</span>
+            </div>
+          </div>
       </div>
     </div>
   );
 };
 
 export default AdminDashboard;
-
-
-
-

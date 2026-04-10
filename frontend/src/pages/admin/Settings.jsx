@@ -1,167 +1,125 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { 
-  Settings as SettingsIcon, 
   Shield, 
-  Key, 
-  Bell, 
-  User, 
   Globe, 
   Cpu, 
-  Database,
-  Lock,
-  Mail,
   Zap,
   Power
 } from 'lucide-react';
-import { cn } from '../../utils/cn';
 
 const Settings = () => {
-  const [activeTab, setActiveTab] = useState('General');
-
-  const tabs = [
-    { id: 'General', icon: Globe },
-    { id: 'Security', icon: Lock },
-    { id: 'API Config', icon: Cpu },
-    { id: 'Database', icon: Database },
-    { id: 'Notifications', icon: Bell },
-  ];
-
   return (
-    <div className="space-y-6 animate-in fade-in duration-700 pb-8">
+    <div className="max-w-4xl mx-auto space-y-12 animate-in fade-in duration-500 pb-12">
       
+      {/* API Configuration Section */}
+      <section className="space-y-4">
+        <div className="flex items-center gap-3 px-1">
+          <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center border border-blue-100">
+            <Cpu className="w-5 h-5 text-blue-600" />
+          </div>
+          <div>
+            <h3 className="text-lg font-bold text-slate-900">API Configuration</h3>
+            <p className="text-sm text-slate-500">Manage external service integrations and security keys.</p>
+          </div>
+        </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-         
-         <div className="lg:col-span-1 space-y-2">
-            {tabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={cn(
-                  "w-full flex items-center gap-4 px-6 py-4 rounded-2xl transition-all font-black text-sm text-left group",
-                  activeTab === tab.id 
-                    ? "bg-cyan-500 text-white shadow-xl shadow-cyan-500/10" 
-                    : "text-slate-500 hover:bg-white hover:text-cyan-600"
-                )}
-              >
-                <tab.icon className={cn("w-5 h-5", activeTab === tab.id ? "text-blue-400" : "text-slate-300 group-hover:text-slate-900")} />
-                {tab.id}
-              </button>
-            ))}
-            
-            <div className="pt-8 pb-4">
-               <div className="bg-red-50 rounded-[2rem] p-6 border border-red-100 mt-8">
-                  <h5 className="text-[10px] font-black text-red-600 uppercase tracking-widest mb-2 flex items-center gap-2">
-                     <Power className="w-3 h-3" /> Danger Zone
-                  </h5>
-                  <p className="text-xs font-bold text-red-400 mb-4">Actions here are permanent and cannot be reversed.</p>
-                  <button className="w-full py-3 bg-red-600 text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-red-700 transition-all shadow-lg shadow-red-600/20">
-                     Reset Platform
-                  </button>
-               </div>
+        <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+          <div className="p-6 border-b border-slate-100 bg-slate-50/50">
+            <div className="flex gap-3">
+              <Zap className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
+              <div>
+                <p className="text-sm font-semibold text-blue-900">Security Note</p>
+                <p className="text-xs text-blue-700/70">API keys provide administrative access to AI services. Ensure they are kept confidential and rotated regularly if compromised.</p>
+              </div>
             </div>
-         </div>
+          </div>
 
-         
-          <div className="lg:col-span-3 bg-white rounded-[2.5rem] border border-slate-100 shadow-sm p-8 min-h-[550px] relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-50 rounded-bl-[8rem] -mr-20 -mt-20 opacity-50" />
-            
-            <div className="relative z-10 space-y-10">
-               <div>
-                  <h3 className="text-2xl font-black text-slate-900 tracking-tight">{activeTab} Configuration</h3>
-                  <p className="text-slate-400 font-bold text-sm">Overview of {activeTab.toLowerCase()} parameters for the platform.</p>
-               </div>
-
-               {activeTab === 'General' && (
-                 <div className="space-y-8 animate-in slide-in-from-bottom-2 duration-500">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                       <div className="space-y-2">
-                          <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Platform Name</label>
-                          <input type="text" defaultValue="Kredo AI Analyzer" className="w-full px-6 py-4 bg-cyan-50 border border-slate-100 rounded-2xl font-bold text-slate-700 outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500/20 transition-all shadow-inner" />
-                       </div>
-                       <div className="space-y-2">
-                          <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Support Email</label>
-                          <input type="email" defaultValue="admin@kredo.ai" className="w-full px-6 py-4 bg-cyan-50 border border-slate-100 rounded-2xl font-bold text-slate-700 outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500/20 transition-all shadow-inner" />
-                       </div>
-                    </div>
-
-                    <div className="space-y-6">
-                       <h5 className="font-black text-slate-900 border-b border-slate-50 pb-4">Display Options</h5>
-                       <div className="flex items-center justify-between p-6 bg-cyan-50/50 rounded-3xl border border-slate-100/50">
-                          <div>
-                             <p className="text-sm font-black text-slate-700">Dark Mode Enforcement</p>
-                             <p className="text-xs font-bold text-slate-400">Force system-wide dark theme for all users.</p>
-                          </div>
-                          <button className="w-12 h-6 bg-slate-200 rounded-full relative transition-all">
-                             <div className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full shadow-sm" />
-                          </button>
-                       </div>
-                       <div className="flex items-center justify-between p-6 bg-cyan-50/50 rounded-3xl border border-slate-100/50">
-                          <div>
-                             <p className="text-sm font-black text-slate-700">Maintenance Mode</p>
-                             <p className="text-xs font-bold text-slate-400">Lock the platform for scheduled maintenance.</p>
-                          </div>
-                          <button className="w-12 h-6 bg-slate-200 rounded-full relative transition-all">
-                             <div className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full shadow-sm" />
-                          </button>
-                       </div>
-                    </div>
-                 </div>
-               )}
-
-               {activeTab === 'API Config' && (
-                 <div className="space-y-8 animate-in slide-in-from-bottom-2 duration-500">
-                    <div className="bg-amber-50 rounded-3xl p-6 border border-amber-100 flex gap-4">
-                       <Zap className="w-6 h-6 text-amber-500 shrink-0 mt-1" />
-                       <div>
-                          <p className="text-sm font-black text-amber-900">API Key Safety</p>
-                          <p className="text-xs font-bold text-amber-700/70">Ensure your API keys are stored securely. Never share these snapshots publicly.</p>
-                       </div>
-                    </div>
-                    
-                    <div className="space-y-6">
-                       {[
-                         { name: 'Gemini API Key', key: '••••••••••••••••••••••••' },
-                          { name: 'Supabase URL', key: 'https://xxx-kredo.supabase.co' },
-                         { name: 'Supabase Anon Key', key: '••••••••••••••••••••••••' }
-                       ].map((item, i) => (
-                         <div key={i} className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-6 bg-white border border-slate-100 rounded-3xl shadow-sm hover:border-blue-100 transition-all group">
-                            <div className="flex items-center gap-4">
-                               <div className="p-3 bg-cyan-50 rounded-2xl group-hover:bg-blue-50 transition-all">
-                                  <Shield className="w-5 h-5 text-slate-400 group-hover:text-blue-500" />
-                               </div>
-                               <div>
-                                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{item.name}</p>
-                                  <p className="text-sm font-bold text-slate-600 font-mono mt-1">{item.key}</p>
-                               </div>
-                            </div>
-                            <button className="px-5 py-2.5 bg-cyan-500 text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all">
-                               Revoke Key
-                            </button>
-                         </div>
-                       ))}
-                    </div>
-                 </div>
-               )}
-
-               
+          <div className="p-6 space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-white border border-slate-200 rounded-lg hover:border-blue-300 transition-colors group">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-slate-50 rounded-md border border-slate-100 group-hover:bg-blue-50 group-hover:border-blue-100 transition-colors">
+                  <Shield className="w-4 h-4 text-slate-400 group-hover:text-blue-600" />
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Gemini API Key</p>
+                  <p className="text-sm font-medium text-slate-600 font-mono mt-0.5">••••••••••••••••••••••••</p>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <button className="px-4 py-1.5 bg-white border border-slate-200 text-slate-600 rounded-md font-semibold text-xs hover:bg-slate-50 transition-all">
+                  Change Key
+                </button>
+                <button className="px-4 py-1.5 bg-white border border-slate-200 text-red-600 rounded-md font-semibold text-xs hover:bg-red-50 hover:text-red-200 transition-all">
+                  Revoke
+                </button>
+              </div>
             </div>
+          </div>
+        </div>
+      </section>
 
-            <div className="mt-12 pt-8 border-t border-slate-50 flex items-center justify-end gap-3 relative z-10">
-               <button className="px-8 py-4 bg-white border border-slate-200 rounded-2xl font-black text-xs uppercase tracking-widest text-slate-500 hover:bg-cyan-50 transition-all">
-                  Discard Changes
-               </button>
-               <button className="px-8 py-4 bg-blue-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-blue-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all">
-                  Save Changes
-               </button>
+      {/* Platform Controls Section */}
+      <section className="space-y-4">
+        <div className="flex items-center gap-3 px-1">
+          <div className="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center border border-slate-200">
+            <Globe className="w-5 h-5 text-slate-600" />
+          </div>
+          <div>
+            <h3 className="text-lg font-bold text-slate-900">Platform Control</h3>
+            <p className="text-sm text-slate-500">Configure global behavior and display settings for all users.</p>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6 space-y-4">
+          <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg border border-slate-100">
+            <div>
+              <p className="text-sm font-semibold text-slate-700">Maintenance Mode</p>
+              <p className="text-xs text-slate-500">Disable platform access for non-admin users during updates.</p>
             </div>
-         </div>
+            <button className="w-10 h-5 bg-slate-200 rounded-full relative transition-all">
+              <div className="absolute left-0.5 top-0.5 w-4 h-4 bg-white rounded-full shadow-sm" />
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* Action Buttons */}
+      <div className="flex items-center justify-end gap-3 px-1">
+        <button className="px-6 py-2.5 bg-white border border-slate-200 rounded-lg font-semibold text-sm text-slate-600 hover:bg-slate-50 transition-colors shadow-sm">
+          Discard Changes
+        </button>
+        <button className="px-8 py-2.5 bg-blue-600 text-white rounded-lg font-semibold text-sm hover:bg-blue-700 transition-colors shadow-sm">
+          Save Settings
+        </button>
       </div>
+
+      <div className="border-t border-slate-200 pt-8">
+        {/* Danger Zone Section */}
+        <section className="space-y-4">
+          <div className="flex items-center gap-3 px-1">
+            <div className="w-10 h-10 bg-red-50 rounded-lg flex items-center justify-center border border-red-100">
+              <Power className="w-5 h-5 text-red-600" />
+            </div>
+            <div>
+              <h3 className="text-lg font-bold text-red-700">Danger Zone</h3>
+              <p className="text-sm text-slate-500">Critical actions that affect system-wide data integrity.</p>
+            </div>
+          </div>
+
+          <div className="bg-red-50/30 rounded-xl border border-red-100 p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+            <div>
+              <p className="text-sm font-bold text-red-900">Reset Platform Data</p>
+              <p className="text-xs text-red-700/70 mt-1 max-w-md">This will permanently delete all student resumes, analysis history, and generated reports. This action cannot be undone.</p>
+            </div>
+            <button className="px-6 py-2.5 bg-red-600 text-white rounded-lg font-bold text-xs uppercase tracking-wider hover:bg-red-700 transition-colors shadow-sm whitespace-nowrap">
+              Clear All Data
+            </button>
+          </div>
+        </section>
+      </div>
+
     </div>
   );
 };
 
 export default Settings;
-
-
-

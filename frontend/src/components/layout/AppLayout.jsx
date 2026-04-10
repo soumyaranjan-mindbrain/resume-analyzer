@@ -41,7 +41,6 @@ const AppLayout = ({ children }) => {
     { path: '/admin/reports', label: 'Reports', icon: FileText },
     { path: '/admin/jobs', label: 'Job Descriptions', icon: Briefcase },
     { path: '/admin/readiness', label: 'Job Readiness', icon: ShieldCheck },
-    { path: '/admin/analytics', label: 'Analytics', icon: BarChart3 },
     { path: '/admin/insights', label: 'Skill Insights', icon: CloudLightning },
     { path: '/admin/settings', label: 'Settings', icon: HelpCircle },
   ];
@@ -60,7 +59,6 @@ const AppLayout = ({ children }) => {
     '/admin/reports': { title: 'Global Reports', subtitle: 'Analyze student resume performance data.' },
     '/admin/jobs': { title: 'Job Descriptions', subtitle: 'Manage available job roles and requirements.' },
     '/admin/readiness': { title: 'Job Readiness', subtitle: 'Monitor students ready for the industry.' },
-    '/admin/analytics': { title: 'System Analytics', subtitle: 'Deep dive into platform usage trends.' },
     '/admin/insights': { title: 'Market Insights', subtitle: 'Global skill gaps and demand trends.' },
     '/admin/settings': { title: 'Admin Settings', subtitle: 'Configure platform parameters and users.' },
   };
@@ -101,7 +99,7 @@ const AppLayout = ({ children }) => {
           </div>
 
           
-          <nav className="flex-1 px-4 space-y-2 overflow-y-auto w-full">
+          <nav className="flex-1 px-4 space-y-2 overflow-y-auto w-full border-b border-slate-100 mb-4 pb-4">
             {navItems.map((item) => {
               const isActive = location.pathname === item.path;
               const Icon = item.icon;
@@ -126,18 +124,20 @@ const AppLayout = ({ children }) => {
 
           
           <div className="px-5 mt-auto shrink-0 w-full space-y-2">
-             <NavLink 
-               to="/support"
-               className={({ isActive }) => cn(
-                "flex items-center gap-3 w-full px-4 py-3 border rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all",
-                isActive 
-                  ? "bg-[#4b7bff] text-white shadow-lg border-transparent shadow-blue-500/10" 
-                  : "bg-white/40 shadow-sm border-white/60 text-[#64748b] hover:text-[#334155] hover:bg-white/60"
-              )}
-             >
-              <HelpCircle className="w-5 h-5" />
-              Support
-            </NavLink>
+            {user?.role !== 'admin' && (
+              <NavLink 
+                to="/support"
+                className={({ isActive }) => cn(
+                  "flex items-center gap-3 w-full px-4 py-3 border rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all",
+                  isActive 
+                    ? "bg-[#4b7bff] text-white shadow-lg border-transparent shadow-blue-500/10" 
+                    : "bg-white/40 shadow-sm border-white/60 text-[#64748b] hover:text-[#334155] hover:bg-white/60"
+                )}
+              >
+                <HelpCircle className="w-5 h-5" />
+                Support
+              </NavLink>
+            )}
 
             <button 
               onClick={() => { logout(); navigate('/auth', { replace: true }); }}
@@ -152,14 +152,16 @@ const AppLayout = ({ children }) => {
         
         <main className="flex-1 flex flex-col min-w-0 h-full relative overflow-hidden bg-slate-50/80">
           
-          <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute -top-[10%] -right-[5%] w-[70%] h-[70%] bg-cyan-200/40 blur-[130px] rounded-full animate-pulse" style={{ animationDuration: '8s' }} />
-            <div className="absolute -bottom-[10%] -left-[5%] w-[65%] h-[65%] bg-lime-200/40 blur-[130px] rounded-full animate-pulse shadow-[0_0_100px_rgba(190,242,100,0.3)]" style={{ animationDuration: '12s' }} />
-            <div className="absolute top-[20%] left-[10%] w-[50%] h-[50%] bg-blue-100/30 blur-[100px] rounded-full" />
-            
-            
-            <div className="absolute inset-0 bg-gradient-to-br from-white/60 via-transparent to-white/40 opacity-70" />
-          </div>
+          {user?.role !== 'admin' && (
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+              <div className="absolute -top-[10%] -right-[5%] w-[70%] h-[70%] bg-cyan-200/40 blur-[130px] rounded-full animate-pulse" style={{ animationDuration: '8s' }} />
+              <div className="absolute -bottom-[10%] -left-[5%] w-[65%] h-[65%] bg-lime-200/40 blur-[130px] rounded-full animate-pulse shadow-[0_0_100px_rgba(190,242,100,0.3)]" style={{ animationDuration: '12s' }} />
+              <div className="absolute top-[20%] left-[10%] w-[50%] h-[50%] bg-blue-100/30 blur-[100px] rounded-full" />
+              
+              
+              <div className="absolute inset-0 bg-gradient-to-br from-white/60 via-transparent to-white/40 opacity-70" />
+            </div>
+          )}
 
           <div className="relative z-10 flex flex-col h-full">
           
@@ -240,5 +242,3 @@ const AppLayout = ({ children }) => {
 };
 
 export default AppLayout;
-
-

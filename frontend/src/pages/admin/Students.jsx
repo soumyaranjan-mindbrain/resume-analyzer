@@ -6,9 +6,7 @@ import {
   Download, 
   Plus, 
   MoreHorizontal, 
-  ArrowUpRight,
   TrendingUp,
-  Mail,
   Trash2,
   Eye,
   CheckCircle2,
@@ -18,8 +16,7 @@ import { cn } from '../../utils/cn';
 
 const Students = () => {
   const [activeTab, setActiveTab] = useState('All');
-  const [searchTerm, setSearchTerm] = useState('');
-
+  
   const stats = [
     { label: 'Active Students', value: '1,124', change: '+5%', status: 'up' },
     { label: 'New This Week', value: '84', change: '+12%', status: 'up' },
@@ -36,53 +33,53 @@ const Students = () => {
   ];
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-700">
+    <div className="space-y-6 animate-in fade-in duration-500">
       
-      
+      {/* Header Actions */}
       <div className="flex justify-end gap-3 mb-4">
-        <button className="flex items-center gap-2 px-5 py-3 bg-white border border-slate-200 rounded-2xl font-black text-xs uppercase tracking-widest text-slate-600 hover:bg-slate-50 transition-all shadow-sm">
+        <button className="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 rounded-lg font-medium text-sm text-slate-700 hover:bg-slate-50 transition-colors shadow-sm">
           <Download className="w-4 h-4" /> Export CSV
         </button>
-        <button className="flex items-center gap-2 px-6 py-3 bg-cyan-500 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-cyan-500/20">
+        <button className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-lg font-medium text-sm hover:bg-blue-700 transition-colors shadow-sm">
           <Plus className="w-4 h-4" /> Add Student
         </button>
       </div>
 
-      
+      {/* Stats Row */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat, i) => (
-          <div key={i} className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm relative overflow-hidden group">
-            <div className="absolute top-0 right-0 w-24 h-24 bg-slate-50 rounded-bl-[4rem] -mr-4 -mt-4 transition-all group-hover:bg-blue-50/50" />
-            <div className="relative z-10">
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">{stat.label}</p>
-              <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-black text-slate-900 tracking-tighter">{stat.value}</span>
-                <span className={cn(
-                  "text-[10px] font-black px-1.5 py-0.5 rounded-md",
-                  stat.status === 'up' ? "bg-emerald-50 text-emerald-600" : "bg-red-50 text-red-600"
-                )}>
-                  {stat.change}
-                </span>
-              </div>
+          <div key={i} className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+            <div className="mb-2">
+              <p className="text-sm font-medium text-slate-500">{stat.label}</p>
+            </div>
+            <div className="flex items-baseline justify-between">
+              <span className="text-2xl font-bold text-slate-900">{stat.value}</span>
+              <span className={cn(
+                "text-xs font-medium px-2 py-0.5 rounded-full",
+                stat.status === 'up' ? "bg-emerald-50 text-emerald-700" : "bg-red-50 text-red-700"
+              )}>
+                {stat.change}
+              </span>
             </div>
           </div>
         ))}
       </div>
 
-      
-      <div className="bg-white rounded-[2rem] border border-slate-100 shadow-sm overflow-hidden">
+      {/* Main Table Container */}
+      <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
         
-        <div className="p-6 border-b border-slate-50 flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="flex items-center gap-4 overflow-x-auto pb-2 md:pb-0 hide-scrollbar">
+        {/* Table Toolbar */}
+        <div className="p-4 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white">
+          <div className="flex items-center gap-2 overflow-x-auto pb-2 sm:pb-0 hide-scrollbar">
             {['All', 'Active', 'Hired', 'Needs Review'].map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
                 className={cn(
-                  "px-6 py-2.5 rounded-xl font-black text-xs uppercase tracking-widest transition-all whitespace-nowrap",
+                  "px-4 py-2 rounded-lg font-medium text-sm transition-colors whitespace-nowrap",
                   activeTab === tab 
-                    ? "bg-cyan-500 text-white shadow-lg shadow-cyan-500/20" 
-                    : "text-slate-400 hover:bg-slate-50 hover:text-slate-600"
+                    ? "bg-slate-100 text-slate-900" 
+                    : "text-slate-500 hover:text-slate-700 hover:bg-slate-50"
                 )}
               >
                 {tab}
@@ -92,86 +89,86 @@ const Students = () => {
 
           <div className="flex items-center gap-3">
              <div className="relative group">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
                 <input 
                   type="text" 
-                  placeholder="Search name, email or branch..."
-                  className="pl-12 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold placeholder:text-slate-400 outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500/20 w-full md:w-64 transition-all"
+                  placeholder="Search students..."
+                  className="pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 w-full sm:w-64 transition-all shadow-sm"
                 />
              </div>
-             <button className="p-3 bg-slate-50 border border-slate-100 rounded-2xl text-slate-500 hover:text-slate-800 transition-all">
+             <button className="p-2 bg-white border border-slate-200 rounded-lg text-slate-500 hover:text-slate-700 hover:bg-slate-50 transition-colors shadow-sm">
                 <Filter className="w-5 h-5" />
              </button>
           </div>
         </div>
 
-        
-        <div className="overflow-x-auto min-h-[400px]">
-          <table className="w-full text-left border-collapse">
+        {/* Table Area */}
+        <div className="overflow-x-auto flex-1">
+          <table className="w-full text-left border-collapse min-w-[800px]">
             <thead>
-              <tr className="bg-slate-50/50">
-                <th className="py-5 px-8 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Student Info</th>
-                <th className="py-5 px-6 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Branch</th>
-                <th className="py-5 px-6 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Avg Score</th>
-                <th className="py-5 px-6 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Status</th>
-                <th className="py-5 px-6 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Last Activity</th>
-                <th className="py-5 px-8 text-right text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Actions</th>
+              <tr className="bg-slate-50 border-b border-slate-200">
+                <th className="py-3 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider">Student Info</th>
+                <th className="py-3 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider">Branch</th>
+                <th className="py-3 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider">Avg Score</th>
+                <th className="py-3 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider">Status</th>
+                <th className="py-3 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider">Last Activity</th>
+                <th className="py-3 px-6 text-right text-xs font-semibold text-slate-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-slate-100">
               {students.map((student) => (
-                <tr key={student.id} className="group hover:bg-blue-50/30 transition-colors border-b border-slate-50">
-                  <td className="py-6 px-8">
-                    <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center font-black text-slate-400 text-xs">
+                <tr key={student.id} className="hover:bg-slate-50 transition-colors">
+                  <td className="py-4 px-6">
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center font-semibold text-blue-600 text-sm shrink-0">
                          {student.name.charAt(0)}
                       </div>
                       <div>
-                        <p className="text-sm font-black text-slate-900 group-hover:text-blue-600 transition-colors">{student.name}</p>
-                        <p className="text-xs font-bold text-slate-400">{student.email}</p>
+                        <p className="text-sm font-medium text-slate-900">{student.name}</p>
+                        <p className="text-sm text-slate-500">{student.email}</p>
                       </div>
                     </div>
                   </td>
-                  <td className="py-6 px-6">
-                    <span className="px-3 py-1 bg-slate-100 text-slate-600 text-[10px] font-black rounded-lg uppercase tracking-widest">{student.branch}</span>
+                  <td className="py-4 px-6">
+                    <span className="text-sm text-slate-700">{student.branch}</span>
                   </td>
-                  <td className="py-6 px-6">
-                    <div className="flex items-center gap-2">
-                       <span className="text-sm font-black text-slate-700">{student.score}%</span>
-                       <div className="w-12 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                  <td className="py-4 px-6">
+                    <div className="flex items-center gap-3">
+                       <span className="text-sm font-medium text-slate-900 w-8">{student.score}%</span>
+                       <div className="w-16 h-2 bg-slate-100 rounded-full overflow-hidden">
                           <div 
                             className={cn("h-full rounded-full", 
                               student.score >= 80 ? "bg-emerald-500" : 
-                              student.score >= 60 ? "bg-blue-500" : "bg-orange-500"
+                              student.score >= 60 ? "bg-blue-500" : "bg-amber-500"
                             )} 
                             style={{ width: `${student.score}%` }} 
                           />
                        </div>
                     </div>
                   </td>
-                  <td className="py-6 px-6">
+                  <td className="py-4 px-6">
                     <div className={cn(
-                      "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest",
-                      student.status === 'Hired' ? "bg-emerald-50 text-emerald-600 border border-emerald-100" :
-                      student.status === 'Active' ? "bg-blue-50 text-blue-600 border border-blue-100" :
-                      "bg-orange-50 text-orange-600 border border-orange-100"
+                      "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium",
+                      student.status === 'Hired' ? "bg-emerald-50 text-emerald-700" :
+                      student.status === 'Active' ? "bg-blue-50 text-blue-700" :
+                      "bg-amber-50 text-amber-700"
                     )}>
-                       {student.status === 'Hired' ? <CheckCircle2 className="w-3 h-3" /> :
-                        student.status === 'Active' ? <TrendingUp className="w-3 h-3" /> :
-                        <Clock className="w-3 h-3" />}
+                       {student.status === 'Hired' ? <CheckCircle2 className="w-3.5 h-3.5" /> :
+                        student.status === 'Active' ? <TrendingUp className="w-3.5 h-3.5" /> :
+                        <Clock className="w-3.5 h-3.5" />}
                        {student.status}
                     </div>
                   </td>
-                  <td className="py-6 px-6 text-xs font-bold text-slate-400">{student.lastActive}</td>
-                  <td className="py-6 px-8">
-                    <div className="flex items-center justify-end gap-2">
-                       <button className="p-2 text-slate-400 hover:text-blue-600 bg-slate-50 hover:bg-blue-50 rounded-xl transition-all">
+                  <td className="py-4 px-6 text-sm text-slate-500">{student.lastActive}</td>
+                  <td className="py-4 px-6">
+                    <div className="flex items-center justify-end gap-1">
+                       <button className="p-1.5 text-slate-400 hover:text-blue-600 rounded-md hover:bg-blue-50 transition-colors" title="View details">
                           <Eye className="w-4 h-4" />
                        </button>
-                       <button className="p-2 text-slate-400 hover:text-red-600 bg-slate-50 hover:bg-red-50 rounded-xl transition-all">
+                       <button className="p-1.5 text-slate-400 hover:text-red-600 rounded-md hover:bg-red-50 transition-colors" title="Delete">
                           <Trash2 className="w-4 h-4" />
                        </button>
-                       <button className="p-2 text-slate-400 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 rounded-xl transition-all">
+                       <button className="p-1.5 text-slate-400 hover:text-slate-900 rounded-md hover:bg-slate-100 transition-colors" title="More options">
                           <MoreHorizontal className="w-4 h-4" />
                        </button>
                     </div>
@@ -182,12 +179,12 @@ const Students = () => {
           </table>
         </div>
 
-        
-        <div className="p-8 bg-slate-50/50 flex items-center justify-between">
-           <p className="text-xs font-bold text-slate-400">Showing 5 of 1,284 students</p>
+        {/* Pagination */}
+        <div className="p-4 border-t border-slate-200 bg-slate-50 flex items-center justify-between">
+           <p className="text-sm text-slate-500">Showing <span className="font-medium text-slate-900">5</span> of <span className="font-medium text-slate-900">1,284</span> students</p>
            <div className="flex gap-2">
-              <button className="px-4 py-2 bg-white border border-slate-200 rounded-xl text-xs font-black text-slate-400 cursor-not-allowed">Previous</button>
-              <button className="px-4 py-2 bg-white border border-slate-200 rounded-xl text-xs font-black text-slate-600 hover:bg-slate-50 transition-all">Next</button>
+              <button className="px-3 py-1.5 bg-white border border-slate-200 rounded-md text-sm font-medium text-slate-400 cursor-not-allowed shadow-sm">Previous</button>
+              <button className="px-3 py-1.5 bg-white border border-slate-200 rounded-md text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors shadow-sm">Next</button>
            </div>
         </div>
       </div>
@@ -196,6 +193,3 @@ const Students = () => {
 };
 
 export default Students;
-
-
-
