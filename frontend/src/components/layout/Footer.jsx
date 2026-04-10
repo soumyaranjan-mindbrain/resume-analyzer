@@ -49,7 +49,7 @@ const Footer = () => {
               <img 
                 src="/Kredo_logo_with_educational_theme-removebg-preview.png" 
                 alt="Kredo Logo" 
-                className="h-10 w-auto transition-transform duration-500 group-hover:scale-105"
+                className="h-14 w-auto transition-transform duration-500 group-hover:scale-105"
               />
             </div>
             <p className="text-sm text-[var(--neutral-500)] font-medium leading-relaxed max-w-xs">

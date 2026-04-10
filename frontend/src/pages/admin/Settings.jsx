@@ -41,7 +41,7 @@ const Settings = () => {
                   <Shield className="w-4 h-4 text-slate-400 group-hover:text-blue-600" />
                 </div>
                 <div>
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Gemini API Key</p>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Groq API Key</p>
                   <p className="text-sm font-medium text-slate-600 font-mono mt-0.5">••••••••••••••••••••••••</p>
                 </div>
               </div>

@@ -18,9 +18,8 @@ const SkillInsights = () => {
       
       {/* Demand vs Supply Panel - Full Width */}
       <div className="bg-white rounded-xl p-8 border border-slate-200 shadow-sm flex flex-col min-h-[600px]">
-        <div className="mb-12">
-            <h4 className="text-xl font-bold text-slate-900">Market Demand vs Talent Supply</h4>
-            <p className="text-slate-500 text-sm mt-1">Real-time gap analysis between industry requirements and current student capabilities.</p>
+        <div className="mb-3">
+          <p className="text-sm text-slate-500">Data automatically updated based on recent job description trends and student profile updates.</p>
         </div>
 
         <div className="flex-1 space-y-8 max-w-4xl mx-auto w-full">
@@ -65,10 +64,6 @@ const SkillInsights = () => {
                 </div>
               </div>
             ))}
-        </div>
-
-        <div className="mt-12 pt-8 border-t border-slate-100">
-            <p className="text-sm text-slate-500 font-medium italic">Data automatically updated based on recent job description trends and student profile updates.</p>
         </div>
       </div>
     </div>

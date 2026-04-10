@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   Plus, 
   Search, 
@@ -14,6 +15,7 @@ import {
 import { cn } from '../../utils/cn';
 
 const JobDescriptions = () => {
+  const navigate = useNavigate();
   const [jobs, setJobs] = useState([
     { id: 1, title: 'Senior Frontend Developer', company: 'Google', tags: ['React', 'TypeScript', 'Tailwind'], applicants: 45, status: 'Active' },
     { id: 2, title: 'Product Manager', company: 'Amazon', tags: ['Agile', 'Jira', 'Strategy'], applicants: 28, status: 'Draft' },
@@ -48,7 +50,10 @@ const JobDescriptions = () => {
           ))}
         </div>
 
-        <button className="flex items-center justify-center gap-2 px-6 py-3.5 bg-blue-600 text-white rounded-xl font-bold text-sm hover:bg-blue-700 transition-all shadow-md shadow-blue-200 h-fit whitespace-nowrap lg:min-w-[180px]">
+        <button 
+          onClick={() => navigate('/admin/jobs/new')}
+          className="flex items-center justify-center gap-2 px-6 py-3.5 bg-blue-600 text-white rounded-xl font-bold text-sm hover:bg-blue-700 transition-all shadow-md shadow-blue-200 h-fit whitespace-nowrap lg:min-w-[180px]"
+        >
           <Plus className="w-5 h-5" /> New Job Role
         </button>
       </div>

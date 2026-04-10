@@ -16,12 +16,12 @@ import { cn } from '../../utils/cn';
 
 const Students = () => {
   const [activeTab, setActiveTab] = useState('All');
+  const [pageSize, setPageSize] = useState(5);
   
   const stats = [
     { label: 'Active Students', value: '1,124', change: '+5%', status: 'up' },
     { label: 'New This Week', value: '84', change: '+12%', status: 'up' },
     { label: 'Job Ready', value: '642', change: '+3%', status: 'up' },
-    { label: 'Avg Analysis', value: '3.4', change: '-2%', status: 'down' },
   ];
 
   const students = [
@@ -30,37 +30,40 @@ const Students = () => {
     { id: 3, name: 'Marcus Bell', email: 'marcus.b@example.com', branch: 'ECE', score: 65, status: 'Active', lastActive: '1d ago' },
     { id: 4, name: 'Elena Vance', email: 'elena.v@example.com', branch: 'CS', score: 45, status: 'Needs Review', lastActive: '3h ago' },
     { id: 5, name: 'David Kim', email: 'david.k@example.com', branch: 'IT', score: 78, status: 'Active', lastActive: '12h ago' },
+    { id: 6, name: 'James Wilson', email: 'james.w@example.com', branch: 'CS', score: 88, status: 'Active', lastActive: '1h ago' },
+    { id: 7, name: 'Priya Sharma', email: 'priya.s@example.com', branch: 'IT', score: 91, status: 'Hired', lastActive: '4h ago' },
+    { id: 8, name: 'Lucas Meyer', email: 'lucas.m@example.com', branch: 'ME', score: 55, status: 'Needs Review', lastActive: '6h ago' },
+    { id: 9, name: 'Ana Garcia', email: 'ana.g@example.com', branch: 'CS', score: 72, status: 'Active', lastActive: '8h ago' },
+    { id: 10, name: 'Ryan Taylor', email: 'ryan.t@example.com', branch: 'EE', score: 84, status: 'Active', lastActive: '10h ago' },
+    { id: 11, name: 'Sophie Wong', email: 'sophie.w@example.com', branch: 'IT', score: 96, status: 'Hired', lastActive: '30m ago' },
+    { id: 12, name: 'Oliver Brown', email: 'oliver.b@example.com', branch: 'CS', score: 68, status: 'Active', lastActive: '1d ago' },
+    { id: 13, name: 'Emma Davis', email: 'emma.d@example.com', branch: 'ECE', score: 75, status: 'Active', lastActive: '2d ago' },
+    { id: 14, name: 'Noah Wilson', email: 'noah.w@example.com', branch: 'CS', score: 42, status: 'Needs Review', lastActive: '5h ago' },
+    { id: 15, name: 'Isabella Martinez', email: 'isabella.m@example.com', branch: 'IT', score: 89, status: 'Active', lastActive: '7h ago' },
+    { id: 16, name: 'Liam Johnson', email: 'liam.j@example.com', branch: 'ME', score: 81, status: 'Hired', lastActive: '9h ago' },
+    { id: 17, name: 'Mia Thompson', email: 'mia.t@example.com', branch: 'CS', score: 63, status: 'Active', lastActive: '11h ago' },
+    { id: 18, name: 'Ethan Hunt', email: 'ethan.h@example.com', branch: 'IT', score: 92, status: 'Hired', lastActive: '15m ago' },
+    { id: 19, name: 'Zoe Clark', email: 'zoe.c@example.com', branch: 'EE', score: 58, status: 'Needs Review', lastActive: '1d ago' },
+    { id: 20, name: 'Aiden Smith', email: 'aiden.s@example.com', branch: 'CS', score: 76, status: 'Active', lastActive: '3h ago' },
   ];
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       
-      {/* Header Actions */}
-      <div className="flex justify-end gap-3 mb-4">
-        <button className="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 rounded-lg font-medium text-sm text-slate-700 hover:bg-slate-50 transition-colors shadow-sm">
-          <Download className="w-4 h-4" /> Export CSV
-        </button>
-        <button className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-lg font-medium text-sm hover:bg-blue-700 transition-colors shadow-sm">
-          <Plus className="w-4 h-4" /> Add Student
-        </button>
-      </div>
-
       {/* Stats Row */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {stats.map((stat, i) => (
-          <div key={i} className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-            <div className="mb-2">
-              <p className="text-sm font-medium text-slate-500">{stat.label}</p>
-            </div>
-            <div className="flex items-baseline justify-between">
+          <div key={i} className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-slate-500 mb-1">{stat.label}</p>
               <span className="text-2xl font-bold text-slate-900">{stat.value}</span>
-              <span className={cn(
-                "text-xs font-medium px-2 py-0.5 rounded-full",
-                stat.status === 'up' ? "bg-emerald-50 text-emerald-700" : "bg-red-50 text-red-700"
-              )}>
-                {stat.change}
-              </span>
             </div>
+            <span className={cn(
+              "text-xs font-medium px-2 py-1 rounded-lg",
+              stat.status === 'up' ? "bg-emerald-50 text-emerald-700" : "bg-red-50 text-red-700"
+            )}>
+              {stat.change}
+            </span>
           </div>
         ))}
       </div>
@@ -69,8 +72,8 @@ const Students = () => {
       <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
         
         {/* Table Toolbar */}
-        <div className="p-4 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white">
-          <div className="flex items-center gap-2 overflow-x-auto pb-2 sm:pb-0 hide-scrollbar">
+        <div className="p-4 border-b border-slate-200 flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-white">
+          <div className="flex items-center gap-2 overflow-x-auto pb-2 lg:pb-0 hide-scrollbar">
             {['All', 'Active', 'Hired', 'Needs Review'].map((tab) => (
               <button
                 key={tab}
@@ -87,15 +90,18 @@ const Students = () => {
             ))}
           </div>
 
-          <div className="flex items-center gap-3">
-             <div className="relative group">
+          <div className="flex flex-wrap items-center gap-3">
+             <div className="relative group flex-1 min-w-[240px]">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
                 <input 
                   type="text" 
                   placeholder="Search students..."
-                  className="pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 w-full sm:w-64 transition-all shadow-sm"
+                  className="pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 w-full transition-all shadow-sm"
                 />
              </div>
+             <button className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-lg font-medium text-sm text-slate-700 hover:bg-slate-50 transition-colors shadow-sm whitespace-nowrap">
+                <Download className="w-4 h-4" /> Export
+             </button>
              <button className="p-2 bg-white border border-slate-200 rounded-lg text-slate-500 hover:text-slate-700 hover:bg-slate-50 transition-colors shadow-sm">
                 <Filter className="w-5 h-5" />
              </button>
@@ -116,7 +122,7 @@ const Students = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {students.map((student) => (
+              {students.slice(0, pageSize).map((student) => (
                 <tr key={student.id} className="hover:bg-slate-50 transition-colors">
                   <td className="py-4 px-6">
                     <div className="flex items-center gap-3">
@@ -180,8 +186,24 @@ const Students = () => {
         </div>
 
         {/* Pagination */}
-        <div className="p-4 border-t border-slate-200 bg-slate-50 flex items-center justify-between">
-           <p className="text-sm text-slate-500">Showing <span className="font-medium text-slate-900">5</span> of <span className="font-medium text-slate-900">1,284</span> students</p>
+        <div className="p-4 border-t border-slate-200 bg-slate-50 flex flex-col sm:flex-row items-center justify-between gap-4">
+           <div className="flex items-center gap-4">
+             <p className="text-sm text-slate-500">Showing <span className="font-medium text-slate-900">{students.length > pageSize ? pageSize : students.length}</span> of <span className="font-medium text-slate-900">1,284</span> students</p>
+             
+             <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-sm">
+               <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Show</span>
+               <select 
+                value={pageSize}
+                onChange={(e) => setPageSize(Number(e.target.value))}
+                className="bg-transparent text-xs font-black text-slate-700 outline-none cursor-pointer"
+               >
+                 {[5, 15, 25, 50].map(size => (
+                   <option key={size} value={size}>{size}</option>
+                 ))}
+               </select>
+             </div>
+           </div>
+
            <div className="flex gap-2">
               <button className="px-3 py-1.5 bg-white border border-slate-200 rounded-md text-sm font-medium text-slate-400 cursor-not-allowed shadow-sm">Previous</button>
               <button className="px-3 py-1.5 bg-white border border-slate-200 rounded-md text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors shadow-sm">Next</button>

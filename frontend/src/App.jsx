@@ -13,9 +13,7 @@ import Profile from './pages/user/Profile.jsx';
 import AdminDashboard from './pages/admin/AdminDashboard.jsx';
 import Students from './pages/admin/Students.jsx';
 import Reports from './pages/admin/Reports.jsx';
-import JobDescriptions from './pages/admin/JobDescriptions.jsx';
 import JobReadiness from './pages/admin/JobReadiness.jsx';
-import SkillInsightsAdmin from './pages/admin/SkillInsights.jsx';
 import SettingsAdmin from './pages/admin/Settings.jsx';
 import ProtectedRoute from './components/layout/ProtectedRoute.jsx';
 import PublicRoute from './components/layout/PublicRoute.jsx';
@@ -41,9 +39,7 @@ function App() {
         <Route path="/admin" element={<ProtectedRoute allowedRoles={['admin']}><AppLayout><AdminDashboard /></AppLayout></ProtectedRoute>} />
         <Route path="/admin/students" element={<ProtectedRoute allowedRoles={['admin']}><AppLayout><Students /></AppLayout></ProtectedRoute>} />
         <Route path="/admin/reports" element={<ProtectedRoute allowedRoles={['admin']}><AppLayout><Reports /></AppLayout></ProtectedRoute>} />
-        <Route path="/admin/jobs" element={<ProtectedRoute allowedRoles={['admin']}><AppLayout><JobDescriptions /></AppLayout></ProtectedRoute>} />
         <Route path="/admin/readiness" element={<ProtectedRoute allowedRoles={['admin']}><AppLayout><JobReadiness /></AppLayout></ProtectedRoute>} />
-        <Route path="/admin/insights" element={<ProtectedRoute allowedRoles={['admin']}><AppLayout><SkillInsightsAdmin /></AppLayout></ProtectedRoute>} />
         <Route path="/admin/settings" element={<ProtectedRoute allowedRoles={['admin']}><AppLayout><SettingsAdmin /></AppLayout></ProtectedRoute>} />
       </Routes>
     </Router>
