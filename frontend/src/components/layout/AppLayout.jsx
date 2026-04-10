@@ -12,7 +12,6 @@ import {
   Search,
   Menu,
   X,
-  BrainCircuit,
   ChevronDown,
   User,
   LogOut
@@ -87,9 +86,12 @@ const AppLayout = ({ children }) => {
         )}
       >
           
-          <div className="flex items-center gap-3 px-8 mb-10 shrink-0">
-            <BrainCircuit className="w-8 h-8 text-[#4169e1] fill-[#4169e1]/20" />
-            <span className="font-display font-black text-2xl tracking-tight text-[#1e293b]">Kredo</span>
+          <div className="flex items-center gap-3 px-6 mb-10 shrink-0">
+            <img 
+              src="/Kredo_logo_with_educational_theme-removebg-preview.png" 
+              alt="Kredo Logo" 
+              className="h-12 w-auto"
+            />
             <button 
               className="ml-auto lg:hidden text-slate-400 hover:text-slate-600"
               onClick={() => setSidebarOpen(false)}

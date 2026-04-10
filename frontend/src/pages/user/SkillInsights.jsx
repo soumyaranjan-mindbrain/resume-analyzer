@@ -170,7 +170,7 @@ const SkillInsights = () => {
              ))}
           </div>
           <button className="mt-10 flex items-center gap-2 text-slate-400 hover:text-[#4b7bff] font-bold text-sm transition-colors group">
-             Find related courses <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+             Find all the related courses <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
           </button>
         </div>
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Layout, Menu, X, ArrowRight } from 'lucide-react';
+import { Menu, X, ArrowRight } from 'lucide-react';
 import { cn } from '../../utils/cn';
 
 const Navbar = () => {
@@ -32,17 +32,14 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
         
         <div 
-          className="flex items-center gap-3 cursor-pointer group" 
+          className="flex items-center gap-2 cursor-pointer group" 
           onClick={() => navigate('/')}
         >
-          <div className="relative">
-            <div className="w-10 h-10 rounded-2xl bg-white flex items-center justify-center transition-all duration-500 group-hover:scale-110 shadow-[4px_4px_10px_rgba(0,0,0,0.08),-4px_-4px_10px_rgba(255,255,255,0.9)] border border-white/50">
-              <Layout className="text-[var(--primary-500)] w-5 h-5" strokeWidth={2.5} />
-            </div>
-          </div>
-          <span className="text-xl font-display font-black tracking-tight text-[var(--neutral-900)]">
-            Kredo
-          </span>
+          <img 
+            src="/Kredo_logo_with_educational_theme-removebg-preview.png" 
+            alt="Kredo Logo" 
+            className="h-10 w-auto transition-transform duration-500 group-hover:scale-105"
+          />
         </div>
 
         

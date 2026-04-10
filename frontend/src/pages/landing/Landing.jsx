@@ -46,13 +46,12 @@ const Navbar = () => {
         "container mx-auto max-w-7xl rounded-2xl flex items-center justify-between px-8 py-4 transition-all duration-500",
         isScrolled ? "bg-white/60 backdrop-blur-xl border border-white/20 shadow-lg" : "bg-transparent"
       )}>
-        <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate('/')}>
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-600 to-indigo-600 flex items-center justify-center shadow-lg">
-            <Sparkles className="w-5 h-5 text-white" />
-          </div>
-          <span className="text-xl font-display font-black tracking-tighter text-[var(--neutral-900)]">
-            Kredo<span className="text-purple-600">.</span>
-          </span>
+        <div className="flex items-center gap-2 cursor-pointer group" onClick={() => navigate('/')}>
+          <img 
+            src="/Kredo_logo_with_educational_theme-removebg-preview.png" 
+            alt="Kredo Logo" 
+            className="h-10 w-auto transition-transform duration-500 group-hover:scale-105"
+          />
         </div>
 
         <div className="hidden md:flex items-center gap-10">

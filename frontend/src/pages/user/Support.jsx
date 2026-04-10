@@ -102,7 +102,7 @@ const Support = () => {
                <div className="w-10 h-10 bg-[#4b7bff]/10 rounded-xl flex items-center justify-center text-[#4b7bff]">
                   <BookOpen className="w-6 h-6" />
                </div>
-               <h2 className="text-3xl font-black text-[#1e293b] tracking-tight">Popular Questions</h2>
+               <h2 className="text-3xl font-black text-[#1e293b] tracking-tight">Popular Queries</h2>
             </div>
             
             <div className="space-y-4">
@@ -135,8 +135,8 @@ const Support = () => {
                      <MessageSquare className="w-6 h-6" />
                   </div>
                   <div>
-                     <h3 className="text-2xl font-black text-[#1e293b] tracking-tight">Submit a Ticket</h3>
-                     <p className="text-slate-400 font-bold text-sm">We'll get back to you within 24 hours.</p>
+                     <h3 className="text-2xl font-black text-[#1e293b] tracking-tight">Submit a Support Ticket</h3>
+                     <p className="text-slate-400 font-bold text-sm">We'll get back to you very soon.</p>
                   </div>
                </div>
 

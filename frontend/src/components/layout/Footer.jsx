@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Layout, Mail } from 'lucide-react';
+import { Mail } from 'lucide-react';
 
 
 const TwitterIcon = ({ className }) => (
@@ -43,13 +43,14 @@ const Footer = () => {
           
           <div className="col-span-2 md:col-span-1 space-y-6">
             <div 
-              className="flex items-center gap-3 cursor-pointer group" 
+              className="flex items-center gap-2 cursor-pointer group" 
               onClick={() => navigate('/')}
             >
-              <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-[4px_4px_10px_rgba(0,0,0,0.05)] border border-white">
-                <Layout className="text-[var(--primary-500)] w-5 h-5" strokeWidth={2.5} />
-              </div>
-              <span className="text-xl font-display font-black text-[var(--neutral-900)] tracking-tight">Kredo</span>
+              <img 
+                src="/Kredo_logo_with_educational_theme-removebg-preview.png" 
+                alt="Kredo Logo" 
+                className="h-10 w-auto transition-transform duration-500 group-hover:scale-105"
+              />
             </div>
             <p className="text-sm text-[var(--neutral-500)] font-medium leading-relaxed max-w-xs">
               AI-driven career acceleration for the modern professional. Built for depth, clarity, and results.

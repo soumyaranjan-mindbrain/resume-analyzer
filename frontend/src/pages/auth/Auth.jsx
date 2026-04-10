@@ -90,6 +90,14 @@ const Auth = () => {
           <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--primary-200)] blur-[120px] rounded-full opacity-40 -translate-y-1/2 translate-x-1/4 pointer-events-none" />
           
           <div className="relative z-10 space-y-8">
+            <div className="mb-10">
+              <img 
+                src="/Kredo_logo_with_educational_theme-removebg-preview.png" 
+                alt="Kredo Logo" 
+                className="h-16 w-auto cursor-pointer"
+                onClick={() => navigate('/')}
+              />
+            </div>
             <div className="space-y-2">
               <h2 className="text-3xl font-display font-black tracking-tighter text-[#1e293b]">
                 {isLogin ? 'Sign In' : 'Create Account'}
