@@ -34,6 +34,7 @@ const AdminDashboard = () => {
 
   const maxVal = 80;
   const yAxisTicks = [80, 60, 40, 20, 0];
+  const chartHeight = 320;
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
@@ -93,14 +94,14 @@ const AdminDashboard = () => {
               </div>
 
               {/* The Bars */}
-              <div className="relative h-full flex items-end justify-between px-4 pb-10 z-10">
+              <div className="relative h-full flex items-end justify-between px-4 pb-10 z-10" style={{ height: chartHeight }}>
                 {chartData.map((data, i) => (
-                  <div key={i} className="flex flex-col items-center gap-2 group/month h-full justify-end">
-                    <div className="flex items-end gap-1 px-1">
+                  <div key={i} className="flex flex-col items-center justify-end gap-2 group/month h-full relative">
+                    <div className="flex items-end gap-1 px-1 h-full">
                       {/* Orange Bar - Resumes */}
                       <div 
-                        className="w-3 sm:w-4 bg-[#ee844a] rounded-t-sm transition-all duration-500 hover:brightness-110 relative group/bar shadow-sm"
-                        style={{ height: `${(data.resumes / maxVal) * 100}%`, minHeight: '4px' }}
+                        className="w-3 sm:w-4 bg-gradient-to-t from-[#f38d49] to-[#ffb97a] rounded-t-sm transition-all duration-500 hover:brightness-110 relative group/bar shadow-sm border border-white/60"
+                        style={{ height: `${Math.max((data.resumes / maxVal) * chartHeight, 4)}px` }}
                       >
                         <div className="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover/bar:opacity-100 transition-opacity bg-slate-800 text-white text-[10px] font-bold px-2 py-1 rounded shadow-lg pointer-events-none whitespace-nowrap z-30">
                           {data.resumes} Resumes
@@ -108,8 +109,8 @@ const AdminDashboard = () => {
                       </div>
                       {/* Teal Bar - Analyzed */}
                       <div 
-                        className="w-3 sm:w-4 bg-[#26d0ce] rounded-t-sm transition-all duration-500 hover:brightness-110 relative group/bar shadow-sm"
-                        style={{ height: `${(data.analyzed / maxVal) * 100}%`, minHeight: '4px' }}
+                        className="w-3 sm:w-4 bg-gradient-to-t from-[#19bfc1] to-[#59e5e0] rounded-t-sm transition-all duration-500 hover:brightness-110 relative group/bar shadow-sm border border-white/60"
+                        style={{ height: `${Math.max((data.analyzed / maxVal) * chartHeight, 4)}px` }}
                       >
                         <div className="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover/bar:opacity-100 transition-opacity bg-slate-800 text-white text-[10px] font-bold px-2 py-1 rounded shadow-lg pointer-events-none whitespace-nowrap z-30">
                           {data.analyzed} Analyzed
@@ -117,8 +118,8 @@ const AdminDashboard = () => {
                       </div>
                       {/* Blue Bar - Matched */}
                       <div 
-                        className="w-3 sm:w-4 bg-[#2563eb] rounded-t-sm transition-all duration-500 hover:brightness-110 relative group/bar shadow-sm"
-                        style={{ height: `${(data.matched / maxVal) * 100}%`, minHeight: '4px' }}
+                        className="w-3 sm:w-4 bg-gradient-to-t from-[#2563eb] to-[#5d8eff] rounded-t-sm transition-all duration-500 hover:brightness-110 relative group/bar shadow-sm border border-white/60"
+                        style={{ height: `${Math.max((data.matched / maxVal) * chartHeight, 4)}px` }}
                       >
                         <div className="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover/bar:opacity-100 transition-opacity bg-slate-800 text-white text-[10px] font-bold px-2 py-1 rounded shadow-lg pointer-events-none whitespace-nowrap z-30">
                           {data.matched} Matched
