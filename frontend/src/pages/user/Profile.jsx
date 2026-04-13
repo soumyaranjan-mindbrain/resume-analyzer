@@ -6,6 +6,7 @@ import {
   Camera,
   ChevronRight,
 } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 
 
 const TwitterIcon = ({ className }) => (
@@ -39,6 +40,7 @@ const profileFields = [
 ];
 
 const Profile = () => {
+  const { user } = useAuth();
   return (
     <div className="flex-1 p-6 lg:p-1 overflow-y-auto custom-scrollbar">
       
@@ -51,15 +53,15 @@ const Profile = () => {
           <div className="relative z-10 flex flex-col items-center w-full">
             <div className="relative mb-6">
               <div className="w-32 h-32 rounded-[2rem] overflow-hidden ring-4 ring-white shadow-2xl">
-                <img src="https://i.pravatar.cc/150?img=11" alt="James Anderson" className="w-full h-full object-cover" />
+                <img src="https://i.pravatar.cc/150?img=11" alt={user?.name || 'Profile'} className="w-full h-full object-cover" />
               </div>
               <button className="absolute -bottom-2 -right-2 w-10 h-10 bg-[#4b7bff] text-white rounded-xl flex items-center justify-center shadow-lg hover:scale-110 transition-transform border-4 border-white">
                 <Camera className="w-4 h-4" />
               </button>
             </div>
 
-            <h2 className="text-2xl font-black text-[#1e293b] tracking-tight mb-1">James Anderson</h2>
-            <p className="text-[#64748b] font-bold text-sm uppercase tracking-widest mb-6">Senior Product Designer</p>
+            <h2 className="text-2xl font-black text-[#1e293b] tracking-tight mb-1">{user?.name || 'James Anderson'}</h2>
+            <p className="text-[#64748b] font-bold text-sm uppercase tracking-widest mb-6">{user?.role === 'admin' ? 'Administrator' : 'Student'}</p>
 
             <div className="flex gap-3 mb-8">
               {[GithubIcon, TwitterIcon, LinkedinIcon].map((Icon, i) => (
@@ -76,7 +78,7 @@ const Profile = () => {
                 </div>
                 <div className="text-left">
                   <p className="text-[10px] font-black text-[#94a3b8] uppercase tracking-widest">Email Address</p>
-                  <p className="text-sm font-bold text-[#334155]">james.a@kredo.ai</p>
+                  <p className="text-sm font-bold text-[#334155]">{user?.email || 'james.a@kredo.ai'}</p>
                 </div>
               </div>
               <div className="bg-white/50 p-4 rounded-2xl border border-white flex items-center gap-4 group hover:bg-white transition-all shadow-sm">

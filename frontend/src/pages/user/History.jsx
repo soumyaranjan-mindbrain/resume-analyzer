@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
   FileText, 
   Search, 
@@ -17,40 +17,32 @@ import {
   PlayCircle
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
+import { analyzeResume, deleteResume, getMyResumes } from '../../services/api';
 
 const History = () => {
   const [activeTab, setActiveTab] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
+  const [resumes, setResumes] = useState([]);
 
-  const resumes = [
-    {
-      id: 1,
-      name: 'James_Anderson_Software_Engineer.pdf',
-      status: 'Analyzed',
-      score: 78,
-      date: '2 days ago',
-      role: 'Software Engineer',
-      type: 'analyzed'
-    },
-    {
-      id: 2,
-      name: 'James_Anderson_Product_Manager.pdf',
-      status: 'Draft',
-      score: null,
-      date: '1 month ago',
-      role: 'Product Manager',
-      type: 'draft'
-    },
-    {
-      id: 3,
-      name: 'James_Anderson_Product_Manager.pdf',
-      status: 'Draft',
-      score: null,
-      date: '2 days ago',
-      role: null,
-      type: 'draft'
-    }
-  ];
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const data = await getMyResumes();
+        setResumes((data.resumes || []).map((resume) => ({
+          id: resume.id,
+          name: resume.fileName,
+          status: resume.analysis ? 'Analyzed' : 'Draft',
+          score: resume.analysis?.atsScore || null,
+          date: new Date(resume.createdAt || Date.now()).toLocaleDateString(),
+          role: resume.analysis?.summary || resume.analysis?.jobTitle || 'General Analysis',
+          type: resume.analysis ? 'analyzed' : 'draft',
+        })));
+      } catch {
+        setResumes([]);
+      }
+    };
+    load();
+  }, []);
 
   const tabs = ['All', 'Analyzed', 'Drafts'];
 
@@ -192,13 +184,13 @@ const History = () => {
                  </div>
 
                  <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
-                    <button className="p-3 text-slate-400 hover:text-[#4b7bff] hover:bg-white/40 rounded-xl transition-all" title="Rename">
+                    <button className="p-3 text-slate-400 hover:text-[#4b7bff] hover:bg-white/40 rounded-xl transition-all" title="Refresh Analysis" onClick={() => analyzeResume(resume.id)}>
                         <Edit3 className="w-5 h-5" />
                     </button>
                     <button className="p-3 text-slate-400 hover:text-[#4b7bff] hover:bg-white/40 rounded-xl transition-all" title="Download">
                         <Download className="w-5 h-5" />
                     </button>
-                    <button className="p-3 text-slate-400 hover:text-rose-500 hover:bg-rose-50/40 rounded-xl transition-all" title="Delete">
+                    <button className="p-3 text-slate-400 hover:text-rose-500 hover:bg-rose-50/40 rounded-xl transition-all" title="Delete" onClick={() => deleteResume(resume.id).then(() => setResumes((prev) => prev.filter((r) => r.id !== resume.id)))}>
                         <Trash2 className="w-5 h-5" />
                     </button>
                  </div>

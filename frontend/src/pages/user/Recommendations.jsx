@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
   Lightbulb, 
   Search, 
@@ -16,36 +16,37 @@ import {
   RefreshCw
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
+import { getFeedback, getMyResumes } from '../../services/api';
+import { useNavigate } from 'react-router-dom';
 
 const Recommendations = () => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('Improvement Tips');
+  const [loading, setLoading] = useState(true);
+  const [recommendations, setRecommendations] = useState([]);
+  const [resumes, setResumes] = useState([]);
 
-  const recommendations = [
-    {
-      id: 1,
-      icon: <Lightbulb className="w-6 h-6 text-yellow-500" />,
-      title: 'Add JavaScript to skills',
-      description: 'Including JavaScript in your resume can increase your job matches by 20%.',
-      actionText: 'Add Skill to Resume',
-      type: 'skill'
-    },
-    {
-      id: 2,
-      icon: <Search className="w-6 h-6 text-blue-500" />,
-      title: 'Include "Data Analysis" keyword',
-      description: 'Adding this keyword to your resume can improve ATS score and job relevancy.',
-      actionText: 'Add Keyword',
-      type: 'keyword'
-    },
-    {
-      id: 3,
-      icon: <Lightbulb className="w-6 h-6 text-yellow-500" />,
-      title: 'Improve resume summary',
-      description: 'Optimize your resume summary for better impact and higher job matches.',
-      actionText: 'Generate Summary',
-      type: 'summary'
-    }
-  ];
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const resumeData = await getMyResumes();
+        const list = resumeData.resumes || [];
+        setResumes(list);
+        if (list.length) {
+          const feedback = await getFeedback(list[0].id);
+          const tips = [
+            ...(feedback.aiFeedback || []).map((text, idx) => ({ id: idx, title: text, description: text, actionText: 'Apply Tip', type: 'skill' })),
+          ];
+          setRecommendations(tips);
+        }
+      } catch {
+        setRecommendations([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, []);
 
   const courses = [
     {
@@ -73,6 +74,10 @@ const Recommendations = () => {
   ];
 
   const tabs = ['Improvement Tips', 'Suggested Jobs', 'Skill Courses'];
+
+  if (loading) {
+    return <div className="min-h-[300px] flex items-center justify-center"><div className="w-12 h-12 border-4 border-[#4b7bff]/20 border-t-[#4b7bff] rounded-full animate-spin" /></div>;
+  }
 
   return (
     <div className="max-w-[1400px] mx-auto pb-8">
