@@ -40,7 +40,9 @@ const AppLayout = ({ children }) => {
     { path: '/admin', label: 'Dashboard', icon: LayoutDashboard },
     { path: '/admin/students', label: 'Students', icon: User },
     { path: '/admin/reports', label: 'Reports', icon: FileText },
+    { path: '/admin/jobs', label: 'Job Descriptions', icon: Briefcase },
     { path: '/admin/readiness', label: 'Job Readiness', icon: ShieldCheck },
+    { path: '/admin/insights', label: 'Market Insights', icon: CloudLightning },
     { path: '/admin/settings', label: 'Settings', icon: Settings },
   ];
 
@@ -57,10 +59,10 @@ const AppLayout = ({ children }) => {
     '/admin/students': { title: 'Student Management', subtitle: 'Manage student accounts and records.' },
     '/admin/reports': { title: 'Global Reports', subtitle: 'Analyze student resume performance data.' },
     '/admin/jobs': { title: 'Job Descriptions', subtitle: 'Manage available job roles and requirements.' },
+    '/admin/jobs/new': { title: 'Create New Job Role', subtitle: 'Add a new position to the recruitment catalog.' },
     '/admin/readiness': { title: 'Job Readiness', subtitle: 'Monitor students ready for the industry.' },
     '/admin/insights': { title: 'Market Insights', subtitle: 'Global skill gaps and demand trends.' },
     '/admin/settings': { title: 'Admin Settings', subtitle: 'Configure platform parameters and users.' },
-    '/admin/jobs/new': { title: 'Create New Job Role', subtitle: 'Add a new position to the recruitment catalog.' },
   };
 
   const currentPage = pageInfo[location.pathname];

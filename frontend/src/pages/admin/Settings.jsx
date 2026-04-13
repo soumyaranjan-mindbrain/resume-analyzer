@@ -81,8 +81,12 @@ const Settings = () => {
   };
 
   const handleDeleteAll = async () => {
-    const confirmed = window.confirm('DANGER: This will permanently delete ALL platform data (Users, Resumes, Reports). This cannot be undone. Type DELETE ALL to confirm.');
-    if (!confirmed) return;
+    const userInput = window.prompt('DANGER: This will permanently delete ALL platform data (Users, Resumes, Reports). This cannot be undone. Type "DELETE ALL" to confirm:');
+    
+    if (userInput !== 'DELETE ALL') {
+      if (userInput !== null) toast.error('Confirmation text mismatch. Deletion cancelled.');
+      return;
+    }
 
     setLoading(prev => ({ ...prev, delete: true }));
     try {

@@ -39,3 +39,6 @@ backend/dist
 .vercel
 
 apis.md
+dev.js
+scratch/
+

@@ -29,7 +29,7 @@ const AdminDashboard = () => {
           { label: 'Total Students', value: statsData.totalUsers?.toLocaleString() || '0', trend: '+12.5%', icon: Users, color: 'text-blue-600', bg: 'bg-blue-50' },
           { label: 'Resumes Analyzed', value: statsData.totalAnalyses?.toLocaleString() || '0', trend: '+18.2%', icon: FileCheck, color: 'text-purple-600', bg: 'bg-purple-50' },
           { label: 'Average Score', value: `${analyticsData.averageAtsScore || 0}%`, trend: '+4.5%', icon: Target, color: 'text-emerald-600', bg: 'bg-emerald-50' },
-          { label: 'Job Readiness', value: '42%', trend: '+2.1%', icon: Trophy, color: 'text-amber-600', bg: 'bg-amber-50' },
+          { label: 'Job Readiness', value: `${analyticsData.readinessBreakdown?.marketReady || 0}%`, trend: '+2.1%', icon: Trophy, color: 'text-amber-600', bg: 'bg-amber-50' },
         ]);
       } catch (error) {
         console.error('Error fetching admin dashboard data:', error);
@@ -41,24 +41,9 @@ const AdminDashboard = () => {
     fetchData();
   }, []);
 
-  // Variations in data to make the demo look more realistic and dynamic
-  const chartData = [
-    { month: 'Jan', resumes: 25, analyzed: 35, matched: 18 },
-    { month: 'Feb', resumes: 32, analyzed: 28, matched: 22 },
-    { month: 'Mar', resumes: 45, analyzed: 58, matched: 35 },
-    { month: 'Apr', resumes: 42, analyzed: 65, matched: 32 },
-    { month: 'Mei', resumes: 68, analyzed: 50, matched: 40 }, 
-    { month: 'Jun', resumes: 50, analyzed: 72, matched: 45 },
-    { month: 'Jul', resumes: 48, analyzed: 45, matched: 38 },
-    { month: 'Aug', resumes: 55, analyzed: 52, matched: 42 },
-    { month: 'Sep', resumes: 60, analyzed: 58, matched: 48 },
-    { month: 'Oct', resumes: 52, analyzed: 75, matched: 44 },
-    { month: 'Nov', resumes: 75, analyzed: 78, matched: 55 },
-    { month: 'Dec', resumes: 68, analyzed: 70, matched: 50 },
-  ];
-
-  const maxVal = 80;
-  const yAxisTicks = [80, 60, 40, 20, 0];
+  const chartData = analytics?.chartData || [];
+  const maxVal = Math.max(...chartData.map(d => Math.max(d.resumes, d.analyzed, d.matched)), 10);
+  const yAxisTicks = [maxVal, Math.round(maxVal*0.75), Math.round(maxVal*0.5), Math.round(maxVal*0.25), 0];
   const chartHeight = 320;
 
   if (loading) {

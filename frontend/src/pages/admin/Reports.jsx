@@ -26,10 +26,16 @@ const Reports = () => {
         if (data.recentReports) {
           const mappedReports = data.recentReports.map(report => ({
             id: report.resumeId,
+            resumeId: report.resumeId,
             student: report.studentName,
+            studentName: report.studentName,
+            fileName: report.fileName,
             role: 'Matched Jobs: ' + report.jobsMatched,
+            jobsMatched: report.jobsMatched,
             score: report.atsScore,
+            atsScore: report.atsScore,
             date: new Date(report.createdAt).toLocaleDateString(),
+            createdAt: report.createdAt,
             status: report.atsScore >= 85 ? 'Exceptional' : 
                     report.atsScore >= 70 ? 'High' : 
                     report.atsScore >= 50 ? 'Medium' : 'Needs Improvement'

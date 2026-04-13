@@ -10,6 +10,10 @@ const authAxios = axios.create({
 export const login = async (email, password) => {
   try {
     const response = await authAxios.post('/login', { email, password });
+    // Store token if backend sends it in body
+    if (response.data.token) {
+      localStorage.setItem('auth_token', response.data.token);
+    }
     return response.data;
   } catch (error) {
     throw error.response?.data || { error: 'Login failed' };
@@ -28,15 +32,20 @@ export const register = async (userData) => {
 export const logout = async () => {
   try {
     const response = await authAxios.post('/logout');
+    localStorage.removeItem('auth_token');
     return response.data;
   } catch (error) {
+    localStorage.removeItem('auth_token');
     throw error.response?.data || { error: 'Logout failed' };
   }
 };
 
 export const getMe = async () => {
   try {
-    const response = await authAxios.get('/me');
+    const token = localStorage.getItem('auth_token');
+    const response = await authAxios.get('/me', {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    });
     return response.data;
   } catch (error) {
     throw error.response?.data || { error: 'Not authenticated' };

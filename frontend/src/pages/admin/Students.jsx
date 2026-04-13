@@ -14,7 +14,8 @@ import {
   Loader2
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
-import { getAdminStudents, deleteAdminStudent } from '../../services/api';
+import { getAdminStudents, deleteAdminStudent, createAdminStudent } from '../../services/api';
+import toast from 'react-hot-toast';
 
 const Students = () => {
   const [activeTab, setActiveTab] = useState('All');
@@ -22,6 +23,9 @@ const Students = () => {
   const [loading, setLoading] = useState(true);
   const [students, setStudents] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newStudent, setNewStudent] = useState({ name: '', email: '', course: '', phone: '' });
+  const [submitting, setSubmitting] = useState(false);
 
   const fetchStudents = async () => {
     try {
@@ -39,13 +43,30 @@ const Students = () => {
     fetchStudents();
   }, []);
 
+  const handleAddStudent = async (e) => {
+    e.preventDefault();
+    try {
+      setSubmitting(true);
+      await createAdminStudent(newStudent);
+      toast.success('Student added successfully');
+      setShowAddModal(false);
+      setNewStudent({ name: '', email: '', course: '', phone: '' });
+      fetchStudents();
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to add student');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this student?')) {
       try {
         await deleteAdminStudent(id);
+        toast.success('Student deleted successfully');
         fetchStudents();
       } catch (error) {
-        alert('Failed to delete student');
+        toast.error('Failed to delete student');
       }
     }
   };
@@ -119,9 +140,15 @@ const Students = () => {
                   className="pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 w-full transition-all shadow-sm"
                 />
              </div>
-             <button className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-lg font-medium text-sm text-slate-700 hover:bg-slate-50 transition-colors shadow-sm whitespace-nowrap">
-                <Download className="w-4 h-4" /> Export
-             </button>
+              <button 
+                onClick={() => setShowAddModal(true)}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium text-sm transition-all shadow-sm shadow-blue-200"
+              >
+                 <Plus className="w-4 h-4" /> Add Student
+              </button>
+              <button className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-lg font-medium text-sm text-slate-700 hover:bg-slate-50 transition-colors shadow-sm whitespace-nowrap">
+                 <Download className="w-4 h-4" /> Export
+              </button>
              <button className="p-2 bg-white border border-slate-200 rounded-lg text-slate-500 hover:text-slate-700 hover:bg-slate-50 transition-colors shadow-sm">
                 <Filter className="w-5 h-5" />
              </button>
@@ -251,6 +278,81 @@ const Students = () => {
            </div>
         </div>
       </div>
+
+      {showAddModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
+            <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-white">
+              <h3 className="text-xl font-bold text-slate-900">Add New Student</h3>
+              <button onClick={() => setShowAddModal(false)} className="p-2 hover:bg-slate-50 rounded-lg transition-colors">
+                <Filter className="w-5 h-5 rotate-45 text-slate-400" />
+              </button>
+            </div>
+            <form onSubmit={handleAddStudent} className="p-6 space-y-4">
+              <div className="space-y-1.5">
+                <label className="text-sm font-semibold text-slate-700">Full Name</label>
+                <input
+                  required
+                  type="text"
+                  value={newStudent.name}
+                  onChange={(e) => setNewStudent({...newStudent, name: e.target.value})}
+                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                  placeholder="e.g. John Doe"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-sm font-semibold text-slate-700">Email Address</label>
+                <input
+                  required
+                  type="email"
+                  value={newStudent.email}
+                  onChange={(e) => setNewStudent({...newStudent, email: e.target.value})}
+                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                  placeholder="john@example.com"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-sm font-semibold text-slate-700">Course</label>
+                  <input
+                    type="text"
+                    value={newStudent.course}
+                    onChange={(e) => setNewStudent({...newStudent, course: e.target.value})}
+                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                    placeholder="B.Tech"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-sm font-semibold text-slate-700">Phone</label>
+                  <input
+                    type="text"
+                    value={newStudent.phone}
+                    onChange={(e) => setNewStudent({...newStudent, phone: e.target.value})}
+                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                    placeholder="1234567890"
+                  />
+                </div>
+              </div>
+              <div className="pt-4 flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setShowAddModal(false)}
+                  className="flex-1 px-4 py-2.5 border border-slate-200 text-slate-600 font-semibold rounded-xl hover:bg-slate-50 transition-all"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="flex-1 px-4 py-2.5 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-blue-200 flex items-center justify-center gap-2"
+                >
+                  {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Create Student'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

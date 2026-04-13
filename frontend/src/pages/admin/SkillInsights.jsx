@@ -1,17 +1,41 @@
-import React from 'react';
+import { getSkillInsights } from '../../services/api';
+import { Loader2 } from 'lucide-react';
 import { cn } from '../../utils/cn';
+import React from 'react';
 
 const SkillInsights = () => {
-  const topSkills = [
-    { name: 'React.js', demand: 98, supply: 64, trend: 'High' },
-    { name: 'Node.js', demand: 85, supply: 42, trend: 'Medium' },
-    { name: 'Python', demand: 92, supply: 88, trend: 'High' },
-    { name: 'PostgreSQL', demand: 76, supply: 30, trend: 'High' },
-    { name: 'Docker', demand: 68, supply: 22, trend: 'Critical' },
-    { name: 'AWS/Cloud', demand: 82, supply: 35, trend: 'High' },
-    { name: 'Machine Learning', demand: 74, supply: 15, trend: 'Critical' },
-    { name: 'TypeScript', demand: 90, supply: 58, trend: 'High' },
-  ];
+  const [topSkills, setTopSkills] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    const fetchInsights = async () => {
+      try {
+        const data = await getSkillInsights();
+        setTopSkills(data);
+      } catch (error) {
+        console.error('Failed to fetch skill insights:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchInsights();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-[400px] flex items-center justify-center">
+        <Loader2 className="w-10 h-10 text-blue-500 animate-spin" />
+      </div>
+    );
+  }
+
+  if (topSkills.length === 0) {
+    return (
+      <div className="bg-white rounded-xl p-12 border border-slate-200 shadow-sm text-center">
+        <p className="text-slate-500 font-medium">No skill data available yet. Analyzed resumes and job roles will populate this section.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500 pb-8">

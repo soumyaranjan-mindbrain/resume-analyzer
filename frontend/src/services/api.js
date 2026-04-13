@@ -7,6 +7,15 @@ const apiClient = axios.create({
   withCredentials: true,
 });
 
+// Automatically attach Bearer token from localStorage to every request
+apiClient.interceptors.request.use((config) => {
+  const token = localStorage.getItem('auth_token');
+  if (token) {
+    config.headers['Authorization'] = `Bearer ${token}`;
+  }
+  return config;
+});
+
 // Resume APIs
 export const uploadResume = async (formData) => {
   const response = await apiClient.post('/resume/upload', formData, {
@@ -106,19 +115,23 @@ export const getAdminStudents = async () => {
   return response.data;
 };
 
-export const deleteAdminStudent = async (id) => {
-  const response = await apiClient.delete(`/students/${id}`);
-  return response.data;
-};
-
 export const createAdminStudent = async (data) => {
   const response = await apiClient.post('/students', data);
   return response.data;
 };
 
-// Admin Settings APIs
-export const exportData = async () => {
-  const response = await apiClient.get('/settings/export');
+export const updateAdminStudent = async (id, data) => {
+  const response = await apiClient.put(`/students/${id}`, data);
+  return response.data;
+};
+
+export const deleteAdminStudent = async (id) => {
+  const response = await apiClient.delete(`/students/${id}`);
+  return response.data;
+};
+
+export const getSkillInsights = async () => {
+  const response = await apiClient.get('/dashboard/insights');
   return response.data;
 };
 
@@ -134,6 +147,11 @@ export const resetSettings = async () => {
 
 export const deleteAllData = async () => {
   const response = await apiClient.delete('/settings');
+  return response.data;
+};
+
+export const exportData = async () => {
+  const response = await apiClient.get('/settings/export');
   return response.data;
 };
 

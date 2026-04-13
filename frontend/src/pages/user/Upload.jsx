@@ -38,8 +38,11 @@ const Upload = () => {
 
   const validateAndSetFile = (selectedFile) => {
     if (selectedFile) {
-      if (selectedFile.type !== 'application/pdf') {
-        setError('Please upload a PDF file.');
+      const allowedTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+      const isDocx = selectedFile.name.toLowerCase().endsWith('.docx');
+      
+      if (!allowedTypes.includes(selectedFile.type) && !isDocx) {
+        setError('Please upload a PDF or DOCX file.');
         return;
       }
       if (selectedFile.size > 5 * 1024 * 1024) {
@@ -171,13 +174,13 @@ const Upload = () => {
                 ref={fileInputRef} 
                 onChange={handleFileChange} 
                 className="hidden" 
-                accept=".pdf"
+                accept=".pdf,.docx"
               />
               <div className="w-24 h-24 rounded-[2rem] bg-white flex items-center justify-center shadow-xl shadow-blue-500/10 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
                 <UploadIcon className="w-10 h-10 text-[#4b7bff]" />
               </div>
               <div className="text-center space-y-2">
-                <h3 className="text-2xl font-black text-slate-800">Drop your PDF here</h3>
+                <h3 className="text-2xl font-black text-slate-800">Drop your PDF or DOCX here</h3>
                 <p className="text-slate-500 font-bold uppercase tracking-widest text-xs">Maximum file size 5MB</p>
               </div>
             </div>
@@ -192,7 +195,9 @@ const Upload = () => {
                   </div>
                   <div>
                     <h4 className="text-lg font-black text-slate-800 line-clamp-1">{file.name}</h4>
-                    <p className="text-slate-400 font-bold text-xs uppercase tracking-widest">{(file.size / 1024 / 1024).toFixed(2)} MB • PDF Document</p>
+                    <p className="text-slate-400 font-bold text-xs uppercase tracking-widest">
+                      {(file.size / 1024 / 1024).toFixed(2)} MB • {file.name.toLowerCase().endsWith('.pdf') ? 'PDF' : 'DOCX'} Document
+                    </p>
                   </div>
                 </div>
                 {!uploading && (
