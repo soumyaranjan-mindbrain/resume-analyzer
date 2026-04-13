@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   BarChart3,
   ShieldCheck,
@@ -15,8 +15,13 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import dashboardBanner from '../../assets/dashboard-banner-seamless.png';
+<<<<<<< HEAD
 import { useAuth } from '../../context/AuthContext';
 import { getDashboardStats } from '../../services/api';
+=======
+import { getDashboardStats } from '../../services/api';
+import { useAuth } from '../../context/AuthContext';
+>>>>>>> 41b8693f4b056f0286c9dde1c76a3df58538fe9e
 
 const cn = (...classes) => classes.filter(Boolean).join(' ');
 
@@ -50,6 +55,7 @@ const toneStyles = {
 const Dashboard = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+<<<<<<< HEAD
   const [stats, setStats] = React.useState(null);
   const [loading, setLoading] = React.useState(true);
 
@@ -110,6 +116,21 @@ const Dashboard = () => {
       </div>
     );
   }
+=======
+  const [stats, setStats] = useState(null);
+
+  useEffect(() => {
+    const loadStats = async () => {
+      try {
+        const data = await getDashboardStats();
+        setStats(data);
+      } catch {
+        setStats(null);
+      }
+    };
+    loadStats();
+  }, []);
+>>>>>>> 41b8693f4b056f0286c9dde1c76a3df58538fe9e
 
   return (
     <div className="space-y-6 max-w-[1400px] mx-auto pb-10 px-4 sm:px-0">
@@ -130,7 +151,11 @@ const Dashboard = () => {
 
         
         <div className="relative z-10 space-y-4 p-12 flex flex-col justify-center w-full max-w-2xl">
+<<<<<<< HEAD
           <h1 className="text-5xl font-black text-[#1e293b] tracking-tighter">Welcome, <span className="text-[#4b7bff]">{user?.name.split(' ')[0] || 'User'}</span>!</h1>
+=======
+           <h1 className="text-5xl font-black text-[#1e293b] tracking-tighter">Welcome, <span className="text-[#4b7bff]">{user?.name || 'James'}</span>!</h1>
+>>>>>>> 41b8693f4b056f0286c9dde1c76a3df58538fe9e
           <p className="text-[#64748b] text-base font-medium max-w-md leading-relaxed">
             Your personal AI-powered resume dashboard is updated with the latest trends.
           </p>
@@ -153,10 +178,23 @@ const Dashboard = () => {
 
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+<<<<<<< HEAD
         {cards.map((card) => {
           const Icon = card.icon;
           const tone = toneStyles[card.tone];
           return (
+=======
+              {summaryCards.map((card) => {
+              const Icon = card.icon;
+              const tone = toneStyles[card.tone];
+              const dynamicValue =
+                card.label === 'ATS Score' && stats?.avgAtsScore != null ? `${Math.round(stats.avgAtsScore)}%`
+                : card.label === 'Job Ready' && stats?.marketReady != null ? `${stats.marketReady}%`
+                : card.label === 'Gaps' && stats?.critical != null ? String(stats.critical).padStart(2, '0')
+                : card.label === 'Matches' && stats?.totalJobsMatched != null ? String(stats.totalJobsMatched).padStart(2, '0')
+                : card.value;
+              return (
+>>>>>>> 41b8693f4b056f0286c9dde1c76a3df58538fe9e
             <div key={card.label} className={`bg-white/25 backdrop-blur-3xl rounded-[2.8rem] p-7 border border-white/60 relative overflow-hidden group shadow-[0_45px_100px_-20px_rgba(15,23,42,0.35),inset_0_1px_3px_rgba(255,255,255,0.5)] transition-all duration-700 ${tone.card}`}>
               <div className="absolute inset-0 bg-gradient-to-br from-slate-900/[0.12] to-transparent pointer-events-none" />
               <div className="absolute top-0 right-0 p-6 cursor-pointer">
@@ -168,7 +206,7 @@ const Dashboard = () => {
                 </div>
                 <span className="font-bold text-[#334155] text-sm uppercase tracking-wide">{card.label}</span>
               </div>
-              <h2 className="text-5xl font-black text-[#1e293b] tracking-tight mb-2">{card.value}</h2>
+               <h2 className="text-5xl font-black text-[#1e293b] tracking-tight mb-2">{dynamicValue}</h2>
               <div className="flex flex-col gap-1">
                 {card.note && (
                   <span className={card.noteTone + " text-xs font-black inline-flex items-center gap-1"}>

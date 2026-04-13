@@ -53,6 +53,7 @@ const Auth = () => {
 
     try {
       if (isLogin) {
+<<<<<<< HEAD
         const user = await login(email, password);
         const redirectPath = user.role === 'admin' ? '/admin' : '/dashboard';
         navigate(redirectPath, { replace: true });
@@ -61,6 +62,13 @@ const Auth = () => {
         setError('');
         setIsLogin(true); // Switch to login after registration
         alert('Registration successful! Please login.');
+=======
+        const userData = await login(email, password);
+        navigate(userData.role === 'admin' ? '/admin' : '/dashboard', { replace: true });
+      } else {
+        await register({ name, email, password, role: 'student' });
+        setIsLogin(true);
+>>>>>>> 41b8693f4b056f0286c9dde1c76a3df58538fe9e
       }
     } catch (err) {
       setError(err.error || err.message || 'Authentication failed');
@@ -82,9 +90,9 @@ const Auth = () => {
               <span className="kredo-text">Professional</span> <br />
               frequency.
             </h1>
-            <p className="text-xl text-[var(--neutral-500)] font-bold max-w-md leading-relaxed">
-              Step into the future of resume intelligence. One node away from peak career optimization.
-            </p>
+              <p className="text-xl text-[var(--neutral-500)] font-bold max-w-md leading-relaxed">
+                Step into the future of resume intelligence. One node away from peak career optimization.
+              </p>
           </div>
 
         </div>
@@ -111,6 +119,7 @@ const Auth = () => {
               </div>
             )}
 
+<<<<<<< HEAD
             <form onSubmit={handleAuth} className="space-y-4">
               {!isLogin && (
                 <div className="space-y-2">
@@ -124,12 +133,28 @@ const Auth = () => {
                       placeholder="John Doe"
                       className="input-clay !pl-14 !bg-slate-50 !border-slate-200 focus:!bg-white transition-all shadow-sm"
                       required={!isLogin}
+=======
+              <form onSubmit={handleAuth} className="space-y-4">
+                {!isLogin && (
+                  <div className="space-y-2">
+                    <label className="text-[11px] font-black uppercase tracking-widest text-slate-500 ml-1">Full Name</label>
+                    <div className="relative">
+                      <User className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                      <input 
+                        type="text" 
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        placeholder="John Doe"
+                        className="input-clay !pl-14 !bg-slate-50 !border-slate-200 focus:!bg-white transition-all shadow-sm"
+                        required={!isLogin}
+>>>>>>> 41b8693f4b056f0286c9dde1c76a3df58538fe9e
                     />
                   </div>
                 </div>
               )}
 
               <div className="space-y-2">
+<<<<<<< HEAD
                 <label className="text-[11px] font-black uppercase tracking-widest text-slate-500 ml-1">Email Address</label>
                 <div className="relative">
                   <Mail className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
@@ -141,6 +166,19 @@ const Auth = () => {
                     className="input-clay !pl-14 !bg-slate-50 !border-slate-200 focus:!bg-white transition-all shadow-sm"
                     required
                   />
+=======
+                  <label className="text-[11px] font-black uppercase tracking-widest text-slate-500 ml-1">Email Address</label>
+                  <div className="relative">
+                    <Mail className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                    <input 
+                      type="email" 
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="example@mail.com"
+                      className="input-clay !pl-14 !bg-slate-50 !border-slate-200 focus:!bg-white transition-all shadow-sm"
+                      required
+                    />
+>>>>>>> 41b8693f4b056f0286c9dde1c76a3df58538fe9e
                 </div>
               </div>
 

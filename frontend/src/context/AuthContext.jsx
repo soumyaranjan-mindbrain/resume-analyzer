@@ -11,10 +11,17 @@ export const AuthProvider = ({ children }) => {
     try {
       const data = await authService.getMe();
       const userData = data.user;
+<<<<<<< HEAD
       // Map student to user role for frontend consistency
       if (userData.role === 'student') userData.role = 'user';
       setUser(userData);
     } catch (error) {
+=======
+      if (userData.role === 'student') userData.role = 'user';
+      setUser(userData);
+      localStorage.setItem('kredo_user', JSON.stringify(userData));
+    } catch {
+>>>>>>> 41b8693f4b056f0286c9dde1c76a3df58538fe9e
       setUser(null);
       localStorage.removeItem('kredo_user');
     } finally {
@@ -29,15 +36,23 @@ export const AuthProvider = ({ children }) => {
         const parsed = JSON.parse(savedUser);
         if (parsed.role === 'student') parsed.role = 'user';
         setUser(parsed);
+<<<<<<< HEAD
       } catch (e) {
         localStorage.removeItem('kredo_user');
       }
     }
     // Verify session with backend
+=======
+      } catch {
+        localStorage.removeItem('kredo_user');
+      }
+    }
+>>>>>>> 41b8693f4b056f0286c9dde1c76a3df58538fe9e
     checkAuth();
   }, []);
 
   const login = async (email, password) => {
+<<<<<<< HEAD
     try {
       const data = await authService.login(email, password);
       const userData = data.user;
@@ -58,13 +73,28 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       throw error;
     }
+=======
+    const data = await authService.login(email, password);
+    const userData = data.user;
+    if (userData.role === 'student') userData.role = 'user';
+    setUser(userData);
+    localStorage.setItem('kredo_user', JSON.stringify(userData));
+    return userData;
+  };
+
+  const registerUser = async (userData) => {
+    return authService.register(userData);
+>>>>>>> 41b8693f4b056f0286c9dde1c76a3df58538fe9e
   };
 
   const logout = async () => {
     try {
       await authService.logout();
+<<<<<<< HEAD
     } catch (error) {
       console.error('Logout error:', error);
+=======
+>>>>>>> 41b8693f4b056f0286c9dde1c76a3df58538fe9e
     } finally {
       setUser(null);
       localStorage.removeItem('kredo_user');
@@ -80,8 +110,6 @@ export const AuthProvider = ({ children }) => {
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
+  if (!context) throw new Error('useAuth must be used within an AuthProvider');
   return context;
 };
