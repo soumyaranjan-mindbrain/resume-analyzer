@@ -12,22 +12,44 @@ import {
   Clock,
   CheckCircle2
 } from 'lucide-react';
-import { cn } from '../../utils/cn';
+import { getAllJobs, deleteJob } from '../../services/api';
 
 const JobDescriptions = () => {
   const navigate = useNavigate();
-  const [jobs, setJobs] = useState([
-    { id: 1, title: 'Senior Frontend Developer', company: 'Google', tags: ['React', 'TypeScript', 'Tailwind'], applicants: 45, status: 'Active' },
-    { id: 2, title: 'Product Manager', company: 'Amazon', tags: ['Agile', 'Jira', 'Strategy'], applicants: 28, status: 'Draft' },
-    { id: 3, title: 'Data Scientist', company: 'Meta', tags: ['Python', 'PyTorch', 'SQL'], applicants: 62, status: 'Active' },
-    { id: 4, title: 'Backend Engineer', company: 'Netflix', tags: ['Node.js', 'PostgreSQL', 'Docker'], applicants: 15, status: 'Active' },
-    { id: 5, title: 'UI Designer', company: 'Airbnb', tags: ['Figma', 'Prototyping', 'Design Systems'], applicants: 34, status: 'Closed' },
-  ]);
+  const [jobs, setJobs] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchJobs = async () => {
+    try {
+      setLoading(true);
+      const data = await getAllJobs();
+      setJobs(data);
+    } catch (error) {
+      console.error('Error fetching jobs:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useState(() => {
+    fetchJobs();
+  }, []);
+
+  const handleDelete = async (id) => {
+    if (window.confirm('Are you sure you want to delete this job role?')) {
+      try {
+        await deleteJob(id);
+        fetchJobs();
+      } catch (error) {
+        alert('Failed to delete job role');
+      }
+    }
+  };
 
   const stats = [
-    { label: 'Active Roles', value: '128', icon: Target, color: 'text-emerald-600', bg: 'bg-emerald-50', border: 'border-emerald-100' },
-    { label: 'Total Applicants', value: '2,840', icon: Users, color: 'text-blue-600', bg: 'bg-blue-50', border: 'border-blue-100' },
-    { label: 'Pending Review', value: '42', icon: Clock, color: 'text-amber-600', bg: 'bg-amber-50', border: 'border-amber-100' },
+    { label: 'Active Roles', value: jobs.length.toString(), icon: Target, color: 'text-emerald-600', bg: 'bg-emerald-50', border: 'border-emerald-100' },
+    { label: 'Total Applicants', value: jobs.reduce((acc, job) => acc + (job.applicants || 0), 0).toLocaleString(), icon: Users, color: 'text-blue-600', bg: 'bg-blue-50', border: 'border-blue-100' },
+    { label: 'Pending Review', value: '0', icon: Clock, color: 'text-amber-600', bg: 'bg-amber-50', border: 'border-amber-100' },
     { label: 'Hiring Rate', value: '18%', icon: CheckCircle2, color: 'text-purple-600', bg: 'bg-purple-50', border: 'border-purple-100' },
   ];
 

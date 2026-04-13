@@ -42,13 +42,17 @@ const Reports = () => {
         setLoading(false);
       }
     };
-
     fetchReports();
   }, []);
 
+  const stats = [
+    { label: 'Growth', value: '+12.5%', icon: TrendingUp, color: 'text-emerald-600', bg: 'bg-emerald-50', border: 'border-emerald-100' },
+    { label: 'Efficiency', value: '94%', icon: Zap, color: 'text-blue-600', bg: 'bg-blue-50', border: 'border-blue-100' },
+    { label: 'Reliability', value: '99.9%', icon: ShieldCheck, color: 'text-purple-600', bg: 'bg-purple-50', border: 'border-purple-100' },
+  ];
+
   const filteredReports = reports.filter(r => 
-    r.student?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    r.role?.toLowerCase().includes(searchQuery.toLowerCase())
+    r.studentName?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const viewButtonClass = (mode) =>
@@ -57,11 +61,18 @@ const Reports = () => {
       viewMode === mode ? "bg-white text-blue-600 shadow-sm border border-slate-200" : "text-slate-400 hover:text-slate-600"
     );
 
-  const statusClass = (status) => {
-    if (status === 'Exceptional') return "bg-emerald-50 text-emerald-700 border-emerald-100";
-    if (status === 'High') return "bg-blue-50 text-blue-700 border-blue-100";
-    if (status === 'Medium') return "bg-amber-50 text-amber-700 border-amber-100";
+  const statusClass = (score) => {
+    if (score >= 85) return "bg-emerald-50 text-emerald-700 border-emerald-100";
+    if (score >= 70) return "bg-blue-50 text-blue-700 border-blue-100";
+    if (score >= 50) return "bg-amber-50 text-amber-700 border-amber-100";
     return "bg-red-50 text-red-700 border-red-100";
+  };
+
+  const getStatusLabel = (score) => {
+    if (score >= 85) return 'Exceptional';
+    if (score >= 70) return 'High';
+    if (score >= 50) return 'Medium';
+    return 'Needs Improvement';
   };
 
   return (
@@ -142,26 +153,26 @@ const Reports = () => {
                   </tr>
                 ) : (
                   filteredReports.map((report) => (
-                    <tr key={report.id} className="hover:bg-slate-50 transition-colors">
+                    <tr key={report.resumeId} className="hover:bg-slate-50 transition-colors">
                       <td className="py-4 px-6">
                         <div>
-                          <p className="text-sm font-semibold text-slate-900">{report.student}</p>
-                          <p className="text-xs text-slate-500 mt-0.5">{report.date}</p>
+                          <p className="text-sm font-semibold text-slate-900">{report.studentName}</p>
+                          <p className="text-xs text-slate-500 mt-0.5">{new Date(report.createdAt).toLocaleDateString()}</p>
                         </div>
                       </td>
                       <td className="py-4 px-6">
-                         <span className="text-xs font-medium text-slate-700 bg-slate-100 px-2.5 py-1 rounded-md">{report.role}</span>
+                         <span className="text-xs font-medium text-slate-700 bg-slate-100 px-2.5 py-1 rounded-md">{report.fileName}</span>
                       </td>
                       <td className="py-4 px-6">
                          <div className="flex flex-col items-center gap-1.5">
                             <span className={cn(
                               "text-sm font-bold",
-                              report.score >= 80 ? "text-emerald-600" : report.score >= 60 ? "text-blue-600" : "text-amber-600"
-                            )}>{report.score}%</span>
+                              report.atsScore >= 80 ? "text-emerald-600" : report.atsScore >= 60 ? "text-blue-600" : "text-amber-600"
+                            )}>{report.atsScore}%</span>
                             <div className="w-16 h-1.5 bg-slate-100 rounded-full overflow-hidden">
                                <div 
-                                className={cn("h-full", report.score >= 80 ? "bg-emerald-500" : report.score >= 60 ? "bg-blue-500" : "bg-amber-500")} 
-                                style={{ width: `${report.score}%` }} 
+                                className={cn("h-full", report.atsScore >= 80 ? "bg-emerald-500" : report.atsScore >= 60 ? "bg-blue-500" : "bg-amber-500")} 
+                                style={{ width: `${report.atsScore}%` }} 
                                />
                             </div>
                          </div>
@@ -169,9 +180,9 @@ const Reports = () => {
                       <td className="py-4 px-6 text-center">
                          <span className={cn(
                             "inline-block text-[11px] font-semibold px-2.5 py-1 rounded-full border",
-                            statusClass(report.status)
+                            statusClass(report.atsScore)
                           )}>
-                            {report.status}
+                            {getStatusLabel(report.atsScore)}
                          </span>
                       </td>
                       <td className="py-4 px-6 text-right">

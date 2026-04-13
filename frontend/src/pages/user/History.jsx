@@ -186,9 +186,8 @@ const History = () => {
                 </div>
               </div>
             </div>
-            </div>
-            );
-          })
+          );
+        })
         )}
       </div>
     </div>

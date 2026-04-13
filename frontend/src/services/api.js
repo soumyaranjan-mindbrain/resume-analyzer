@@ -68,6 +68,16 @@ export const getReports = async () => {
   return response.data;
 };
 
+export const getAnalytics = async () => {
+  const response = await apiClient.get('/dashboard/analytics');
+  return response.data;
+};
+
+export const getReports = async () => {
+  const response = await apiClient.get('/dashboard/reports');
+  return response.data;
+};
+
 // Profile APIs
 export const updateProfile = async (id, data) => {
   const response = await apiClient.put(`/profile/${id}`, data);
@@ -82,6 +92,21 @@ export const getAllJobs = async () => {
 
 export const getMatchedJobs = async () => {
   const response = await apiClient.get('/jobs/user/my-jobs');
+  return response.data;
+};
+
+export const createJob = async (data) => {
+  const response = await apiClient.post('/jobs', data);
+  return response.data;
+};
+
+export const updateJob = async (id, data) => {
+  const response = await apiClient.put(`/jobs/${id}`, data);
+  return response.data;
+};
+
+export const deleteJob = async (id) => {
+  const response = await apiClient.delete(`/jobs/${id}`);
   return response.data;
 };
 

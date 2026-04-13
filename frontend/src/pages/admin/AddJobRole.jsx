@@ -13,10 +13,12 @@ import {
   Settings,
   Target
 } from 'lucide-react';
-import { cn } from '../../utils/cn';
+import { createJob } from '../../services/api';
+import toast from 'react-hot-toast';
 
 const AddJobRole = () => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
     company: '',
@@ -53,11 +55,19 @@ const AddJobRole = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // In a real app, this would be an API call
-    console.log('Saving job role:', formData);
-    navigate('/admin/jobs');
+    setLoading(true);
+    try {
+      await createJob(formData);
+      toast.success('Job role created successfully');
+      navigate('/admin/jobs');
+    } catch (error) {
+      console.error('Error saving job role:', error);
+      toast.error('Failed to save job role');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

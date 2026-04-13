@@ -150,6 +150,7 @@ const Dashboard = () => {
           const Icon = card.icon;
           const tone = toneStyles[card.tone];
           const dynamicValue = card.value;
+          return (
             <div key={card.label} className={`bg-white/25 backdrop-blur-3xl rounded-[2.8rem] p-7 border border-white/60 relative overflow-hidden group shadow-[0_45px_100px_-20px_rgba(15,23,42,0.35),inset_0_1px_3px_rgba(255,255,255,0.5)] transition-all duration-700 ${tone.card}`}>
               <div className="absolute inset-0 bg-gradient-to-br from-slate-900/[0.12] to-transparent pointer-events-none" />
               <div className="absolute top-0 right-0 p-6 cursor-pointer">
