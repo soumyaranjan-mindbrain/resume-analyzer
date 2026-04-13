@@ -1,0 +1,82 @@
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String?    
+  email     String   @unique
+  password  String
+  role      String    // 'admin' or 'student'
+  phone     String?   
+  bio       String?    
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  resumes Resume[] 
+   jobs    Job[] 
+
+  @@map("users")
+}
+
+model Resume {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  fileUrl   String
+  fileName  String
+  extractedText String?
+  createdAt  DateTime @default(now())
+
+  user     User      @relation(fields: [userId], references: [id])
+  analysis Analysis?  
+
+  @@map("resumes")
+}
+
+
+model Student {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  email     String   @unique
+  phone     String?
+  course    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+model Analysis {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  resumeId        String   @unique @db.ObjectId
+  atsScore        Int
+  keywordsMissing Json
+  jobsMatched     Int
+  suggestions     Json
+  trends          Json
+  summary         String?
+  experienceLevel String?
+  topStrengths    Json?
+  weaknesses      Json?
+  createdAt       DateTime @default(now())
+
+  resume Resume @relation(fields: [resumeId], references: [id])
+
+  @@map("analysis")
+}
+
+model Job {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  title           String
+  company         String
+  location        String
+  description     String
+  skillsRequired  String[]
+  salary          String?
+  userId          String   @db.ObjectId
+  createdAt       DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])  
+}

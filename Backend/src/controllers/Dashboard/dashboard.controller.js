@@ -1,0 +1,343 @@
+const prisma  = require("../../prisma/client");
+
+//  GET ANALYTICS
+exports.getAnalytics = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const role = req.user?.role;
+
+    //   STUDENT ANALYTICS
+    if (role === "student") {
+      const resumes = await prisma.resume.findMany({
+        where: { userId },
+        include: { analysis: true },
+        orderBy: { createdAt: "desc" },
+      });
+
+      const analyzed = resumes.filter((r) => r.analysis);
+
+      const averageAtsScore = analyzed.length
+        ? Math.round(
+            analyzed.reduce((sum, r) => sum + (r.analysis?.atsScore || 0), 0) /
+              analyzed.length
+          )
+        : 0;
+
+      const allAiFeedback = analyzed.flatMap(
+        (r) => r.analysis?.suggestions || []
+      );
+
+      const allSkills = analyzed.flatMap((r) =>
+        Array.isArray(r.analysis?.trends) ? r.analysis.trends : []
+      );
+
+      const totalKeywordsMissing = analyzed.reduce(
+        (sum, r) =>
+          sum + (r.analysis?.keywordsMissing?.length || 0),
+        0
+      );
+
+      const totalJobsMatched = analyzed.reduce(
+        (sum, r) => sum + (r.analysis?.jobsMatched || 0),
+        0
+      );
+
+      // Skill Gap Analysis (formatted for Frontend)
+      const missingSkills = (analyzed[0]?.analysis?.keywordsMissing || []).map(skill => ({
+        name: skill,
+        value: Math.floor(Math.random() * 40) + 30, // Mocked match value
+        color: 'bg-blue-400'
+      }));
+
+      const inDemandSkills = [
+        { name: 'Full Stack Development', percentage: 94, color: 'bg-blue-500' },
+        { name: 'Machine Learning', percentage: 88, color: 'bg-emerald-500' },
+        { name: 'Cloud Native', percentage: 75, color: 'bg-purple-500' },
+        { name: 'DevOps', percentage: 65, color: 'bg-orange-500' }
+      ];
+
+      const courses = [
+        { name: 'Mastering React & Node.js', url: '#' },
+        { name: 'Advanced System Design', url: '#' },
+        { name: 'Machine Learning Fundamentals', url: '#' }
+      ];
+
+      return res.json({
+        type: "student",
+        totalResumes: resumes.length,
+        analyzedResumes: analyzed.length,
+        averageAtsScore,
+        keywordsMissing: totalKeywordsMissing,
+        jobsMatched: totalJobsMatched,
+        aiFeedback: [...new Set(allAiFeedback)],
+        skillExtraction: [...new Set(allSkills)],
+        analytics: {
+          missingSkills: missingSkills.length > 0 ? missingSkills : [
+            { name: 'System Design', value: 45, color: 'bg-blue-400' },
+            { name: 'Unit Testing', value: 30, color: 'bg-emerald-400' }
+          ],
+          inDemandSkills,
+          courses
+        }
+      });
+    }
+
+    //   ADMIN ANALYTICS
+    if (role === "admin") {
+      const totalUsers = await prisma.user.count();
+      const totalResumes = await prisma.resume.count();
+      const totalAnalyses = await prisma.analysis.count();
+
+      const avgResult = await prisma.analysis.aggregate({
+        _avg: { atsScore: true },
+      });
+
+      const averageAtsScore = Math.round(
+        avgResult._avg.atsScore || 0
+      );
+
+      // Readiness Breakdown
+      const marketReady = await prisma.analysis.count({ where: { atsScore: { gte: 80 } } });
+      const developing = await prisma.analysis.count({ where: { atsScore: { gte: 50, lt: 80 } } });
+      const critical = await prisma.analysis.count({ where: { atsScore: { lt: 50 } } });
+
+      // Growth Chart Data (Last 6 Months)
+      const sixMonthsAgo = new Date();
+      sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+
+      const [monthlyResumes, monthlyAnalyses] = await Promise.all([
+        prisma.resume.findMany({
+          where: { createdAt: { gte: sixMonthsAgo } },
+          select: { createdAt: true }
+        }),
+        prisma.analysis.findMany({
+          where: { createdAt: { gte: sixMonthsAgo } },
+          select: { createdAt: true, jobsMatched: true }
+        })
+      ]);
+
+      const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      const chartMap = {};
+
+      // Initialize last 6 months
+      for (let i = 5; i >= 0; i--) {
+        const d = new Date();
+        d.setMonth(d.getMonth() - i);
+        const monthName = months[d.getMonth()];
+        chartMap[monthName] = { month: monthName, resumes: 0, analyzed: 0, matched: 0 };
+      }
+
+      monthlyResumes.forEach(r => {
+        const m = months[r.createdAt.getMonth()];
+        if (chartMap[m]) chartMap[m].resumes++;
+      });
+
+      monthlyAnalyses.forEach(a => {
+        const m = months[a.createdAt.getMonth()];
+        if (chartMap[m]) {
+          chartMap[m].analyzed++;
+          chartMap[m].matched += (a.jobsMatched || 0);
+        }
+      });
+
+      return res.json({
+        type: "admin",
+        totalUsers,
+        totalResumes,
+        totalAnalyses,
+        averageAtsScore,
+        chartData: Object.values(chartMap),
+        readinessBreakdown: {
+          marketReady: Math.round((marketReady / (totalAnalyses || 1)) * 100),
+          developing: Math.round((developing / (totalAnalyses || 1)) * 100),
+          criticalGap: Math.round((critical / (totalAnalyses || 1)) * 100)
+        }
+      });
+    }
+
+    res.status(403).json({ message: "Invalid role" });
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+//   GET REPORTS
+exports.getReports = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const role = req.user?.role;
+
+    // 🎓 STUDENT REPORTS
+    if (role === "student") {
+      const resumes = await prisma.resume.findMany({
+        where: { userId },
+        include: { analysis: true },
+        orderBy: { createdAt: "desc" },
+      });
+
+      const reportRows = resumes.map((resume) => ({
+        resumeId: resume.id,
+        fileName: resume.fileName,
+        atsScore: resume.analysis?.atsScore || 0,
+        keywordsMissing:
+          resume.analysis?.keywordsMissing?.length || 0,
+        jobsMatched: resume.analysis?.jobsMatched || 0,
+        jobMatch: resume.analysis?.jobsMatched || 0,
+        aiFeedback: resume.analysis?.suggestions || [],
+        skillExtraction: Array.isArray(resume.analysis?.trends)
+          ? resume.analysis.trends
+          : [],
+        createdAt: resume.createdAt,
+      }));
+
+      return res.json({
+        type: "student",
+        reports: reportRows,
+      });
+    }
+
+    //   ADMIN REPORTS
+    if (role === "admin") {
+      const recentAnalyses = await prisma.analysis.findMany({
+        take: 50, // Increased for pool visibility
+        orderBy: { createdAt: "desc" },
+        include: { 
+          resume: {
+            include: {
+              user: true
+            }
+          } 
+        },
+      });
+
+      return res.json({
+        type: "admin",
+        recentReports: recentAnalyses.map((analysis) => ({
+          resumeId: analysis.resumeId,
+          fileName: analysis.resume?.fileName || "Unknown",
+          studentName: analysis.resume?.user?.name || "Student",
+          atsScore: analysis.atsScore,
+          keywordsMissing:
+            analysis.keywordsMissing?.length || 0,
+          jobsMatched: analysis.jobsMatched,
+          createdAt: analysis.createdAt,
+        })),
+      });
+    }
+
+    res.status(403).json({ message: "Invalid role" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+//   GET SKILL INSIGHTS (ADMIN)
+exports.getSkillInsights = async (req, res) => {
+  try {
+    const role = req.user?.role;
+    if (role !== "admin") return res.status(403).json({ message: "Admin only" });
+
+    // Fetch all job skills (Demand)
+    const jobs = await prisma.job.findMany({ select: { skillsRequired: true } });
+    const demandMap = {};
+    jobs.forEach(job => {
+      job.skillsRequired.forEach(skill => {
+        const s = skill.toLowerCase().trim();
+        demandMap[s] = (demandMap[s] || 0) + 1;
+      });
+    });
+
+    // Fetch all extracted skills (Supply)
+    const analyses = await prisma.analysis.findMany({ select: { trends: true } });
+    const supplyMap = {};
+    analyses.forEach(analysis => {
+      // Assuming trends contains skillExtraction or similar
+      const skills = analysis.trends?.skills || [];
+      skills.forEach(skill => {
+        const s = skill.toLowerCase().trim();
+        supplyMap[s] = (supplyMap[s] || 0) + 1;
+      });
+    });
+
+    // Normalize and combine
+    const allSkills = [...new Set([...Object.keys(demandMap), ...Object.keys(supplyMap)])];
+    const totalJobs = jobs.length || 1;
+    const totalAnalyses = analyses.length || 1;
+
+    const insights = allSkills.map(skill => {
+      const demandScore = Math.round(((demandMap[skill] || 0) / totalJobs) * 100);
+      const supplyScore = Math.round(((supplyMap[skill] || 0) / totalAnalyses) * 100);
+      
+      let trend = "Medium";
+      if (demandScore > 80) trend = "High";
+      if (demandScore > 60 && supplyScore < 20) trend = "Critical";
+
+      return {
+        name: skill.charAt(0).toUpperCase() + skill.slice(1),
+        demand: demandScore,
+        supply: supplyScore,
+        trend
+      };
+    }).sort((a, b) => b.demand - a.demand).slice(0, 15);
+
+    res.json(insights);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+//   GET DASHBOARD
+exports.getDashboard = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const role = req.user?.role;
+
+    //   STUDENT DASHBOARD
+    if (role === "student") {
+      const resumes = await prisma.resume.findMany({
+        where: { userId },
+        include: { analysis: true },
+        orderBy: { createdAt: "desc" },
+      });
+
+      const latest = resumes[0]?.analysis;
+
+      return res.json({
+        type: "student",
+        atsScore: latest?.atsScore || 0,
+        keywordsMissing:
+          latest?.keywordsMissing?.length || 0,
+        jobsMatched: latest?.jobsMatched || 0,
+        jobMatch: latest?.jobsMatched || 0,
+        suggestions: latest?.suggestions || [],
+        aiFeedback: latest?.suggestions || [],
+        skillExtraction: Array.isArray(latest?.trends)
+          ? latest.trends
+          : [],
+      });
+    }
+
+    //  ADMIN DASHBOARD
+    if (role === "admin") {
+      const totalUsers = await prisma.user.count();
+      const totalResumes = await prisma.resume.count();
+      const totalAnalyses = await prisma.analysis.count();
+
+      return res.json({
+        type: "admin",
+        totalUsers,
+        totalResumes,
+        totalAnalyses,
+      });
+    }
+
+    res.status(403).json({ message: "Invalid role" });
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+
+
