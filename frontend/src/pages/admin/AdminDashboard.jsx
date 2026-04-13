@@ -1,20 +1,45 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Users, 
   FileCheck, 
   Target, 
   Trophy, 
-  ArrowUpRight 
+  ArrowUpRight,
+  Loader2
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
+import { getDashboardStats, getAnalytics } from '../../services/api';
 
 const AdminDashboard = () => {
-  const stats = [
-    { label: 'Total Students', value: '1,284', trend: '+12.5%', icon: Users, color: 'text-blue-600', bg: 'bg-blue-50' },
-    { label: 'Resumes Analyzed', value: '3,842', trend: '+18.2%', icon: FileCheck, color: 'text-purple-600', bg: 'bg-purple-50' },
-    { label: 'Average Score', value: '74%', trend: '+4.5%', icon: Target, color: 'text-emerald-600', bg: 'bg-emerald-50' },
-    { label: 'Job Readiness', value: '42%', trend: '+2.1%', icon: Trophy, color: 'text-amber-600', bg: 'bg-amber-50' },
-  ];
+  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState([]);
+  const [analytics, setAnalytics] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [statsData, analyticsData] = await Promise.all([
+          getDashboardStats(),
+          getAnalytics()
+        ]);
+        
+        setAnalytics(analyticsData);
+        
+        setStats([
+          { label: 'Total Students', value: statsData.totalUsers?.toLocaleString() || '0', trend: '+12.5%', icon: Users, color: 'text-blue-600', bg: 'bg-blue-50' },
+          { label: 'Resumes Analyzed', value: statsData.totalAnalyses?.toLocaleString() || '0', trend: '+18.2%', icon: FileCheck, color: 'text-purple-600', bg: 'bg-purple-50' },
+          { label: 'Average Score', value: `${analyticsData.averageAtsScore || 0}%`, trend: '+4.5%', icon: Target, color: 'text-emerald-600', bg: 'bg-emerald-50' },
+          { label: 'Job Readiness', value: '42%', trend: '+2.1%', icon: Trophy, color: 'text-amber-600', bg: 'bg-amber-50' },
+        ]);
+      } catch (error) {
+        console.error('Error fetching admin dashboard data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   // Variations in data to make the demo look more realistic and dynamic
   const chartData = [
@@ -35,6 +60,14 @@ const AdminDashboard = () => {
   const maxVal = 80;
   const yAxisTicks = [80, 60, 40, 20, 0];
   const chartHeight = 320;
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">

@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
 import BaseLayout from './components/layout/BaseLayout';
 import AppLayout from './components/layout/AppLayout';
 import Landing from './pages/landing/Landing.jsx';
@@ -10,6 +11,7 @@ import Recommendations from './pages/user/Recommendations.jsx';
 import SkillInsights from './pages/user/SkillInsights.jsx';
 import Support from './pages/user/Support.jsx';
 import Profile from './pages/user/Profile.jsx';
+import Upload from './pages/user/Upload.jsx';
 import AdminDashboard from './pages/admin/AdminDashboard.jsx';
 import Students from './pages/admin/Students.jsx';
 import Reports from './pages/admin/Reports.jsx';
@@ -21,6 +23,7 @@ import PublicRoute from './components/layout/PublicRoute.jsx';
 function App() {
   return (
     <Router>
+      <Toaster position="top-right" />
       <Routes>
         
         <Route path="/" element={<PublicRoute><BaseLayout><Landing /></BaseLayout></PublicRoute>} />
@@ -34,6 +37,7 @@ function App() {
         <Route path="/insights" element={<ProtectedRoute allowedRoles={['user']}><AppLayout><SkillInsights /></AppLayout></ProtectedRoute>} />
         <Route path="/support" element={<ProtectedRoute allowedRoles={['user']}><AppLayout><Support /></AppLayout></ProtectedRoute>} />
         <Route path="/profile" element={<ProtectedRoute allowedRoles={['user', 'admin']}><AppLayout><Profile /></AppLayout></ProtectedRoute>} />
+        <Route path="/upload" element={<ProtectedRoute allowedRoles={['user']}><AppLayout><Upload /></AppLayout></ProtectedRoute>} />
 
         
         <Route path="/admin" element={<ProtectedRoute allowedRoles={['admin']}><AppLayout><AdminDashboard /></AppLayout></ProtectedRoute>} />

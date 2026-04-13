@@ -1,13 +1,99 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   Shield, 
   Globe, 
   Cpu, 
   Zap,
-  Power
+  Power,
+  Download,
+  Upload,
+  RefreshCw,
+  Loader2,
+  AlertTriangle
 } from 'lucide-react';
+import { exportData, importData, resetSettings, deleteAllData } from '../../services/api';
+import toast from 'react-hot-toast';
 
 const Settings = () => {
+  const [loading, setLoading] = useState({
+    export: false,
+    import: false,
+    reset: false,
+    delete: false
+  });
+
+  const handleExport = async () => {
+    setLoading(prev => ({ ...prev, export: true }));
+    try {
+      const data = await exportData();
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `platform-backup-${new Date().toISOString().split('T')[0]}.json`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      toast.success('Platform data exported successfully');
+    } catch (error) {
+      toast.error('Failed to export data');
+    } finally {
+      setLoading(prev => ({ ...prev, export: false }));
+    }
+  };
+
+  const handleImport = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setLoading(prev => ({ ...prev, import: true }));
+    try {
+      const reader = new FileReader();
+      reader.onload = async (event) => {
+        try {
+          const content = JSON.parse(event.target.result);
+          await importData(content);
+          toast.success('Platform data imported successfully');
+        } catch (err) {
+          toast.error('Invalid backup file format');
+        }
+      };
+      reader.readAsText(file);
+    } catch (error) {
+      toast.error('Failed to import data');
+    } finally {
+      setLoading(prev => ({ ...prev, import: false }));
+    }
+  };
+
+  const handleReset = async () => {
+    if (!window.confirm('Are you sure you want to reset all platform configurations to default?')) return;
+    
+    setLoading(prev => ({ ...prev, reset: true }));
+    try {
+      await resetSettings();
+      toast.success('Platform settings reset successfully');
+    } catch (error) {
+      toast.error('Failed to reset settings');
+    } finally {
+      setLoading(prev => ({ ...prev, reset: false }));
+    }
+  };
+
+  const handleDeleteAll = async () => {
+    const confirmed = window.confirm('DANGER: This will permanently delete ALL platform data (Users, Resumes, Reports). This cannot be undone. Type DELETE ALL to confirm.');
+    if (!confirmed) return;
+
+    setLoading(prev => ({ ...prev, delete: true }));
+    try {
+      await deleteAllData();
+      toast.success('All platform data has been purged');
+    } catch (error) {
+      toast.error('Failed to delete platform data');
+    } finally {
+      setLoading(prev => ({ ...prev, delete: false }));
+    }
+  };
   return (
     <div className="max-w-4xl mx-auto space-y-12 animate-in fade-in duration-500 pb-12">
       
@@ -70,15 +156,40 @@ const Settings = () => {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6 space-y-4">
-          <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg border border-slate-100">
-            <div>
-              <p className="text-sm font-semibold text-slate-700">Maintenance Mode</p>
-              <p className="text-xs text-slate-500">Disable platform access for non-admin users during updates.</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6 space-y-4">
+            <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg border border-slate-100">
+              <div>
+                <p className="text-sm font-semibold text-slate-700">Maintenance Mode</p>
+                <p className="text-xs text-slate-500">Disable platform access for non-admin users during updates.</p>
+              </div>
+              <button className="w-10 h-5 bg-slate-200 rounded-full relative transition-all">
+                <div className="absolute left-0.5 top-0.5 w-4 h-4 bg-white rounded-full shadow-sm" />
+              </button>
             </div>
-            <button className="w-10 h-5 bg-slate-200 rounded-full relative transition-all">
-              <div className="absolute left-0.5 top-0.5 w-4 h-4 bg-white rounded-full shadow-sm" />
-            </button>
+          </div>
+
+          <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6 space-y-4">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <p className="text-sm font-semibold text-slate-700">Data Management</p>
+                <p className="text-xs text-slate-500">Backup or restore entire platform database state.</p>
+              </div>
+              <div className="flex gap-2">
+                <button 
+                  onClick={handleExport}
+                  disabled={loading.export}
+                  className="p-2 bg-white border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50 transition-colors disabled:opacity-50"
+                  title="Export Data"
+                >
+                  {loading.export ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+                </button>
+                <label className="p-2 bg-white border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50 cursor-pointer transition-colors">
+                  {loading.import ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+                  <input type="file" className="hidden" onChange={handleImport} accept=".json" />
+                </label>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -106,14 +217,36 @@ const Settings = () => {
             </div>
           </div>
 
-          <div className="bg-red-50/30 rounded-xl border border-red-100 p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-            <div>
-              <p className="text-sm font-bold text-red-900">Reset Platform Data</p>
-              <p className="text-xs text-red-700/70 mt-1 max-w-md">This will permanently delete all student resumes, analysis history, and generated reports. This action cannot be undone.</p>
+          <div className="bg-red-50/30 rounded-xl border border-red-100 p-6 space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+              <div>
+                <p className="text-sm font-bold text-red-900">Reset Platform Configurations</p>
+                <p className="text-xs text-red-700/70 mt-1 max-w-md">Restore all system settings, API configurations, and platform defaults. Student data will remain intact.</p>
+              </div>
+              <button 
+                onClick={handleReset}
+                disabled={loading.reset}
+                className="px-6 py-2.5 bg-white border border-red-200 text-red-600 rounded-lg font-bold text-xs uppercase tracking-wider hover:bg-red-50 transition-colors shadow-sm whitespace-nowrap flex items-center gap-2"
+              >
+                {loading.reset && <Loader2 className="w-3 h-3 animate-spin" />}
+                Reset Defaults
+              </button>
             </div>
-            <button className="px-6 py-2.5 bg-red-600 text-white rounded-lg font-bold text-xs uppercase tracking-wider hover:bg-red-700 transition-colors shadow-sm whitespace-nowrap">
-              Clear All Data
-            </button>
+
+            <div className="pt-6 border-t border-red-100 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+              <div>
+                <p className="text-sm font-bold text-red-900">Purge All Data</p>
+                <p className="text-xs text-red-700/70 mt-1 max-w-md">This will permanently delete all student resumes, analysis history, and generated reports. This action cannot be undone.</p>
+              </div>
+              <button 
+                onClick={handleDeleteAll}
+                disabled={loading.delete}
+                className="px-6 py-2.5 bg-red-600 text-white rounded-lg font-bold text-xs uppercase tracking-wider hover:bg-red-700 transition-colors shadow-sm whitespace-nowrap flex items-center gap-2"
+              >
+                {loading.delete && <Loader2 className="w-3 h-3 animate-spin" />}
+                Clear All Data
+              </button>
+            </div>
           </div>
         </section>
       </div>

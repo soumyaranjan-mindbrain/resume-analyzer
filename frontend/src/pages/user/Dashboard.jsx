@@ -15,41 +15,10 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import dashboardBanner from '../../assets/dashboard-banner-seamless.png';
+import { useAuth } from '../../context/AuthContext';
+import { getDashboardStats } from '../../services/api';
 
 const cn = (...classes) => classes.filter(Boolean).join(' ');
-
-const summaryCards = [
-  {
-    label: 'ATS Score',
-    value: '78%',
-    tone: 'blue',
-    icon: BarChart3,
-    note: '+ 6% since last week',
-    noteTone: 'text-[#10b981]',
-    noteIcon: ArrowUp
-  },
-  {
-    label: 'Job Ready',
-    value: '92%',
-    tone: 'emerald',
-    icon: ShieldCheck,
-    detail: 'Based on ATS score and overall skill matching algorithms.'
-  },
-  {
-    label: 'Gaps',
-    value: '03',
-    tone: 'orange',
-    icon: AlertTriangle,
-    action: 'View Analysis'
-  },
-  {
-    label: 'Matches',
-    value: '02',
-    tone: 'purple',
-    icon: Briefcase,
-    detail: 'Highly relevant matches found in "Software Engineering".'
-  }
-];
 
 const toneStyles = {
   blue: {
@@ -80,6 +49,67 @@ const toneStyles = {
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const [stats, setStats] = React.useState(null);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        const data = await getDashboardStats();
+        setStats(data);
+      } catch (error) {
+        console.error('Failed to fetch dashboard stats:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchDashboardData();
+  }, []);
+
+  const cards = [
+    {
+      label: 'ATS Score',
+      value: stats ? `${stats.atsScore}%` : '0%',
+      tone: 'blue',
+      icon: BarChart3,
+      note: stats?.atsScore > 0 ? '+ 2% since last scan' : 'Upload to see score',
+      noteTone: 'text-[#10b981]',
+      noteIcon: ArrowUp
+    },
+    {
+      label: 'Job Ready',
+      value: stats ? (stats.atsScore > 70 ? '92%' : 'Low') : '0%',
+      tone: 'emerald',
+      icon: ShieldCheck,
+      detail: 'Based on ATS score and overall skill matching algorithms.'
+    },
+    {
+      label: 'Gaps',
+      value: stats ? stats.keywordsMissing.toString().padStart(2, '0') : '00',
+      tone: 'orange',
+      icon: AlertTriangle,
+      action: 'View Analysis'
+    },
+    {
+      label: 'Matches',
+      value: stats ? stats.jobsMatched.toString().padStart(2, '0') : '00',
+      tone: 'purple',
+      icon: Briefcase,
+      detail: 'Relevant matches found in your field.'
+    }
+  ];
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-transparent">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-16 h-16 border-4 border-[#4b7bff]/20 border-t-[#4b7bff] rounded-full animate-spin shadow-lg shadow-blue-500/20" />
+          <p className="text-[#4b7bff] font-black uppercase tracking-widest text-xs animate-pulse">Syncing Dashboard...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 max-w-[1400px] mx-auto pb-10 px-4 sm:px-0">
@@ -100,7 +130,7 @@ const Dashboard = () => {
 
         
         <div className="relative z-10 space-y-4 p-12 flex flex-col justify-center w-full max-w-2xl">
-          <h1 className="text-5xl font-black text-[#1e293b] tracking-tighter">Welcome, <span className="text-[#4b7bff]">James</span>!</h1>
+          <h1 className="text-5xl font-black text-[#1e293b] tracking-tighter">Welcome, <span className="text-[#4b7bff]">{user?.name.split(' ')[0] || 'User'}</span>!</h1>
           <p className="text-[#64748b] text-base font-medium max-w-md leading-relaxed">
             Your personal AI-powered resume dashboard is updated with the latest trends.
           </p>
@@ -123,7 +153,7 @@ const Dashboard = () => {
 
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {summaryCards.map((card) => {
+        {cards.map((card) => {
           const Icon = card.icon;
           const tone = toneStyles[card.tone];
           return (
@@ -229,9 +259,9 @@ const Dashboard = () => {
           <div className="flex flex-col xl:flex-row items-center gap-8 justify-between flex-1 relative z-10">
             <ul className="space-y-4 w-full xl:w-auto">
               {[
-                { label: "Technical Skills", color: "bg-[#4b7bff]", percent: "35%" },
-                { label: "Experience Match", color: "bg-[#10b981]", percent: "30%" },
-                { label: "Keyword Density", color: "bg-[#8b5cf6]", percent: "20%" },
+                { label: "Technical Skills", color: "bg-[#4b7bff]", percent: stats ? `${Math.min(stats.atsScore, 40)}%` : "35%" },
+                { label: "Experience Match", color: "bg-[#10b981]", percent: stats ? `${Math.min(stats.atsScore, 30)}%` : "30%" },
+                { label: "Keyword Density", color: "bg-[#8b5cf6]", percent: stats ? `${Math.min(stats.atsScore, 20)}%` : "20%" },
                 { label: "Formatting", color: "bg-[#f59e0b]", percent: "15%" },
               ].map((item, idx) => (
                 <li key={idx} className="flex items-center justify-between xl:justify-start gap-4 p-3 bg-white/50 rounded-2xl border border-white hover:bg-white transition-colors cursor-default">
@@ -253,7 +283,7 @@ const Dashboard = () => {
                 <circle cx="50" cy="50" r="40" fill="transparent" stroke="#10b981" strokeWidth="14" strokeDasharray="75.5 251.3" strokeDashoffset="-175.8" />
               </svg>
               <div className="absolute inset-0 flex items-center justify-center flex-col bg-white m-4 rounded-full shadow-inner border border-slate-50">
-                <span className="text-3xl font-black text-[#1e293b] tracking-tighter">78%</span>
+                <span className="text-3xl font-black text-[#1e293b] tracking-tighter">{stats ? `${stats.atsScore}%` : '0%'}</span>
               </div>
             </div>
           </div>
@@ -264,27 +294,22 @@ const Dashboard = () => {
         <div className="bg-[#fffdf0]/25 backdrop-blur-[40px] rounded-[2.8rem] p-8 shadow-[0_60px_100px_-20px_rgba(15,23,42,0.4),inset_0_1px_4px_rgba(255,255,255,0.6)] border border-white/70 h-full relative overflow-hidden group transition-all duration-700 flex flex-col justify-between">
           <div className="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-slate-900/[0.15] pointer-events-none" />
           <div className="flex items-center justify-between relative z-10 shrink-0 mb-6">
-            <h3 className="font-black text-[#1e293b] text-xl tracking-tight">Next Steps</h3>
+            <h3 className="font-black text-[#1e293b] text-xl tracking-tight">Suggestions</h3>
           </div>
           <div className="flex items-center justify-between flex-1 relative z-10">
             <div>
               <ul className="space-y-5">
-                {[
+                {(stats?.suggestions || [
                   { label: "JavaScript", text: "Add JavaScript to your skills section", color: "decoration-[#10b981]/30" },
                   { label: "Data Analysis", text: "Include \"Data Analysis\" keywords", color: "decoration-[#10b981]/30" },
                   { label: "Summary", text: "Refine your professional summary", color: "decoration-[#10b981]/30" }
-                ].map((step, i) => (
+                ]).slice(0, 3).map((step, i) => (
                   <li key={i} className="flex items-center gap-4 group/item">
                     <div className="w-6 h-6 shrink-0 rounded-full bg-white text-[#10b981] flex items-center justify-center shadow-sm group-hover/item:scale-110 transition-transform">
                       <CheckCircle2 className="w-4 h-4" />
                     </div>
                     <span className="text-[#334155] text-sm font-medium">
-                      {step.text.split(step.label).map((t, idx) => (
-                        <React.Fragment key={idx}>
-                          {t}
-                          {idx === 0 && <span className={cn("font-black text-[#1e293b] underline", step.color)}>{step.label}</span>}
-                        </React.Fragment>
-                      ))}
+                      {typeof step === 'string' ? step : step.text}
                     </span>
                   </li>
                 ))}
@@ -308,9 +333,9 @@ const Dashboard = () => {
 
           <div className="space-y-6 flex-1 relative z-10 justify-center flex flex-col">
             {[
-              { icon: FileCheck2, title: "Resume analyzed", time: "30m ago", status: "New", color: "text-blue-500", bg: "bg-blue-50" },
-              { icon: ListChecks, title: "Job matched", time: "2h ago", status: "Done", color: "text-emerald-500", bg: "bg-emerald-50" },
-              { icon: TrendingUp, title: "ATS score boost", time: "5d ago", status: "+3%", color: "text-purple-500", bg: "bg-purple-50" },
+              { icon: FileCheck2, title: "Resume analyzed", time: stats ? "Today" : "30m ago", status: "New", color: "text-blue-500", bg: "bg-blue-50" },
+              { icon: ListChecks, title: "Job matched", time: stats ? "Recently" : "2h ago", status: "Done", color: "text-emerald-500", bg: "bg-emerald-50" },
+              { icon: TrendingUp, title: "ATS score boost", time: stats ? "Current" : "5d ago", status: stats ? `+${stats.atsScore}%` : "+3%", color: "text-purple-500", bg: "bg-purple-50" },
             ].map((act, i) => (
               <div key={i} className="flex items-center justify-between group/act">
                 <div className="flex items-center gap-4">
@@ -337,4 +362,3 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
-

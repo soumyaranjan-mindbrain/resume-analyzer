@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Users, 
   Search, 
@@ -10,41 +10,59 @@ import {
   Trash2,
   Eye,
   CheckCircle2,
-  Clock
+  Clock,
+  Loader2
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
+import { getAdminStudents, deleteAdminStudent } from '../../services/api';
 
 const Students = () => {
   const [activeTab, setActiveTab] = useState('All');
   const [pageSize, setPageSize] = useState(5);
+  const [loading, setLoading] = useState(true);
+  const [students, setStudents] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const fetchStudents = async () => {
+    try {
+      setLoading(true);
+      const data = await getAdminStudents();
+      setStudents(data);
+    } catch (error) {
+      console.error('Error fetching students:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchStudents();
+  }, []);
+
+  const handleDelete = async (id) => {
+    if (window.confirm('Are you sure you want to delete this student?')) {
+      try {
+        await deleteAdminStudent(id);
+        fetchStudents();
+      } catch (error) {
+        alert('Failed to delete student');
+      }
+    }
+  };
+
+  const filteredStudents = students.filter(student => {
+    const matchesSearch = 
+      student.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      student.email?.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    if (activeTab === 'All') return matchesSearch;
+    return matchesSearch && student.status === activeTab;
+  });
   
   const stats = [
-    { label: 'Active Students', value: '1,124', change: '+5%', status: 'up' },
-    { label: 'New This Week', value: '84', change: '+12%', status: 'up' },
-    { label: 'Job Ready', value: '642', change: '+3%', status: 'up' },
-  ];
-
-  const students = [
-    { id: 1, name: 'Alex Rivera', email: 'alex.r@example.com', branch: 'CS', score: 82, status: 'Active', lastActive: '2h ago' },
-    { id: 2, name: 'Sarah Chen', email: 'sarah.c@example.com', branch: 'IT', score: 94, status: 'Hired', lastActive: '5h ago' },
-    { id: 3, name: 'Marcus Bell', email: 'marcus.b@example.com', branch: 'ECE', score: 65, status: 'Active', lastActive: '1d ago' },
-    { id: 4, name: 'Elena Vance', email: 'elena.v@example.com', branch: 'CS', score: 45, status: 'Needs Review', lastActive: '3h ago' },
-    { id: 5, name: 'David Kim', email: 'david.k@example.com', branch: 'IT', score: 78, status: 'Active', lastActive: '12h ago' },
-    { id: 6, name: 'James Wilson', email: 'james.w@example.com', branch: 'CS', score: 88, status: 'Active', lastActive: '1h ago' },
-    { id: 7, name: 'Priya Sharma', email: 'priya.s@example.com', branch: 'IT', score: 91, status: 'Hired', lastActive: '4h ago' },
-    { id: 8, name: 'Lucas Meyer', email: 'lucas.m@example.com', branch: 'ME', score: 55, status: 'Needs Review', lastActive: '6h ago' },
-    { id: 9, name: 'Ana Garcia', email: 'ana.g@example.com', branch: 'CS', score: 72, status: 'Active', lastActive: '8h ago' },
-    { id: 10, name: 'Ryan Taylor', email: 'ryan.t@example.com', branch: 'EE', score: 84, status: 'Active', lastActive: '10h ago' },
-    { id: 11, name: 'Sophie Wong', email: 'sophie.w@example.com', branch: 'IT', score: 96, status: 'Hired', lastActive: '30m ago' },
-    { id: 12, name: 'Oliver Brown', email: 'oliver.b@example.com', branch: 'CS', score: 68, status: 'Active', lastActive: '1d ago' },
-    { id: 13, name: 'Emma Davis', email: 'emma.d@example.com', branch: 'ECE', score: 75, status: 'Active', lastActive: '2d ago' },
-    { id: 14, name: 'Noah Wilson', email: 'noah.w@example.com', branch: 'CS', score: 42, status: 'Needs Review', lastActive: '5h ago' },
-    { id: 15, name: 'Isabella Martinez', email: 'isabella.m@example.com', branch: 'IT', score: 89, status: 'Active', lastActive: '7h ago' },
-    { id: 16, name: 'Liam Johnson', email: 'liam.j@example.com', branch: 'ME', score: 81, status: 'Hired', lastActive: '9h ago' },
-    { id: 17, name: 'Mia Thompson', email: 'mia.t@example.com', branch: 'CS', score: 63, status: 'Active', lastActive: '11h ago' },
-    { id: 18, name: 'Ethan Hunt', email: 'ethan.h@example.com', branch: 'IT', score: 92, status: 'Hired', lastActive: '15m ago' },
-    { id: 19, name: 'Zoe Clark', email: 'zoe.c@example.com', branch: 'EE', score: 58, status: 'Needs Review', lastActive: '1d ago' },
-    { id: 20, name: 'Aiden Smith', email: 'aiden.s@example.com', branch: 'CS', score: 76, status: 'Active', lastActive: '3h ago' },
+    { label: 'Active Students', value: students.length.toLocaleString(), change: '+5%', status: 'up' },
+    { label: 'New This Week', value: Math.floor(students.length * 0.1), change: '+12%', status: 'up' },
+    { label: 'Job Ready', value: Math.floor(students.length * 0.6), change: '+3%', status: 'up' },
   ];
 
   return (
@@ -96,6 +114,8 @@ const Students = () => {
                 <input 
                   type="text" 
                   placeholder="Search students..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 w-full transition-all shadow-sm"
                 />
              </div>
@@ -121,74 +141,95 @@ const Students = () => {
                 <th className="py-3 px-6 text-right text-xs font-semibold text-slate-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
-              {students.slice(0, pageSize).map((student) => (
-                <tr key={student.id} className="hover:bg-slate-50 transition-colors">
-                  <td className="py-4 px-6">
-                    <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center font-semibold text-blue-600 text-sm shrink-0">
-                         {student.name.charAt(0)}
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-slate-900">{student.name}</p>
-                        <p className="text-sm text-slate-500">{student.email}</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="py-4 px-6">
-                    <span className="text-sm text-slate-700">{student.branch}</span>
-                  </td>
-                  <td className="py-4 px-6">
-                    <div className="flex items-center gap-3">
-                       <span className="text-sm font-medium text-slate-900 w-8">{student.score}%</span>
-                       <div className="w-16 h-2 bg-slate-100 rounded-full overflow-hidden">
-                          <div 
-                            className={cn("h-full rounded-full", 
-                              student.score >= 80 ? "bg-emerald-500" : 
-                              student.score >= 60 ? "bg-blue-500" : "bg-amber-500"
-                            )} 
-                            style={{ width: `${student.score}%` }} 
-                          />
+             <tbody className="divide-y divide-slate-100">
+               {loading ? (
+                 <tr>
+                   <td colSpan="6" className="py-10 text-center">
+                     <div className="flex flex-col items-center gap-2">
+                       <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
+                       <p className="text-sm text-slate-500 font-medium">Loading students...</p>
+                     </div>
+                   </td>
+                 </tr>
+               ) : filteredStudents.length === 0 ? (
+                 <tr>
+                   <td colSpan="6" className="py-10 text-center text-slate-500 font-medium">
+                     No students found matching your criteria.
+                   </td>
+                 </tr>
+               ) : (
+                 filteredStudents.slice(0, pageSize).map((student) => (
+                   <tr key={student.id} className="hover:bg-slate-50 transition-colors">
+                     <td className="py-4 px-6">
+                       <div className="flex items-center gap-3">
+                         <div className="w-9 h-9 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center font-semibold text-blue-600 text-sm shrink-0">
+                            {student.name?.charAt(0)}
+                         </div>
+                         <div>
+                           <p className="text-sm font-medium text-slate-900">{student.name}</p>
+                           <p className="text-sm text-slate-500">{student.email}</p>
+                         </div>
                        </div>
-                    </div>
-                  </td>
-                  <td className="py-4 px-6">
-                    <div className={cn(
-                      "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium",
-                      student.status === 'Hired' ? "bg-emerald-50 text-emerald-700" :
-                      student.status === 'Active' ? "bg-blue-50 text-blue-700" :
-                      "bg-amber-50 text-amber-700"
-                    )}>
-                       {student.status === 'Hired' ? <CheckCircle2 className="w-3.5 h-3.5" /> :
-                        student.status === 'Active' ? <TrendingUp className="w-3.5 h-3.5" /> :
-                        <Clock className="w-3.5 h-3.5" />}
-                       {student.status}
-                    </div>
-                  </td>
-                  <td className="py-4 px-6 text-sm text-slate-500">{student.lastActive}</td>
-                  <td className="py-4 px-6">
-                    <div className="flex items-center justify-end gap-1">
-                       <button className="p-1.5 text-slate-400 hover:text-blue-600 rounded-md hover:bg-blue-50 transition-colors" title="View details">
-                          <Eye className="w-4 h-4" />
-                       </button>
-                       <button className="p-1.5 text-slate-400 hover:text-red-600 rounded-md hover:bg-red-50 transition-colors" title="Delete">
-                          <Trash2 className="w-4 h-4" />
-                       </button>
-                       <button className="p-1.5 text-slate-400 hover:text-slate-900 rounded-md hover:bg-slate-100 transition-colors" title="More options">
-                          <MoreHorizontal className="w-4 h-4" />
-                       </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
+                     </td>
+                     <td className="py-4 px-6">
+                       <span className="text-sm text-slate-700">{student.course || student.branch || 'N/A'}</span>
+                     </td>
+                     <td className="py-4 px-6">
+                       <div className="flex items-center gap-3">
+                          <span className="text-sm font-medium text-slate-900 w-8">{student.score || 0}%</span>
+                          <div className="w-16 h-2 bg-slate-100 rounded-full overflow-hidden">
+                             <div 
+                               className={cn("h-full rounded-full", 
+                                 (student.score || 0) >= 80 ? "bg-emerald-500" : 
+                                 (student.score || 0) >= 60 ? "bg-blue-500" : "bg-amber-500"
+                               )} 
+                               style={{ width: `${student.score || 0}%` }} 
+                             />
+                          </div>
+                       </div>
+                     </td>
+                     <td className="py-4 px-6">
+                       <div className={cn(
+                         "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium",
+                         student.status === 'Hired' ? "bg-emerald-50 text-emerald-700" :
+                         student.status === 'Needs Review' ? "bg-amber-50 text-amber-700" :
+                         "bg-blue-50 text-blue-700"
+                       )}>
+                          {student.status === 'Hired' ? <CheckCircle2 className="w-3.5 h-3.5" /> :
+                           student.status === 'Needs Review' ? <Clock className="w-3.5 h-3.5" /> :
+                           <TrendingUp className="w-3.5 h-3.5" />}
+                          {student.status || 'Active'}
+                       </div>
+                     </td>
+                     <td className="py-4 px-6 text-sm text-slate-500">{student.lastActive || new Date(student.updatedAt).toLocaleDateString()}</td>
+                     <td className="py-4 px-6">
+                       <div className="flex items-center justify-end gap-1">
+                          <button className="p-1.5 text-slate-400 hover:text-blue-600 rounded-md hover:bg-blue-50 transition-colors" title="View details">
+                             <Eye className="w-4 h-4" />
+                          </button>
+                          <button 
+                            onClick={() => handleDelete(student.id)}
+                            className="p-1.5 text-slate-400 hover:text-red-600 rounded-md hover:bg-red-50 transition-colors" 
+                            title="Delete"
+                          >
+                             <Trash2 className="w-4 h-4" />
+                          </button>
+                          <button className="p-1.5 text-slate-400 hover:text-slate-900 rounded-md hover:bg-slate-100 transition-colors" title="More options">
+                             <MoreHorizontal className="w-4 h-4" />
+                          </button>
+                       </div>
+                     </td>
+                   </tr>
+                 ))
+               )}
+             </tbody>
           </table>
         </div>
 
         {/* Pagination */}
         <div className="p-4 border-t border-slate-200 bg-slate-50 flex flex-col sm:flex-row items-center justify-between gap-4">
            <div className="flex items-center gap-4">
-             <p className="text-sm text-slate-500">Showing <span className="font-medium text-slate-900">{students.length > pageSize ? pageSize : students.length}</span> of <span className="font-medium text-slate-900">1,284</span> students</p>
+             <p className="text-sm text-slate-500">Showing <span className="font-medium text-slate-900">{filteredStudents.length > pageSize ? pageSize : filteredStudents.length}</span> of <span className="font-medium text-slate-900">{filteredStudents.length}</span> students</p>
              
              <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-sm">
                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Show</span>

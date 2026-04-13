@@ -84,7 +84,7 @@ const AppLayout = ({ children }) => {
           sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         )}
       >
-          {/* Subtle sidebar gradient overlay */}
+          {/* sidebar gradient */}
           <div className="absolute inset-0 bg-gradient-to-b from-slate-50/50 to-transparent pointer-events-none" />
           
           <div className="relative z-10 flex items-center gap-3 px-6 mb-10 shrink-0">
@@ -126,7 +126,7 @@ const AppLayout = ({ children }) => {
           </nav>
 
           
-          {/* Footer Area */}
+          {/* Footer */}
           <div className="relative z-10 px-5 mt-auto shrink-0 w-full space-y-2">
             {user?.role !== 'admin' && (
               <NavLink 
@@ -165,7 +165,7 @@ const AppLayout = ({ children }) => {
             </div>
           ) : (
             <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-[0.4]">
-               {/* Very subtle secondary tint for admin to avoid pure white */}
+               {/* Secondary tint for admin panel */}
                <div className="absolute top-0 right-0 w-[50%] h-[50%] bg-blue-50/50 blur-[120px] rounded-full" />
                <div className="absolute bottom-0 left-0 w-[50%] h-[50%] bg-slate-100/50 blur-[120px] rounded-full" />
             </div>
@@ -192,10 +192,15 @@ const AppLayout = ({ children }) => {
                   onClick={() => setProfileOpen(!profileOpen)}
                   className="flex items-center gap-3 bg-white shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] rounded-2xl p-1.5 pr-4 ml-2 hover:shadow-md transition-all border border-transparent hover:border-[#4b7bff]/20"
                 >
-                  <div className="w-9 h-9 rounded-xl overflow-hidden shrink-0">
-                    <img src="https://i.pravatar.cc/150?img=11" alt="Profile" className="w-full h-full object-cover" />
+                  <div className="w-9 h-9 rounded-xl overflow-hidden shrink-0 bg-blue-500/10 flex items-center justify-center font-black text-[#4b7bff] text-xs">
+                    {user?.profilePic ? (
+                      <img src={user.profilePic} alt="Profile" className="w-full h-full object-cover" />
+                    ) : (
+                      user?.name?.charAt(0) || 'U'
+                    )}
                   </div>
                   <span className="text-sm font-bold text-[#334155] hidden sm:block">{user?.name || 'User'}</span>
+
                   <ChevronDown className={cn("w-4 h-4 text-[#94a3b8] hidden sm:block transition-transform", profileOpen && "rotate-180")} />
                 </button>
 

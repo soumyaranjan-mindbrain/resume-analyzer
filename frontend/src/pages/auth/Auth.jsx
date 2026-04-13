@@ -17,12 +17,12 @@ import { useAuth } from '../../context/AuthContext';
 
 const Auth = () => {
   const navigate = useNavigate();
-  const { login, user } = useAuth();
+  const { login, register, user } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
 
-  
   const [showPassword, setShowPassword] = useState(false);
-  const [id, setId] = useState('');
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -45,26 +45,30 @@ const Auth = () => {
     return () => ctx.revert();
   }, []);
 
-  const handleAuth = (e) => {
+  const handleAuth = async (e) => {
     e.preventDefault();
+
     setLoading(true);
     setError('');
 
-    setTimeout(() => {
-      if (id === 'admin' && password === '000000') {
-        login({ id: 'admin', role: 'admin', name: 'James (Admin)' });
-        navigate('/admin', { replace: true });
-        setLoading(false);
-      } else if (id === 'user' && password === '000000') {
-        login({ id: 'user', role: 'user', name: 'James Anderson' });
-        navigate('/dashboard', { replace: true });
-        setLoading(false);
+    try {
+      if (isLogin) {
+        const user = await login(email, password);
+        const redirectPath = user.role === 'admin' ? '/admin' : '/dashboard';
+        navigate(redirectPath, { replace: true });
       } else {
-        setError('Invalid ID or Password. Try user/admin with 000000.');
-        setLoading(false);
+        await register({ name, email, password, role: 'student' });
+        setError('');
+        setIsLogin(true); // Switch to login after registration
+        alert('Registration successful! Please login.');
       }
-    }, 1200);
+    } catch (err) {
+      setError(err.error || err.message || 'Authentication failed');
+    } finally {
+      setLoading(false);
+    }
   };
+
 
   return (
     <div className="min-h-screen flex items-center justify-center p-6 bg-transparent">
@@ -115,6 +119,8 @@ const Auth = () => {
                     <User className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                     <input 
                       type="text" 
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
                       placeholder="John Doe"
                       className="input-clay !pl-14 !bg-slate-50 !border-slate-200 focus:!bg-white transition-all shadow-sm"
                       required={!isLogin}
@@ -124,14 +130,14 @@ const Auth = () => {
               )}
 
               <div className="space-y-2">
-                <label className="text-[11px] font-black uppercase tracking-widest text-slate-500 ml-1">Email or ID</label>
+                <label className="text-[11px] font-black uppercase tracking-widest text-slate-500 ml-1">Email Address</label>
                 <div className="relative">
                   <Mail className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                   <input 
-                    type="text" 
-                    value={id}
-                    onChange={(e) => setId(e.target.value)}
-                    placeholder="user or admin"
+                    type="email" 
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="example@mail.com"
                     className="input-clay !pl-14 !bg-slate-50 !border-slate-200 focus:!bg-white transition-all shadow-sm"
                     required
                   />
