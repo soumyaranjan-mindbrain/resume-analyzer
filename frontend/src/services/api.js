@@ -1,4 +1,4 @@
-import axios from 'axios';
+  import axios from 'axios';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
@@ -7,10 +7,7 @@ const apiClient = axios.create({
   withCredentials: true,
 });
 
-<<<<<<< HEAD
 // Resume APIs
-=======
->>>>>>> 41b8693f4b056f0286c9dde1c76a3df58538fe9e
 export const uploadResume = async (formData) => {
   const response = await apiClient.post('/resume/upload', formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
@@ -33,11 +30,8 @@ export const getMyResumes = async () => {
   return response.data;
 };
 
-<<<<<<< HEAD
 export const getResumes = getMyResumes; // Alias for convenience
 
-=======
->>>>>>> 41b8693f4b056f0286c9dde1c76a3df58538fe9e
 export const getResumeById = async (id) => {
   const response = await apiClient.get(`/resume/${id}`);
   return response.data;
@@ -48,23 +42,17 @@ export const deleteResume = async (id) => {
   return response.data;
 };
 
-<<<<<<< HEAD
 export const matchResume = async (resumeId, jobDescription) => {
   const response = await apiClient.post('/resume/match', { resumeId, jobDescription });
   return response.data;
 };
 
-=======
->>>>>>> 41b8693f4b056f0286c9dde1c76a3df58538fe9e
 export const getFeedback = async (resumeId) => {
   const response = await apiClient.get('/resume/feedback', { params: { resumeId } });
   return response.data;
 };
 
-<<<<<<< HEAD
 // Dashboard APIs
-=======
->>>>>>> 41b8693f4b056f0286c9dde1c76a3df58538fe9e
 export const getDashboardStats = async () => {
   const response = await apiClient.get('/dashboard');
   return response.data;
@@ -80,38 +68,24 @@ export const getReports = async () => {
   return response.data;
 };
 
-<<<<<<< HEAD
 // Profile APIs
-=======
->>>>>>> 41b8693f4b056f0286c9dde1c76a3df58538fe9e
 export const updateProfile = async (id, data) => {
   const response = await apiClient.put(`/profile/${id}`, data);
   return response.data;
 };
 
-<<<<<<< HEAD
 // Jobs APIs
-=======
->>>>>>> 41b8693f4b056f0286c9dde1c76a3df58538fe9e
 export const getAllJobs = async () => {
   const response = await apiClient.get('/jobs');
   return response.data;
 };
 
 export const getMatchedJobs = async () => {
-<<<<<<< HEAD
-  // In a real scenario, this might need a resumeId or user context
-  const response = await apiClient.get('/jobs/user/my-jobs'); 
-  return response.data;
-};
-
-// Student APIs
-=======
   const response = await apiClient.get('/jobs/user/my-jobs');
   return response.data;
 };
 
->>>>>>> 41b8693f4b056f0286c9dde1c76a3df58538fe9e
+// Student APIs
 export const getAdminStudents = async () => {
   const response = await apiClient.get('/students');
   return response.data;
@@ -127,10 +101,7 @@ export const createAdminStudent = async (data) => {
   return response.data;
 };
 
-<<<<<<< HEAD
 // Admin Settings APIs
-=======
->>>>>>> 41b8693f4b056f0286c9dde1c76a3df58538fe9e
 export const exportData = async () => {
   const response = await apiClient.get('/settings/export');
   return response.data;

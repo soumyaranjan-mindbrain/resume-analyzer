@@ -1,32 +1,22 @@
-<<<<<<< HEAD
 import React, { useState, useEffect } from 'react';
 import {
   FileText,
+  Search,
+  Upload,
+  Plus,
+  Filter,
+  MoreHorizontal,
+  Download,
+  Trash2,
+  Edit3,
   CheckCircle2,
   Clock,
-=======
-import React, { useEffect, useState } from 'react';
-import { 
-  FileText, 
-  Search, 
-  Upload, 
-  Plus, 
-  Filter, 
-  MoreHorizontal, 
-  Download, 
-  Trash2, 
-  Edit3, 
-  CheckCircle2, 
-  Clock, 
   ChevronRight,
->>>>>>> 41b8693f4b056f0286c9dde1c76a3df58538fe9e
   Eye,
   GitCompare,
-  PlayCircle,
-  Trash2
+  PlayCircle
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
-<<<<<<< HEAD
 import { getResumes, deleteResume, analyzeResume } from '../../services/api';
 
 const History = () => {
@@ -44,34 +34,6 @@ const History = () => {
       setLoading(false);
     }
   };
-=======
-import { analyzeResume, deleteResume, getMyResumes } from '../../services/api';
-
-const History = () => {
-  const [activeTab, setActiveTab] = useState('All');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [resumes, setResumes] = useState([]);
-
-  useEffect(() => {
-    const load = async () => {
-      try {
-        const data = await getMyResumes();
-        setResumes((data.resumes || []).map((resume) => ({
-          id: resume.id,
-          name: resume.fileName,
-          status: resume.analysis ? 'Analyzed' : 'Draft',
-          score: resume.analysis?.atsScore || null,
-          date: new Date(resume.createdAt || Date.now()).toLocaleDateString(),
-          role: resume.analysis?.summary || resume.analysis?.jobTitle || 'General Analysis',
-          type: resume.analysis ? 'analyzed' : 'draft',
-        })));
-      } catch {
-        setResumes([]);
-      }
-    };
-    load();
-  }, []);
->>>>>>> 41b8693f4b056f0286c9dde1c76a3df58538fe9e
 
   useEffect(() => {
     fetchResumes();
@@ -98,7 +60,6 @@ const History = () => {
       setLoading(false);
     }
   };
-
 
   if (loading && resumes.length === 0) {
     return (
@@ -210,6 +171,12 @@ const History = () => {
 
                   <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
                     <button
+                      onClick={() => handleAnalyze(resume._id || resume.id)}
+                      className="p-3 text-slate-400 hover:text-[#4b7bff] hover:bg-white/40 rounded-xl transition-all" title="Refresh Analysis"
+                    >
+                      <Edit3 className="w-5 h-5" />
+                    </button>
+                    <button
                       onClick={() => handleDelete(resume._id || resume.id)}
                       className="p-3 text-slate-400 hover:text-rose-500 hover:bg-rose-50/40 rounded-xl transition-all" title="Delete"
                     >
@@ -218,44 +185,7 @@ const History = () => {
                   </div>
                 </div>
               </div>
-<<<<<<< HEAD
-=======
-
-              
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-8 border-t border-white/40">
-                 <div className="flex items-center gap-3 w-full sm:w-auto">
-                    {resume.status === 'Analyzed' ? (
-                        <>
-                           <button className="flex-1 sm:flex-none flex items-center justify-center gap-3 px-6 py-3.5 bg-[#4b7bff] text-white rounded-2xl font-black text-sm shadow-lg shadow-blue-500/20 hover:scale-[1.02] active:scale-95 transition-all">
-                                <Eye className="w-4 h-4" />
-                                View Report
-                            </button>
-                            <button className="flex-1 sm:flex-none flex items-center justify-center gap-3 px-6 py-3.5 bg-white/40 text-[#1e293b] rounded-2xl font-black text-sm border border-white/60 hover:bg-white/60 transition-all">
-                                <GitCompare className="w-4 h-4" />
-                                Compare
-                            </button>
-                        </>
-                    ) : (
-                        <button className="flex-1 sm:flex-none flex items-center justify-center gap-3 px-8 py-3.5 bg-emerald-500 text-white rounded-2xl font-black text-sm shadow-lg shadow-emerald-500/20 hover:scale-[1.02] active:scale-95 transition-all">
-                            <PlayCircle className="w-4 h-4" />
-                            Run Analysis
-                        </button>
-                    )}
-                 </div>
-
-                 <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
-                    <button className="p-3 text-slate-400 hover:text-[#4b7bff] hover:bg-white/40 rounded-xl transition-all" title="Refresh Analysis" onClick={() => analyzeResume(resume.id)}>
-                        <Edit3 className="w-5 h-5" />
-                    </button>
-                    <button className="p-3 text-slate-400 hover:text-[#4b7bff] hover:bg-white/40 rounded-xl transition-all" title="Download">
-                        <Download className="w-5 h-5" />
-                    </button>
-                    <button className="p-3 text-slate-400 hover:text-rose-500 hover:bg-rose-50/40 rounded-xl transition-all" title="Delete" onClick={() => deleteResume(resume.id).then(() => setResumes((prev) => prev.filter((r) => r.id !== resume.id)))}>
-                        <Trash2 className="w-5 h-5" />
-                    </button>
-                 </div>
-              </div>
->>>>>>> 41b8693f4b056f0286c9dde1c76a3df58538fe9e
+            </div>
             </div>
             );
           })

@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import React, { useState, useEffect } from 'react';
-=======
-import React, { useEffect, useState } from 'react';
->>>>>>> 41b8693f4b056f0286c9dde1c76a3df58538fe9e
 import { 
   Lightbulb, 
   Search, 
@@ -22,7 +18,6 @@ import { useNavigate } from 'react-router-dom';
 const Recommendations = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('Improvement Tips');
-<<<<<<< HEAD
   const [recommendations, setRecommendations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [resumes, setResumes] = useState([]);
@@ -32,45 +27,31 @@ const Recommendations = () => {
       try {
         setLoading(true);
         const resumeData = await getMyResumes();
-        setResumes(resumeData.resumes || []);
-        
-        if (resumeData.resumes?.length > 0) {
-          const feedbackData = await getFeedback(resumeData.resumes[0]._id || resumeData.resumes[0].id);
-          // Assuming feedbackData has recommendations array
-          setRecommendations(feedbackData.recommendations || []);
-        }
-      } catch (error) {
-        console.error('Failed to fetch recommendations:', error);
-=======
-  const [loading, setLoading] = useState(true);
-  const [recommendations, setRecommendations] = useState([]);
-  const [resumes, setResumes] = useState([]);
-
-  useEffect(() => {
-    const load = async () => {
-      try {
-        const resumeData = await getMyResumes();
         const list = resumeData.resumes || [];
         setResumes(list);
-        if (list.length) {
-          const feedback = await getFeedback(list[0].id);
+        
+        if (list.length > 0) {
+          const feedbackData = await getFeedback(list[0]._id || list[0].id);
           const tips = [
-            ...(feedback.aiFeedback || []).map((text, idx) => ({ id: idx, title: text, description: text, actionText: 'Apply Tip', type: 'skill' })),
+            ...(feedbackData.aiFeedback || []).map((text, idx) => ({ 
+              id: idx, 
+              title: text, 
+              description: text, 
+              actionText: 'Apply Tip', 
+              type: 'skill' 
+            })),
+            ...(feedbackData.recommendations || [])
           ];
           setRecommendations(tips);
         }
-      } catch {
+      } catch (error) {
+        console.error('Failed to fetch recommendations:', error);
         setRecommendations([]);
->>>>>>> 41b8693f4b056f0286c9dde1c76a3df58538fe9e
       } finally {
         setLoading(false);
       }
     };
-<<<<<<< HEAD
     fetchData();
-=======
-    load();
->>>>>>> 41b8693f4b056f0286c9dde1c76a3df58538fe9e
   }, []);
 
   const courses = [
@@ -101,7 +82,6 @@ const Recommendations = () => {
   const tabs = ['Improvement Tips', 'Suggested Jobs', 'Skill Courses'];
 
   if (loading) {
-<<<<<<< HEAD
     return (
       <div className="min-h-[400px] flex items-center justify-center">
         <div className="w-12 h-12 border-4 border-[#4b7bff]/20 border-t-[#4b7bff] rounded-full animate-spin" />
@@ -127,9 +107,6 @@ const Recommendations = () => {
         </button>
       </div>
     );
-=======
-    return <div className="min-h-[300px] flex items-center justify-center"><div className="w-12 h-12 border-4 border-[#4b7bff]/20 border-t-[#4b7bff] rounded-full animate-spin" /></div>;
->>>>>>> 41b8693f4b056f0286c9dde1c76a3df58538fe9e
   }
 
   return (
