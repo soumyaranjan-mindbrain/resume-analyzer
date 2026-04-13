@@ -68,16 +68,6 @@ export const getReports = async () => {
   return response.data;
 };
 
-export const getAnalytics = async () => {
-  const response = await apiClient.get('/dashboard/analytics');
-  return response.data;
-};
-
-export const getReports = async () => {
-  const response = await apiClient.get('/dashboard/reports');
-  return response.data;
-};
-
 // Profile APIs
 export const updateProfile = async (id, data) => {
   const response = await apiClient.put(`/profile/${id}`, data);
