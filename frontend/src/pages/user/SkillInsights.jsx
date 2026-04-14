@@ -93,77 +93,8 @@ const SkillInsights = () => {
 
   return (
     <div className="max-w-[1400px] mx-auto pb-8 px-4">
-      
-
-
-      
-       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-12">
-        {/* Overall Mastery Score */}
-        <div className="bg-white rounded-[2rem] p-8 border border-slate-100 flex flex-col justify-center items-center shadow-sm relative overflow-hidden group">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-blue-50/50 rounded-full -mr-16 -mt-16 transition-transform group-hover:scale-110" />
-          <div className="relative z-10 text-center">
-            <span className="text-[10px] font-bold text-blue-500 uppercase tracking-widest mb-2 block">Skill Mastery Score</span>
-            <div className="text-5xl font-bold text-slate-900 tracking-tighter mb-2">
-              {analytics?.averageAtsScore || 0}%
-            </div>
-            <div className="flex items-center gap-1.5 justify-center">
-              <TrendingUp className="w-3.5 h-3.5 text-emerald-500" />
-              <span className="text-[11px] font-bold text-emerald-600">+2.4% vs last month</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Market Readiness */}
-        <div className="bg-white rounded-[2rem] p-8 border border-slate-100 shadow-sm">
-          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4 block">Market Readiness</span>
-          <div className="flex items-end gap-2 mb-4">
-            <span className="text-3xl font-bold text-slate-800 tracking-tight">
-              {analytics?.averageAtsScore > 70 ? 'High' : (analytics?.averageAtsScore > 40 ? 'Moderate' : 'Developing')}
-            </span>
-            <span className="text-slate-400 text-xs font-medium mb-1">Standard</span>
-          </div>
-          <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-            <div 
-              className={cn(
-                "h-full rounded-full transition-all duration-1000",
-                analytics?.averageAtsScore > 70 ? 'bg-emerald-500' : (analytics?.averageAtsScore > 40 ? 'bg-amber-500' : 'bg-rose-500')
-              )} 
-              style={{ width: `${analytics?.averageAtsScore || 0}%` }} 
-            />
-          </div>
-        </div>
-
-        {/* Job Matches */}
-        <div className="bg-white rounded-[2rem] p-8 border border-slate-100 shadow-sm">
-          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4 block">Direct Job Matches</span>
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-600">
-              <Briefcase className="w-6 h-6" />
-            </div>
-            <div>
-              <div className="text-3xl font-bold text-slate-800 tracking-tight">{analytics?.jobsMatched || 0}</div>
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Active Opportunities</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Roadmap Progress */}
-        <div className="bg-white rounded-[2rem] p-8 border border-slate-100 shadow-sm">
-          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4 block">Gap Intensity</span>
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center text-amber-500">
-              <Activity className="w-6 h-6" />
-            </div>
-            <div>
-              <div className="text-3xl font-bold text-slate-800 tracking-tight">{missingSkills.length}</div>
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Critical Skill Gaps</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Mastery Markers - Good Points & Critical Gaps */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
         {/* Good Points / Strengths */}
         <div className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm relative overflow-hidden">
           <div className="absolute top-0 right-0 p-6 opacity-10">
@@ -213,6 +144,45 @@ const SkillInsights = () => {
             )}
           </div>
         </div>
+
+        {/* Strategic Goals - Moved to Top Row */}
+        <div className="bg-white rounded-[2.5rem] p-8 border border-slate-100 relative overflow-hidden shadow-sm h-full">
+          <div className="flex items-center gap-4 mb-8">
+            <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center border border-indigo-100 shadow-sm">
+              <Target className="w-5 h-5 text-indigo-600" />
+            </div>
+            <h3 className="text-xl font-bold text-slate-800 tracking-tight">Strategic Goals</h3>
+          </div>
+          
+          <div className="space-y-4">
+            {missingSkills.slice(0, 3).map((skill, i) => (
+              <div key={i} className="flex flex-col p-4 bg-slate-50 border border-slate-100 rounded-2xl group transition-all hover:bg-white hover:shadow-md">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-7 h-7 bg-white rounded-lg flex items-center justify-center shadow-sm">
+                      <Star className="w-3 h-3 text-amber-500 fill-amber-500" />
+                    </div>
+                    <span className="font-bold text-slate-700 text-xs whitespace-nowrap overflow-hidden text-ellipsis max-w-[120px]">Learn {skill.name}</span>
+                  </div>
+                  <div className="text-[9px] font-bold text-blue-600">Q2 Target</div>
+                </div>
+                <div className="h-1 bg-slate-200 rounded-full overflow-hidden">
+                  <div className="h-full bg-blue-500 rounded-full" style={{ width: '0%' }} />
+                </div>
+              </div>
+            ))}
+            {missingSkills.length === 0 && (
+              ['Finish Unit Testing Path', 'Draft Portfolio Site', 'Update Tech Keywords'].map((label, i) => (
+                <div key={i} className="flex items-center gap-3 p-4 bg-slate-50 border border-slate-100 rounded-2xl">
+                  <div className="w-7 h-7 bg-white rounded-lg flex items-center justify-center shadow-sm">
+                    <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
+                  </div>
+                  <span className="font-bold text-slate-700 text-xs">{label}</span>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
       </div>
 
 
@@ -220,9 +190,9 @@ const SkillInsights = () => {
       
 
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-12">
-        {/* Personalized Career Roadmap */}
-        <div className="lg:col-span-2 bg-white rounded-[2.5rem] p-10 border border-slate-100 relative overflow-hidden shadow-sm">
+      <div className="mt-12">
+        {/* Personalized Career Roadmap - Now Full Screen */}
+        <div className="bg-white rounded-[2.5rem] p-10 border border-slate-100 relative overflow-hidden shadow-sm">
           <div className="flex items-center justify-between mb-12">
             <div>
               <h3 className="text-3xl font-bold text-slate-900 tracking-tight">Personalized Career Roadmap</h3>
@@ -364,46 +334,6 @@ const SkillInsights = () => {
             )}
           </div>
         </div>
-
-        {/* Strategic Goals Sidebar */}
-        <div className="bg-white rounded-[2.5rem] p-10 border border-slate-100 relative overflow-hidden shadow-sm h-fit">
-          <div className="flex items-center gap-4 mb-10">
-            <div className="w-12 h-12 bg-indigo-50 rounded-xl flex items-center justify-center border border-indigo-100 shadow-sm">
-              <Target className="w-6 h-6 text-indigo-600" />
-            </div>
-            <h3 className="text-2xl font-bold text-slate-800 tracking-tight">Strategic Goals</h3>
-          </div>
-          
-          <div className="space-y-6">
-            {missingSkills.slice(0, 4).map((skill, i) => (
-              <div key={i} className="flex flex-col p-5 bg-slate-50 border border-slate-100 rounded-2xl group transition-all hover:bg-white hover:shadow-md">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center shadow-sm">
-                      <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
-                    </div>
-                    <span className="font-bold text-slate-700 text-sm whitespace-nowrap overflow-hidden text-ellipsis max-w-[140px]">Learn {skill.name}</span>
-                  </div>
-                  <div className="text-[10px] font-bold text-blue-600">Q2 Target</div>
-                </div>
-                <div className="h-1.5 bg-slate-200 rounded-full overflow-hidden">
-                  <div className="h-full bg-blue-500 rounded-full" style={{ width: '0%' }} />
-                </div>
-              </div>
-            ))}
-            {missingSkills.length === 0 && (
-              ['Finish Unit Testing Path', 'Draft Portfolio Site', 'Update Tech Keywords'].map((label, i) => (
-                <div key={i} className="flex items-center gap-4 p-4 bg-slate-50 border border-slate-100 rounded-2xl">
-                  <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center shadow-sm">
-                    <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
-                  </div>
-                  <span className="font-bold text-slate-700 text-sm">{label}</span>
-                </div>
-              ))
-            )}
-          </div>
-
-          </div>
       </div>
     </div>
   );
