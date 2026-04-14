@@ -57,112 +57,113 @@ const Profile = () => {
   };
   return (
     <div className="flex-1 p-6 lg:p-1 overflow-y-auto custom-scrollbar">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
+      <div className="max-w-[1400px] mx-auto py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
         
-        <div className="lg:col-span-1 bg-white/30 backdrop-blur-3xl rounded-[2.8rem] p-8 shadow-[0_40px_80px_-20px_rgba(15,23,42,0.15)] border border-white/70 relative overflow-hidden flex flex-col items-center h-full">
-          <div className="absolute inset-0 bg-gradient-to-br from-white/40 via-transparent to-[#4b7bff]/5 pointer-events-none" />
+        <div className="lg:col-span-1 bg-white rounded-2xl p-8 shadow-[0_8px_30px_rgba(0,0,0,0.06)] border border-slate-200 relative overflow-hidden flex flex-col items-center h-full">
           
           <div className="relative z-10 flex flex-col items-center w-full">
             <div className="relative mb-6">
-              <div className="w-32 h-32 rounded-[2rem] overflow-hidden ring-4 ring-white shadow-2xl bg-blue-500/10 flex items-center justify-center">
+              <div className="w-32 h-32 rounded-2xl overflow-hidden ring-4 ring-slate-50 shadow-md bg-slate-50 flex items-center justify-center">
                 {user?.profilePic ? (
                   <img src={user.profilePic} alt={user?.name} className="w-full h-full object-cover" />
                 ) : (
-                  <span className="text-4xl font-black text-[#4b7bff]">
+                  <span className="text-4xl font-bold text-blue-600">
                     {user?.name?.charAt(0) || 'U'}
                   </span>
                 )}
               </div>
-              <button className="absolute -bottom-2 -right-2 w-10 h-10 bg-[#4b7bff] text-white rounded-xl flex items-center justify-center shadow-lg hover:scale-110 transition-transform border-4 border-white">
+              <button className="absolute -bottom-2 -right-2 w-10 h-10 bg-blue-600 text-white rounded-xl flex items-center justify-center shadow-lg hover:scale-105 transition-transform border-4 border-white">
                 <Camera className="w-4 h-4" />
               </button>
             </div>
 
-            <h2 className="text-2xl font-black text-[#1e293b] tracking-tight mb-1">{user?.name}</h2>
-            <p className="text-[#64748b] font-bold text-sm uppercase tracking-widest mb-6">{formData.title}</p>
+            <h2 className="text-2xl font-bold text-slate-900 tracking-tight mb-1">{user?.name}</h2>
+            <p className="text-slate-500 font-semibold text-xs uppercase tracking-widest mb-6">{formData.title}</p>
 
             <div className="flex gap-3 mb-8">
               {[GithubIcon, TwitterIcon, LinkedinIcon].map((Icon, i) => (
-                <button key={i} className="w-10 h-10 bg-white/50 rounded-xl flex items-center justify-center border border-white hover:bg-[#4b7bff] hover:text-white transition-all shadow-sm">
+                <button key={i} className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center border border-slate-100 hover:bg-blue-600 hover:text-white transition-all shadow-sm">
                   <Icon className="w-4 h-4" />
                 </button>
               ))}
             </div>
 
             <div className="w-full space-y-4">
-              <div className="bg-white/50 p-4 rounded-2xl border border-white flex items-center gap-4 group hover:bg-white transition-all shadow-sm">
-                <div className="w-10 h-10 bg-blue-50 text-[#4b7bff] rounded-xl flex items-center justify-center">
+              <div className="bg-slate-50/50 p-4 rounded-xl border border-slate-200 flex items-center gap-4 group transition-all">
+                <div className="w-10 h-10 bg-white text-blue-600 rounded-xl flex items-center justify-center shadow-sm">
                   <Mail className="w-5 h-5" />
                 </div>
                 <div className="text-left">
-                  <p className="text-[10px] font-black text-[#94a3b8] uppercase tracking-widest">Email Address</p>
-                  <p className="text-sm font-bold text-[#334155]">{user?.email}</p>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Email Address</p>
+                  <p className="text-sm font-semibold text-slate-700">{user?.email}</p>
                 </div>
               </div>
-              <div className="bg-white/50 p-4 rounded-2xl border border-white flex items-center gap-4 group hover:bg-white transition-all shadow-sm">
-                <div className="w-10 h-10 bg-emerald-50 text-[#10b981] rounded-xl flex items-center justify-center">
+              <div className="bg-slate-50/50 p-4 rounded-xl border border-slate-200 flex items-center gap-4 group transition-all">
+                <div className="w-10 h-10 bg-white text-emerald-600 rounded-xl flex items-center justify-center shadow-sm">
                   <MapPin className="w-5 h-5" />
                 </div>
                 <div className="text-left">
-                  <p className="text-[10px] font-black text-[#94a3b8] uppercase tracking-widest">Location</p>
-                  <p className="text-sm font-bold text-[#334155]">{user?.location || 'Not Specified'}</p>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Location</p>
+                  <p className="text-sm font-semibold text-slate-700">{user?.location || 'Not Specified'}</p>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="lg:col-span-2 bg-white/30 backdrop-blur-3xl rounded-[2.8rem] p-8 shadow-[0_40px_80px_-20px_rgba(15,23,42,0.15)] border border-white/70 relative flex flex-col h-full">
-          <h3 className="text-xl font-black text-[#1e293b] mb-8 tracking-tight">Account Settings</h3>
+        <div className="lg:col-span-2 bg-white rounded-2xl p-8 shadow-[0_8px_30px_rgba(0,0,0,0.06)] border border-slate-200 relative flex flex-col h-full">
+          <h3 className="text-xl font-bold text-slate-900 mb-8 tracking-tight">Account Settings</h3>
             
           <div className="grid sm:grid-cols-2 gap-6 flex-1">
             <div className="space-y-2">
-              <label className="text-[11px] font-black text-[#94a3b8] uppercase tracking-widest px-1">Full Name</label>
+              <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest px-1">Full Name</label>
               <input 
                 type="text" 
                 value={formData.name}
                 onChange={(e) => setFormData({...formData, name: e.target.value})}
-                className="w-full bg-white/50 border border-white rounded-2xl px-5 py-4 text-sm font-bold text-[#334155] focus:outline-none focus:ring-4 focus:ring-[#4b7bff]/10 focus:bg-white transition-all shadow-sm"
+                className="w-full bg-slate-50 border border-slate-300 rounded-xl px-5 py-4 text-sm font-semibold text-slate-700 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 focus:bg-white transition-all shadow-sm"
               />
             </div>
             <div className="space-y-2">
-              <label className="text-[11px] font-black text-[#94a3b8] uppercase tracking-widest px-1">Job Title</label>
+              <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest px-1">Job Title</label>
               <input 
                 type="text" 
                 value={formData.title}
                 onChange={(e) => setFormData({...formData, title: e.target.value})}
-                className="w-full bg-white/50 border border-white rounded-2xl px-5 py-4 text-sm font-bold text-[#334155] focus:outline-none focus:ring-4 focus:ring-[#4b7bff]/10 focus:bg-white transition-all shadow-sm"
+                className="w-full bg-slate-50 border border-slate-300 rounded-xl px-5 py-4 text-sm font-semibold text-slate-700 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 focus:bg-white transition-all shadow-sm"
               />
             </div>
             <div className="space-y-2">
-              <label className="text-[11px] font-black text-[#94a3b8] uppercase tracking-widest px-1">Location</label>
+              <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest px-1">Location</label>
               <input 
                 type="text" 
                 value={formData.location}
                 onChange={(e) => setFormData({...formData, location: e.target.value})}
-                className="w-full bg-white/50 border border-white rounded-2xl px-5 py-4 text-sm font-bold text-[#334155] focus:outline-none focus:ring-4 focus:ring-[#4b7bff]/10 focus:bg-white transition-all shadow-sm"
+                className="w-full bg-slate-50 border border-slate-300 rounded-xl px-5 py-4 text-sm font-semibold text-slate-700 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 focus:bg-white transition-all shadow-sm"
               />
             </div>
             <div className="space-y-2">
-              <label className="text-[11px] font-black text-[#94a3b8] uppercase tracking-widest px-1">Phone Number</label>
+              <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest px-1">Phone Number</label>
               <input 
                 type="text" 
                 value={formData.phone}
                 onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                className="w-full bg-white/50 border border-white rounded-2xl px-5 py-4 text-sm font-bold text-[#334155] focus:outline-none focus:ring-4 focus:ring-[#4b7bff]/10 focus:bg-white transition-all shadow-sm"
+                className="w-full bg-slate-50 border border-slate-300 rounded-xl px-5 py-4 text-sm font-semibold text-slate-700 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 focus:bg-white transition-all shadow-sm"
               />
             </div>
           </div>
 
-          <div className="mt-8 flex justify-end pt-6 border-t border-white/40">
+          <div className="mt-8 flex justify-end pt-6 border-t border-slate-50">
             <button 
               onClick={handleUpdate}
               disabled={loading}
-              className="px-8 py-4 bg-[#4b7bff] text-white rounded-2xl font-black text-sm uppercase tracking-widest shadow-xl shadow-[#4b7bff]/20 hover:scale-105 active:scale-95 transition-all disabled:opacity-50"
+              className="px-8 py-4 bg-blue-600 text-white rounded-xl font-bold text-sm uppercase tracking-widest shadow-md hover:bg-blue-700 hover:shadow-lg transition-all disabled:opacity-50"
             >
               {loading ? 'Saving...' : 'Update Settings'}
             </button>
           </div>
+        </div>
         </div>
       </div>
     </div>

@@ -104,8 +104,8 @@ const Dashboard = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-transparent">
         <div className="flex flex-col items-center gap-4">
-          <div className="w-16 h-16 border-4 border-[#4b7bff]/20 border-t-[#4b7bff] rounded-full animate-spin shadow-lg shadow-blue-500/20" />
-          <p className="text-[#4b7bff] font-black uppercase tracking-widest text-xs animate-pulse">Syncing Dashboard...</p>
+          <div className="w-16 h-16 border-4 border-blue-600/20 border-t-blue-600 rounded-full animate-spin" />
+          <p className="text-blue-600 font-bold uppercase tracking-widest text-xs animate-pulse">Syncing Dashboard...</p>
         </div>
       </div>
     );
@@ -113,35 +113,30 @@ const Dashboard = () => {
 
   return (
     <div className="space-y-6 max-w-[1400px] mx-auto pb-10 px-4 sm:px-0">
-      <div className="relative overflow-hidden rounded-[2.5rem] bg-white border border-slate-100 flex shadow-[0_10px_40px_-15px_rgba(0,0,0,0.08)] min-h-[300px]">
+      <div className="relative overflow-hidden rounded-3xl bg-white border border-slate-100 flex shadow-[0_10px_40px_-15px_rgba(0,0,0,0.08)] min-h-[200px]">
         <div className="absolute inset-0 w-full h-full">
-           <img 
-             src={dashboardBanner} 
-             alt="Welcome Banner" 
-             className="w-full h-full object-cover object-center" 
-           />
-           <div className="absolute inset-0 bg-gradient-to-r from-white/60 via-white/10 to-transparent" />
+          <img
+            src={dashboardBanner}
+            alt="Welcome Banner"
+            className="w-full h-full object-cover object-center"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-white/60 via-white/10 to-transparent" />
         </div>
 
-        <div className="relative z-10 space-y-4 p-12 flex flex-col justify-center w-full max-w-2xl">
-          <h1 className="text-5xl font-black text-[#1e293b] tracking-tighter">Welcome, <span className="text-[#4b7bff]">{user?.name?.split(' ')[0] || 'User'}</span>!</h1>
-          <p className="text-[#64748b] text-base font-medium max-w-md leading-relaxed">
-            Your personal AI-powered resume dashboard is updated with the latest trends.
-          </p>
-
-          <div className="pt-2">
+        <div className="relative z-10 p-8 flex flex-col justify-center w-full max-w-2xl">
+          <div className="mb-4 space-y-1">
+            <h1 className="text-xl font-bold text-slate-800 tracking-tight">Your personal AI-powered resume dashboard is updated.</h1>
+            <p className="text-slate-500 font-semibold text-sm">Upload your latest version to stay ahead of industry trends.</p>
+          </div>
+          <div className="pt-0">
             <button
               onClick={() => navigate('/upload')}
-              className="inline-flex items-center gap-3 bg-[#4b7bff] text-white px-8 py-4 rounded-2xl text-sm font-black uppercase tracking-wider hover:bg-[#3b63d6] transition-all shadow-xl shadow-blue-500/30 hover:scale-[1.02] active:scale-95"
+              className="inline-flex items-center gap-3 bg-blue-600 text-white px-8 py-4 rounded-xl text-sm font-bold uppercase tracking-wider hover:bg-blue-700 transition-all shadow-md active:scale-95"
             >
               <Upload className="w-5 h-5" />
               Upload New Resume
             </button>
           </div>
-
-          <p className="text-[13px] text-[#64748b] pt-1 font-semibold opacity-80">
-            Haven't updated your resume in awhile? Upload the latest version now!
-          </p>
         </div>
       </div>
 
@@ -151,203 +146,115 @@ const Dashboard = () => {
           const tone = toneStyles[card.tone];
           const dynamicValue = card.value;
           return (
-            <div key={card.label} className={`bg-white/25 backdrop-blur-3xl rounded-[2.8rem] p-7 border border-white/60 relative overflow-hidden group shadow-[0_45px_100px_-20px_rgba(15,23,42,0.35),inset_0_1px_3px_rgba(255,255,255,0.5)] transition-all duration-700 ${tone.card}`}>
-              <div className="absolute inset-0 bg-gradient-to-br from-slate-900/[0.12] to-transparent pointer-events-none" />
-              <div className="absolute top-0 right-0 p-6 cursor-pointer">
-                <ChevronRight className={`w-4 h-4 ${tone.accent} transition-colors`} />
-              </div>
-              <div className="flex items-center gap-3 mb-4">
-                <div className={`w-10 h-10 rounded-xl bg-white/80 ${tone.icon} flex items-center justify-center shadow-sm backdrop-blur-sm`}>
-                  <Icon className="w-5 h-5" />
+            <div key={card.label} className="bg-white rounded-2xl p-6 border border-slate-200 relative overflow-hidden group shadow-[0_8px_30px_rgba(0,0,0,0.06)] hover:shadow-[0_20px_50px_rgba(0,0,0,0.1)] transition-all duration-300">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className={cn("w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center", tone.icon)}>
+                    <Icon className="w-5 h-5" />
+                  </div>
+                  <span className="font-bold text-slate-500 text-xs uppercase tracking-wider">{card.label}</span>
                 </div>
-                <span className="font-bold text-[#334155] text-sm uppercase tracking-wide">{card.label}</span>
+                <ChevronRight className="w-4 h-4 text-slate-300 group-hover:text-blue-500 transition-colors" />
               </div>
-               <h2 className="text-5xl font-black text-[#1e293b] tracking-tight mb-2">{dynamicValue}</h2>
+              <h2 className="text-4xl font-bold text-slate-800 tracking-tight mb-2">{dynamicValue}</h2>
               <div className="flex flex-col gap-1">
                 {card.note && (
-                  <span className={card.noteTone + " text-xs font-black inline-flex items-center gap-1"}>
+                  <span className={card.noteTone + " text-xs font-bold inline-flex items-center gap-1"}>
                     <card.noteIcon className="w-3.5 h-3.5" /> {card.note}
                   </span>
                 )}
-                {card.detail && <span className="text-[#64748b] text-[11px] font-semibold leading-relaxed max-w-[90%] opacity-70">{card.detail}</span>}
+                {card.detail && <span className="text-slate-400 text-[11px] font-semibold leading-relaxed max-w-[90%]">{card.detail}</span>}
                 {card.action && (
-                  <button className="text-[#4b7bff] text-xs font-black uppercase tracking-wider hover:underline flex items-center gap-1">
+                  <button className="text-blue-600 text-xs font-bold uppercase tracking-wider hover:underline flex items-center gap-1">
                     {card.action} <ChevronRight className="w-3 h-3" />
                   </button>
                 )}
               </div>
-              <div className={`absolute -bottom-6 -right-6 w-32 h-32 ${tone.orb} rounded-full blur-2xl`} />
             </div>
           );
         })}
       </div>
 
-      
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
 
-        
-        <div className="bg-white/25 backdrop-blur-[40px] rounded-[2.8rem] p-8 shadow-[0_60px_100px_-20px_rgba(15,23,42,0.4),inset_0_1px_4px_rgba(255,255,255,0.6)] border border-white/70 h-full relative overflow-hidden group transition-all duration-700 flex flex-col">
-          <div className="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-slate-900/[0.15] pointer-events-none" />
+
+
+
+        <div className="bg-white rounded-2xl p-8 shadow-[0_8px_30px_rgba(0,0,0,0.06)] border border-slate-200 flex flex-col relative overflow-hidden">
           <div className="flex items-center justify-between mb-8 relative z-10">
-            <h3 className="font-black text-[#1e293b] text-xl tracking-tight">Performance</h3>
-            <MoreHorizontal className="w-5 h-5 text-[#cbd5e1] cursor-pointer" />
-          </div>
-
-          <p className="text-[#94a3b8] text-[11px] font-black uppercase tracking-widest mb-6 relative z-10">ATS Score History</p>
-
-          <div className="w-full h-48 relative flex-1">
-            <div className="absolute inset-0 flex flex-col justify-between text-[11px] text-[#94a3b8] font-bold pb-6 w-8">
-              <span>80</span>
-              <span>65</span>
-              <span>40</span>
-            </div>
-            <div className="ml-8 absolute inset-0 pb-6 border-b border-slate-100/50">
-              <div className="w-full h-[1px] bg-slate-50 absolute top-[0%]" />
-              <div className="w-full h-[1px] bg-slate-50 absolute top-[50%]" />
-              <div className="w-full h-[1px] bg-slate-50 absolute top-[100%]" />
-
-              <svg className="w-full h-full overflow-visible" preserveAspectRatio="none">
-                <defs>
-                  <linearGradient id="chartGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stopColor="#4b7bff" stopOpacity="0.2" />
-                    <stop offset="100%" stopColor="#4b7bff" stopOpacity="0" />
-                  </linearGradient>
-                </defs>
-                <path
-                  d="M 10 100 Q 100 80 150 75 T 300 60 T 450 30 L 450 120 L 10 120 Z"
-                  fill="url(#chartGradient)"
-                />
-                <path
-                  d="M 10 100 Q 100 80 150 75 T 300 60 T 450 30"
-                  fill="none"
-                  stroke="#4b7bff"
-                  strokeWidth="4"
-                  strokeLinecap="round"
-                />
-                <circle cx="10" cy="100" r="5" fill="white" stroke="#4b7bff" strokeWidth="2.5" />
-                <circle cx="150" cy="75" r="5" fill="white" stroke="#4b7bff" strokeWidth="2.5" />
-                <circle cx="300" cy="60" r="5" fill="white" stroke="#4b7bff" strokeWidth="2.5" />
-                <circle cx="450" cy="30" r="5" fill="white" stroke="#4b7bff" strokeWidth="2.5" />
-              </svg>
-            </div>
-
-            <div className="absolute bottom-0 left-8 right-0 flex justify-between text-[10px] text-[#94a3b8] font-black uppercase tracking-tighter px-2">
-              <span>Jan</span>
-              <span>Feb</span>
-              <span>Mar</span>
-              <span>Apr</span>
-              <span>May</span>
-            </div>
-          </div>
-          <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-bl-[100px] pointer-events-none group-hover:scale-110 transition-transform" />
-        </div>
-
-        
-        <div className="bg-[#fcfaff]/25 backdrop-blur-[40px] rounded-[2.8rem] p-8 shadow-[0_60px_100px_-20px_rgba(15,23,42,0.4),inset_0_1px_4px_rgba(255,255,255,0.6)] border border-white/70 h-full relative overflow-hidden group transition-all duration-700 flex flex-col">
-          <div className="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-slate-900/[0.15] pointer-events-none" />
-          <div className="flex items-center justify-between mb-8 relative z-10">
-            <h3 className="font-black text-[#1e293b] text-xl tracking-tight">Skill Breakdown</h3>
-            <MoreHorizontal className="w-5 h-5 text-[#cbd5e1] cursor-pointer hover:text-slate-600 transition-colors" />
+            <h3 className="font-bold text-slate-800 text-xl tracking-tight">Skill Breakdown</h3>
+            <MoreHorizontal className="w-5 h-5 text-slate-300 cursor-pointer hover:text-slate-600 transition-colors" />
           </div>
 
           <div className="flex flex-col xl:flex-row items-center gap-8 justify-between flex-1 relative z-10">
             <ul className="space-y-4 w-full xl:w-auto">
               {[
-                { label: "Technical Skills", color: "bg-[#4b7bff]", percent: stats ? `${Math.min(stats.atsScore, 40)}%` : "35%" },
-                { label: "Experience Match", color: "bg-[#10b981]", percent: stats ? `${Math.min(stats.atsScore, 30)}%` : "30%" },
-                { label: "Keyword Density", color: "bg-[#8b5cf6]", percent: stats ? `${Math.min(stats.atsScore, 20)}%` : "20%" },
-                { label: "Formatting", color: "bg-[#f59e0b]", percent: "15%" },
+                { label: "Technical Skills", color: "bg-blue-500", percent: stats ? `${Math.min(stats.atsScore, 40)}%` : "35%" },
+                { label: "Experience Match", color: "bg-emerald-500", percent: stats ? `${Math.min(stats.atsScore, 30)}%` : "30%" },
+                { label: "Keyword Density", color: "bg-indigo-500", percent: stats ? `${Math.min(stats.atsScore, 20)}%` : "20%" },
+                { label: "Formatting", color: "bg-amber-500", percent: "15%" },
               ].map((item, idx) => (
-                <li key={idx} className="flex items-center justify-between xl:justify-start gap-4 p-3 bg-white/50 rounded-2xl border border-white hover:bg-white transition-colors cursor-default">
+                <li key={idx} className="flex items-center justify-between xl:justify-start gap-12 p-3 bg-slate-50 rounded-xl border border-slate-200 hover:bg-white transition-colors cursor-default">
                   <div className="flex items-center gap-3">
                     <div className={cn("w-3 h-3 rounded-full shadow-sm", item.color)} />
-                    <span className="text-[#334155] text-[13px] font-bold">{item.label}</span>
+                    <span className="text-slate-700 text-[13px] font-semibold">{item.label}</span>
                   </div>
-                  <span className="text-[#94a3b8] text-[11px] font-black ml-auto">{item.percent}</span>
+                  <span className="text-slate-400 text-[11px] font-bold ml-auto">{item.percent}</span>
                 </li>
               ))}
             </ul>
 
             <div className="relative w-44 h-44 shrink-0">
-              <svg viewBox="0 0 100 100" className="w-full h-full transform -rotate-90 filter drop-shadow-2xl">
-                <circle cx="50" cy="50" r="40" fill="transparent" stroke="#f1f5f9" strokeWidth="14" />
-                <circle cx="50" cy="50" r="40" fill="transparent" stroke="#f59e0b" strokeWidth="14" strokeDasharray="37.7 251.3" strokeDashoffset="0" />
-                <circle cx="50" cy="50" r="40" fill="transparent" stroke="#8b5cf6" strokeWidth="14" strokeDasharray="50.2 251.3" strokeDashoffset="-37.7" />
-                <circle cx="50" cy="50" r="40" fill="transparent" stroke="#4b7bff" strokeWidth="14" strokeDasharray="87.9 251.3" strokeDashoffset="-87.9" />
-                <circle cx="50" cy="50" r="40" fill="transparent" stroke="#10b981" strokeWidth="14" strokeDasharray="75.5 251.3" strokeDashoffset="-175.8" />
+              <svg viewBox="0 0 100 100" className="w-full h-full transform -rotate-90">
+                <circle cx="50" cy="50" r="40" fill="transparent" stroke="#f1f5f9" strokeWidth="12" />
+                <circle cx="50" cy="50" r="40" fill="transparent" stroke="#f59e0b" strokeWidth="12" strokeDasharray="37.7 251.3" strokeDashoffset="0" />
+                <circle cx="50" cy="50" r="40" fill="transparent" stroke="#6366f1" strokeWidth="12" strokeDasharray="50.2 251.3" strokeDashoffset="-37.7" />
+                <circle cx="50" cy="50" r="40" fill="transparent" stroke="#2563eb" strokeWidth="12" strokeDasharray="87.9 251.3" strokeDashoffset="-87.9" />
+                <circle cx="50" cy="50" r="40" fill="transparent" stroke="#10b981" strokeWidth="12" strokeDasharray="75.5 251.3" strokeDashoffset="-175.8" />
               </svg>
-              <div className="absolute inset-0 flex items-center justify-center flex-col bg-white m-4 rounded-full shadow-inner border border-slate-50">
-                <span className="text-3xl font-black text-[#1e293b] tracking-tighter">{stats ? `${stats.atsScore}%` : '0%'}</span>
+              <div className="absolute inset-0 flex items-center justify-center flex-col bg-white m-5 rounded-full shadow-sm border border-slate-200">
+                <span className="text-3xl font-bold text-slate-800 tracking-tighter">{stats ? `${stats.atsScore}%` : '0%'}</span>
               </div>
             </div>
           </div>
-          <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/5 rounded-bl-[100px] pointer-events-none group-hover:scale-110 transition-transform" />
         </div>
 
-        
-        <div className="bg-[#fffdf0]/25 backdrop-blur-[40px] rounded-[2.8rem] p-8 shadow-[0_60px_100px_-20px_rgba(15,23,42,0.4),inset_0_1px_4px_rgba(255,255,255,0.6)] border border-white/70 h-full relative overflow-hidden group transition-all duration-700 flex flex-col justify-between">
-          <div className="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-slate-900/[0.15] pointer-events-none" />
+
+        <div className="bg-white rounded-2xl p-8 shadow-[0_8px_30px_rgba(0,0,0,0.06)] border border-slate-200 flex flex-col justify-between relative overflow-hidden">
           <div className="flex items-center justify-between relative z-10 shrink-0 mb-6">
-            <h3 className="font-black text-[#1e293b] text-xl tracking-tight">Suggestions</h3>
+            <h3 className="font-bold text-slate-800 text-xl tracking-tight">Suggestions</h3>
           </div>
           <div className="flex items-center justify-between flex-1 relative z-10">
             <div>
-              <ul className="space-y-5">
-                {(stats?.suggestions || [
-                  { label: "JavaScript", text: "Add JavaScript to your skills section", color: "decoration-[#10b981]/30" },
-                  { label: "Data Analysis", text: "Include \"Data Analysis\" keywords", color: "decoration-[#10b981]/30" },
-                  { label: "Summary", text: "Refine your professional summary", color: "decoration-[#10b981]/30" }
-                ]).slice(0, 3).map((step, i) => (
-                  <li key={i} className="flex items-center gap-4 group/item">
-                    <div className="w-6 h-6 shrink-0 rounded-full bg-white text-[#10b981] flex items-center justify-center shadow-sm group-hover/item:scale-110 transition-transform">
-                      <CheckCircle2 className="w-4 h-4" />
-                    </div>
-                    <span className="text-[#334155] text-sm font-medium">
-                      {typeof step === 'string' ? step : step.text}
-                    </span>
+              <ul className="space-y-4">
+                {stats?.suggestions && stats.suggestions.length > 0 ? (
+                  stats.suggestions.slice(0, 3).map((step, i) => (
+                    <li key={i} className="flex items-center gap-4 group/item">
+                      <div className="w-6 h-6 shrink-0 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shadow-sm">
+                        <CheckCircle2 className="w-4 h-4" />
+                      </div>
+                      <span className="text-slate-600 text-sm font-semibold">
+                        {typeof step === 'string' ? step : step.text}
+                      </span>
+                    </li>
+                  ))
+                ) : (
+                  <li className="flex flex-col gap-2 p-4 bg-slate-50 rounded-xl border border-slate-200 border-dashed">
+                    <p className="text-slate-500 text-sm font-bold opacity-80">No suggestions available</p>
+                    <p className="text-slate-400 text-[11px] font-semibold leading-relaxed">Upload a resume to get AI-powered insights and optimization tips.</p>
                   </li>
-                ))}
+                )}
               </ul>
             </div>
 
-            <div className="w-32 h-32 ml-4 bg-white rounded-full flex items-center justify-center border-8 border-[#fffdf0] shadow-[10px_10px_30px_rgba(0,0,0,0.05)] shrink-0">
-              <TrendingUp className="w-12 h-12 text-yellow-500" />
+            <div className="w-32 h-32 ml-4 bg-slate-50 rounded-full flex items-center justify-center border-4 border-white shadow-sm shrink-0">
+              <TrendingUp className="w-12 h-12 text-blue-600" />
             </div>
           </div>
-          <div className="absolute right-0 top-0 w-48 h-48 bg-yellow-500/10 rounded-bl-[150px] pointer-events-none group-hover:scale-105 transition-transform" />
         </div>
 
-        
-        <div className="bg-[#f8f9fc]/25 backdrop-blur-[40px] rounded-[2.8rem] p-8 shadow-[0_60px_100px_-20px_rgba(15,23,42,0.4),inset_0_1px_4px_rgba(255,255,255,0.6)] border border-white/70 h-full group transition-all duration-700 relative overflow-hidden flex flex-col">
-          <div className="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-slate-900/[0.15] pointer-events-none" />
-          <div className="flex items-center justify-between mb-8 relative z-10">
-            <h3 className="font-black text-[#1e293b] text-xl tracking-tight">Activity</h3>
-            <MoreHorizontal className="w-5 h-5 text-[#cbd5e1] cursor-pointer" />
-          </div>
 
-          <div className="space-y-6 flex-1 relative z-10 justify-center flex flex-col">
-            {[
-              { icon: FileCheck2, title: "Resume analyzed", time: stats ? "Today" : "30m ago", status: "New", color: "text-blue-500", bg: "bg-blue-50" },
-              { icon: ListChecks, title: "Job matched", time: stats ? "Recently" : "2h ago", status: "Done", color: "text-emerald-500", bg: "bg-emerald-50" },
-              { icon: TrendingUp, title: "ATS score boost", time: stats ? "Current" : "5d ago", status: stats ? `+${stats.atsScore}%` : "+3%", color: "text-purple-500", bg: "bg-purple-50" },
-            ].map((act, i) => (
-              <div key={i} className="flex items-center justify-between group/act">
-                <div className="flex items-center gap-4">
-                  <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-transform group-hover/act:scale-110", act.bg, act.color)}>
-                    <act.icon className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h4 className="text-[#1e293b] text-sm font-black">{act.title}</h4>
-                    <p className="text-[#94a3b8] text-[11px] font-bold uppercase tracking-tighter">{act.time}</p>
-                  </div>
-                </div>
-                <span className={cn("px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-white border border-slate-100 shadow-sm", act.color)}>
-                  {act.status}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
 
       </div>
 

@@ -95,15 +95,15 @@ const Recommendations = () => {
         <div className="w-24 h-24 bg-yellow-50 rounded-[2.5rem] flex items-center justify-center mx-auto mb-6 text-yellow-600 shadow-xl shadow-yellow-500/10">
           <Lightbulb className="w-10 h-10" />
         </div>
-        <h2 className="text-3xl font-black text-slate-800 tracking-tighter mb-4">No Recommendations Yet</h2>
-        <p className="text-slate-500 max-w-md mx-auto mb-8 font-medium">
+        <h2 className="text-3xl font-bold text-slate-800 tracking-tight mb-4">No Recommendations Yet</h2>
+        <p className="text-slate-500 max-w-md mx-auto mb-10 font-medium">
           Once you upload your resume, our AI will provide personalized tips, keywords, and courses to help you land your dream job.
         </p>
         <button
           onClick={() => navigate('/upload')}
-          className="bg-[#4b7bff] text-white px-10 py-4 rounded-2xl font-black uppercase tracking-widest text-sm shadow-xl shadow-blue-500/30 hover:scale-[1.05] transition-all"
+          className="bg-blue-600 text-white px-10 py-4 rounded-2xl font-bold text-sm shadow-xl shadow-blue-500/20 hover:bg-blue-700 transition-all active:scale-95"
         >
-          Analyze Resume
+          Initialize Analysis
         </button>
       </div>
     );
@@ -115,16 +115,16 @@ const Recommendations = () => {
 
         <div className="flex-1 space-y-8">
 
-          <div className="p-1.5 bg-slate-200/40 backdrop-blur-xl rounded-2xl flex items-center gap-1 border border-white/50 w-fit">
+          <div className="p-1.5 bg-slate-100 rounded-2xl flex items-center gap-1 border border-slate-200 w-fit">
             {tabs.map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
                 className={cn(
-                  "px-6 py-2.5 rounded-[0.9rem] font-bold text-sm transition-all duration-300",
+                  "px-6 py-2.5 rounded-[0.9rem] font-semibold text-sm transition-all duration-300",
                   activeTab === tab
-                    ? "bg-[#4b7bff] text-white shadow-lg shadow-blue-500/20"
-                    : "text-[#64748b] hover:bg-white/60 hover:text-[#334155]"
+                    ? "bg-blue-600 text-white shadow-md shadow-blue-500/10"
+                    : "text-slate-500 hover:bg-white hover:text-slate-800"
                 )}
               >
                 {tab}
@@ -135,29 +135,28 @@ const Recommendations = () => {
 
           <div className="space-y-4">
             {recommendations.length === 0 ? (
-              <div className="bg-white/40 backdrop-blur-xl p-8 rounded-[2.5rem] border border-white text-center">
-                <Sparkles className="w-12 h-12 text-blue-500/50 mx-auto mb-4" />
-                <h3 className="text-xl font-black text-slate-400 uppercase tracking-widest">Optimized!</h3>
-                <p className="text-slate-400 font-bold mt-2">Your current resume looks great. Check back after adding new experience!</p>
+              <div className="text-center py-20 bg-white rounded-[2.5rem] border border-slate-200 shadow-[0_8px_30px_rgba(0,0,0,0.06)]">
+                <Search className="w-16 h-16 text-slate-200 mx-auto mb-4" />
+                <h3 className="text-xl font-bold text-slate-400 tracking-tight">No Matches Found</h3>
+                <p className="text-slate-400 font-semibold mt-2">We're searching for more roles. Check back shortly!</p>
               </div>
             ) : (
               recommendations.map((rec, idx) => (
                 <div
                   key={idx}
-                  className="bg-white/25 backdrop-blur-3xl rounded-[2rem] p-6 border border-white/70 relative overflow-hidden group shadow-[0_30px_60px_-15px_rgba(15,23,42,0.2),inset_0_1px_3px_rgba(255,255,255,0.5)] hover:shadow-blue-500/10 transition-all duration-500"
+                  className="bg-white rounded-2xl p-6 border border-slate-100 relative overflow-hidden group shadow-sm transition-all duration-500"
                 >
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-slate-900/[0.05] pointer-events-none" />
                   <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
                     <div className="flex items-center gap-6">
-                      <div className="w-14 h-14 bg-white/60 backdrop-blur-md rounded-2xl flex items-center justify-center shadow-inner pt-0.5">
-                        {rec.type === 'skill' ? <Sparkles className="w-6 h-6 text-blue-500" /> : <Lightbulb className="w-6 h-6 text-yellow-500" />}
+                      <div className="w-14 h-14 bg-slate-50 rounded-2xl flex items-center justify-center border border-slate-100 shadow-sm">
+                        {rec.type === 'skill' ? <Sparkles className="w-6 h-6 text-blue-600" /> : <Lightbulb className="w-6 h-6 text-amber-500" />}
                       </div>
                       <div>
-                        <h3 className="text-xl font-black text-[#1e293b] tracking-tight mb-1">{rec.title}</h3>
-                        <p className="text-slate-500 font-medium text-sm max-w-[450px]">{rec.description}</p>
+                        <h3 className="text-xl font-bold text-slate-900 tracking-tight mb-1">{rec.title}</h3>
+                        <p className="text-slate-500 font-semibold text-sm max-w-[450px] leading-relaxed">{rec.description}</p>
                       </div>
                     </div>
-                    <button className="px-6 py-2.5 bg-emerald-500/80 text-white rounded-xl font-black text-xs uppercase tracking-wider hover:bg-emerald-500 transition-all shadow-lg shadow-emerald-500/20 whitespace-nowrap">
+                    <button className="px-6 py-2.5 bg-blue-600 text-white rounded-xl font-bold text-xs hover:bg-blue-700 transition-all shadow-sm whitespace-nowrap active:scale-95">
                       {rec.actionText || 'Implementation Tip'}
                     </button>
                   </div>
@@ -167,45 +166,43 @@ const Recommendations = () => {
           </div>
 
 
-          <div>
-            <h2 className="text-2xl font-black text-[#1e293b] tracking-tight mb-6">Quick Actions</h2>
+          <div className="space-y-6">
+            <h2 className="text-2xl font-bold text-slate-800 tracking-tight">Quick Actions</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-              <div className="bg-white/25 backdrop-blur-3xl rounded-[2.5rem] p-8 border border-white/70 relative overflow-hidden group shadow-[0_30px_60px_-15px_rgba(15,23,42,0.2),inset_0_1px_3px_rgba(255,255,255,0.5)] transition-all">
-                <div className="absolute inset-0 bg-gradient-to-br from-[#4b7bff]/5 to-transparent pointer-events-none" />
+              {/* Card 1: Re-run Analysis */}
+              <div className="bg-white rounded-2xl p-8 border border-slate-100 shadow-sm relative overflow-hidden group">
                 <div className="relative z-10">
-                  <div className="w-16 h-16 bg-[#4b7bff]/10 rounded-2xl flex items-center justify-center mb-6 border border-[#4b7bff]/20">
-                    <RefreshCw className="w-8 h-8 text-[#4b7bff]" />
+                  <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center mb-6 border border-blue-100">
+                    <RefreshCw className="w-8 h-8 text-blue-600" />
                   </div>
-                  <h3 className="text-xl font-black text-[#1e293b] tracking-tight mb-3">Re-run Analysis</h3>
-                  <p className="text-slate-500 font-medium text-sm mb-8 leading-relaxed">
+                  <h3 className="text-xl font-bold text-slate-900 tracking-tight mb-3">Re-run Analysis</h3>
+                  <p className="text-slate-500 font-semibold text-sm mb-8 leading-relaxed">
                     Update your profile or upload a fresh version to get the latest insights.
                   </p>
                   <button
                     onClick={() => navigate('/upload')}
-                    className="flex items-center gap-3 px-6 py-3 bg-white/60 border border-white/80 rounded-2xl font-black text-sm text-[#1e293b] hover:bg-white shadow-sm transition-all group/btn"
+                    className="flex items-center gap-3 px-6 py-3 bg-white border border-slate-200 rounded-xl font-bold text-sm text-slate-700 hover:bg-slate-50 shadow-sm transition-all group/btn"
                   >
-                    <RefreshCw className="w-4 h-4 text-[#4b7bff] group-hover/btn:rotate-180 transition-transform duration-500" />
+                    <RefreshCw className="w-4 h-4 text-blue-600 group-hover/btn:rotate-180 transition-transform duration-500" />
                     New Upload
                     <ChevronRight className="w-4 h-4 text-slate-400" />
                   </button>
                 </div>
               </div>
 
-
-              <div className="bg-white/25 backdrop-blur-3xl rounded-[2.5rem] p-8 border border-white/70 relative overflow-hidden group shadow-[0_30px_60px_-15px_rgba(15,23,42,0.2),inset_0_1px_3px_rgba(255,255,255,0.5)] transition-all">
-                <div className="absolute inset-0 bg-gradient-to-br from-[#6366f1]/5 to-transparent pointer-events-none" />
+              {/* Card 2: History Compare */}
+              <div className="bg-white rounded-2xl p-8 border border-slate-100 shadow-sm relative overflow-hidden group">
                 <div className="relative z-10">
-                  <div className="w-16 h-16 bg-slate-900/10 rounded-2xl flex items-center justify-center mb-6 border border-slate-900/10">
+                  <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center mb-6 border border-slate-100">
                     <GitCompare className="w-8 h-8 text-slate-600" />
                   </div>
-                  <h3 className="text-xl font-black text-[#1e293b] tracking-tight mb-3">Compare Resumes</h3>
-                  <p className="text-slate-500 font-medium text-sm mb-8 leading-relaxed">
+                  <h3 className="text-xl font-bold text-slate-900 tracking-tight mb-3">Compare Resumes</h3>
+                  <p className="text-slate-500 font-semibold text-sm mb-8 leading-relaxed">
                     Analyze and compare your multiple resume versions side by side.
                   </p>
                   <button
                     onClick={() => navigate('/history')}
-                    className="flex items-center gap-3 px-6 py-3 bg-white/60 border border-white/80 rounded-2xl font-black text-sm text-[#1e293b] hover:bg-white shadow-sm transition-all"
+                    className="flex items-center gap-3 px-6 py-3 bg-white border border-slate-200 rounded-xl font-bold text-sm text-slate-700 hover:bg-slate-50 shadow-sm transition-all"
                   >
                     <GitCompare className="w-4 h-4 text-slate-500" />
                     View History
@@ -220,30 +217,29 @@ const Recommendations = () => {
 
         <div className="w-full lg:w-[380px] space-y-8">
 
-          <div className="bg-white/25 backdrop-blur-3xl rounded-[2.5rem] p-8 border border-white/70 relative overflow-hidden shadow-[0_40px_80px_-20px_rgba(15,23,42,0.3),inset_0_1px_4px_rgba(255,255,255,0.6)]">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/[0.05] to-transparent pointer-events-none" />
+          <div className="bg-white rounded-2xl p-8 border border-slate-100 relative overflow-hidden shadow-sm">
             <div className="relative z-10">
               <div className="flex items-center gap-4 mb-8">
-                <div className="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center border border-blue-500/20">
-                  <ClipboardList className="w-6 h-6 text-[#4b7bff]" />
+                <div className="w-12 h-12 bg-slate-50 rounded-xl flex items-center justify-center border border-slate-100">
+                  <ClipboardList className="w-6 h-6 text-blue-600" />
                 </div>
-                <h3 className="text-2xl font-black text-[#1e293b] tracking-tight">Best Practices</h3>
+                <h3 className="text-2xl font-bold text-slate-900 tracking-tight">Best Practices</h3>
               </div>
 
               <div className="space-y-4 mb-10">
                 {checklist.map((item, idx) => (
                   <div key={idx} className="flex items-start gap-3">
-                    <div className="w-5 h-5 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0 mt-0.5">
+                    <div className="w-5 h-5 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center shrink-0 mt-0.5">
                       <Star className="w-2.5 h-2.5 text-emerald-600 fill-emerald-600" />
                     </div>
-                    <span className="text-slate-600 font-bold text-sm leading-relaxed">{item}</span>
+                    <span className="text-slate-600 font-semibold text-sm leading-relaxed">{item}</span>
                   </div>
                 ))}
               </div>
 
               <button
                 onClick={() => navigate('/upload')}
-                className="w-full py-4 bg-slate-100/60 border border-white/80 rounded-2xl font-black text-slate-600 text-sm hover:bg-white hover:text-[#4b7bff] transition-all"
+                className="w-full py-4 bg-slate-50 border border-slate-100 rounded-xl font-bold text-slate-600 text-sm hover:bg-slate-100 hover:text-blue-600 transition-all"
               >
                 Optimize Now
               </button>
@@ -251,22 +247,21 @@ const Recommendations = () => {
           </div>
 
 
-          <div className="bg-white/25 backdrop-blur-3xl rounded-[2.5rem] p-8 border border-white/70 relative overflow-hidden shadow-[0_40px_80px_-20px_rgba(15,23,42,0.3),inset_0_1px_4px_rgba(255,255,255,0.6)]">
-            <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/[0.05] to-transparent pointer-events-none" />
+          <div className="bg-white rounded-2xl p-8 border border-slate-100 relative overflow-hidden shadow-sm">
             <div className="relative z-10">
-              <h3 className="text-2xl font-black text-[#1e293b] tracking-tight mb-8">Upskilling Path</h3>
+              <h3 className="text-2xl font-bold text-slate-900 tracking-tight mb-8">Upskilling Path</h3>
 
               <div className="space-y-8">
                 {courses.map((course) => (
                   <div key={course.id} className="space-y-4">
                     <div className="flex gap-4">
-                      <div className="w-12 h-12 bg-[#4b7bff]/10 rounded-xl flex items-center justify-center shrink-0">
-                        <BookOpen className="w-6 h-6 text-[#4b7bff]" />
+                      <div className="w-12 h-12 bg-slate-50 rounded-xl flex items-center justify-center shrink-0">
+                        <BookOpen className="w-6 h-6 text-blue-600" />
                       </div>
                       <div>
-                        <h4 className="font-black text-[#1e293b] text-base mb-1">{course.name}</h4>
+                        <h4 className="font-bold text-slate-900 text-base mb-1">{course.name}</h4>
                         <div className="flex items-center gap-3">
-                          <span className="text-slate-400 text-xs font-bold">{course.platform}</span>
+                          <span className="text-slate-400 text-xs font-semibold">{course.platform}</span>
                           <div className="flex items-center gap-0.5">
                             {[...Array(5)].map((_, i) => (
                               <Star key={i} className={cn("w-3 h-3 pt-0.5", i < course.rating ? "fill-yellow-400 text-yellow-400" : "text-slate-300")} />
@@ -275,7 +270,7 @@ const Recommendations = () => {
                         </div>
                       </div>
                     </div>
-                    <button className="w-full py-3 bg-[#4b7bff] text-white rounded-[1.2rem] font-black text-xs shadow-lg shadow-blue-500/20 hover:scale-[1.03] transition-all">
+                    <button className="w-full py-3 bg-blue-600 text-white rounded-xl font-bold text-xs shadow-md shadow-blue-500/10 hover:bg-blue-700 transition-all active:scale-95">
                       Enroll Path
                     </button>
                   </div>

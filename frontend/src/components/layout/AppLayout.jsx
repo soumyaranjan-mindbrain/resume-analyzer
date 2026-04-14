@@ -49,6 +49,10 @@ const AppLayout = ({ children }) => {
   const navItems = user?.role === 'admin' ? adminNavItems : userNavItems;
 
   const pageInfo = {
+    '/dashboard': { 
+      title: `Welcome, ${user?.name?.split(' ')[0] || 'User'}!`, 
+      subtitle: 'Welcome back to your personalized career intelligence suite.' 
+    },
     '/history': { title: 'My Resumes', subtitle: 'Manage and track all your analyzed documents.' },
     '/matches': { title: 'Job Matches', subtitle: 'High-probability career opportunities for you.' },
     '/recommendations': { title: 'Recommendations', subtitle: 'AI-driven suggestions for your next career move.' },
@@ -128,26 +132,25 @@ const AppLayout = ({ children }) => {
           </nav>
 
           
-          {/* Footer */}
           <div className="relative z-10 px-5 mt-auto shrink-0 w-full space-y-2">
             {user?.role !== 'admin' && (
               <NavLink 
                 to="/support"
                 className={({ isActive }) => cn(
-                  "flex items-center gap-3 w-full px-4 py-3 border rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all",
+                  "flex items-center gap-3 w-full px-4 py-3 border rounded-2xl font-bold text-xs transition-all",
                   isActive 
-                    ? "bg-[#4b7bff] text-white shadow-lg border-transparent shadow-blue-500/10" 
+                    ? "bg-blue-600 text-white shadow-md border-transparent" 
                     : "bg-white shadow-sm border-slate-200 text-slate-500 hover:text-slate-900 hover:bg-slate-50"
                 )}
               >
                 <HelpCircle className="w-5 h-5" />
-                Support
+                Support Center
               </NavLink>
             )}
 
             <button 
               onClick={() => { logout(); navigate('/auth', { replace: true }); }}
-              className="flex items-center gap-3 w-full px-4 py-3 border border-red-100 bg-red-50/30 rounded-2xl font-black text-[11px] uppercase tracking-widest text-red-600 hover:bg-red-600 hover:text-white transition-all group shadow-sm"
+              className="flex items-center gap-3 w-full px-4 py-3 border border-red-50 bg-red-50/20 rounded-2xl font-bold text-xs text-red-600 hover:bg-red-600 hover:text-white transition-all group shadow-sm"
             >
               <LogOut className="w-5 h-5 transition-transform group-hover:-translate-x-1" />
               Sign Out
@@ -156,14 +159,13 @@ const AppLayout = ({ children }) => {
         </aside>
 
         
-        <main className="flex-1 flex flex-col min-w-0 h-full relative overflow-hidden bg-[#f8fafc]">
+        <main className="flex-1 flex flex-col min-w-0 h-full relative overflow-hidden bg-[#eff3f6]">
           
           {user?.role !== 'admin' ? (
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-              <div className="absolute -top-[10%] -right-[5%] w-[70%] h-[70%] bg-cyan-200/40 blur-[130px] rounded-full animate-pulse" style={{ animationDuration: '8s' }} />
-              <div className="absolute -bottom-[10%] -left-[5%] w-[65%] h-[65%] bg-lime-200/40 blur-[130px] rounded-full animate-pulse shadow-[0_0_100px_rgba(190,242,100,0.3)]" style={{ animationDuration: '12s' }} />
-              <div className="absolute top-[20%] left-[10%] w-[50%] h-[50%] bg-blue-100/30 blur-[100px] rounded-full" />
-              <div className="absolute inset-0 bg-gradient-to-br from-white/60 via-transparent to-white/40 opacity-70" />
+            <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-20">
+              <div className="absolute -top-[10%] -right-[5%] w-[70%] h-[70%] bg-blue-100/30 blur-[130px] rounded-full" />
+              <div className="absolute -bottom-[10%] -left-[5%] w-[65%] h-[65%] bg-slate-200/30 blur-[130px] rounded-full" />
+              <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-white/10 opacity-70" />
             </div>
           ) : (
             <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-[0.4]">
@@ -181,8 +183,8 @@ const AppLayout = ({ children }) => {
             <div className="flex items-center gap-4 flex-1">
               {currentPage && (
                 <div className="animate-in fade-in slide-in-from-left-4 duration-500">
-                  <h2 className="text-xl font-black text-[#1e293b] tracking-tight">{currentPage.title}</h2>
-                  <p className="text-[10px] font-black text-[#94a3b8] uppercase tracking-widest">{currentPage.subtitle}</p>
+                  <h2 className="text-xl font-bold text-slate-800 tracking-tight">{currentPage.title}</h2>
+                  <p className="text-xs font-semibold text-slate-400 tracking-wide">{currentPage.subtitle}</p>
                 </div>
               )}
             </div>
@@ -192,18 +194,18 @@ const AppLayout = ({ children }) => {
               <div className="relative">
                 <button 
                   onClick={() => setProfileOpen(!profileOpen)}
-                  className="flex items-center gap-3 bg-white shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] rounded-2xl p-1.5 pr-4 ml-2 hover:shadow-md transition-all border border-transparent hover:border-[#4b7bff]/20"
+                  className="flex items-center gap-3 bg-white shadow-sm rounded-2xl p-1.5 pr-4 ml-2 hover:shadow-md transition-all border border-slate-100"
                 >
-                  <div className="w-9 h-9 rounded-xl overflow-hidden shrink-0 bg-blue-500/10 flex items-center justify-center font-black text-[#4b7bff] text-xs">
+                  <div className="w-9 h-9 rounded-xl overflow-hidden shrink-0 bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-xs border border-blue-100">
                     {user?.profilePic ? (
                       <img src={user.profilePic} alt="Profile" className="w-full h-full object-cover" />
                     ) : (
                       user?.name?.charAt(0) || 'U'
                     )}
                   </div>
-                  <span className="text-sm font-bold text-[#334155] hidden sm:block">{user?.name || 'User'}</span>
+                  <span className="text-sm font-semibold text-slate-700 hidden sm:block">{user?.name || 'User'}</span>
 
-                  <ChevronDown className={cn("w-4 h-4 text-[#94a3b8] hidden sm:block transition-transform", profileOpen && "rotate-180")} />
+                  <ChevronDown className={cn("w-4 h-4 text-slate-400 hidden sm:block transition-transform", profileOpen && "rotate-180")} />
                 </button>
 
                 {profileOpen && (

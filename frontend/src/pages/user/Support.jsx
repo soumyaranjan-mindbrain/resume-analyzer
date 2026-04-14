@@ -59,19 +59,18 @@ const Support = () => {
       
       
       <div className="text-center mb-16 relative">
-        <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500/10 rounded-full text-[#4b7bff] font-black text-xs mb-6 border border-blue-500/20">
+        <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 rounded-full text-blue-600 font-bold text-[11px] mb-6 border border-blue-100">
            <LifeBuoy className="w-4 h-4" /> HELP CENTER
         </div>
-        <h1 className="text-5xl font-black text-[#1e293b] tracking-tight mb-6">How can we help you today?</h1>
+        <h1 className="text-5xl font-bold text-slate-800 tracking-tight mb-6">How can we help you today?</h1>
         <p className="text-slate-500 font-medium text-xl max-w-2xl mx-auto mb-10">Search our knowledge base or get in touch with our expert team for personalized assistance.</p>
         
-        
         <div className="max-w-xl mx-auto relative group">
-           <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-[#4b7bff] transition-colors" />
+           <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-blue-600 transition-colors" />
            <input 
               type="text" 
               placeholder="Search for articles, guides, or keywords..." 
-              className="w-full pl-14 pr-6 py-5 bg-white/40 backdrop-blur-2xl border border-white/60 rounded-[2rem] shadow-xl shadow-slate-200/50 outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500/30 font-bold text-slate-700 transition-all text-lg placeholder:text-slate-400"
+              className="w-full pl-14 pr-6 py-5 bg-white border border-slate-200 rounded-2xl shadow-sm outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-400 font-semibold text-slate-700 transition-all text-lg placeholder:text-slate-400"
            />
         </div>
       </div>
@@ -79,14 +78,13 @@ const Support = () => {
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
          {contactMethods.map((method, i) => (
-           <div key={i} className="bg-white/30 backdrop-blur-3xl rounded-[2.5rem] p-8 border border-white/70 shadow-[0_40px_80px_-20px_rgba(15,23,42,0.2)] hover:scale-[1.02] transition-all cursor-pointer group relative overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-slate-900/[0.03] pointer-events-none" />
-              <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center mb-6 border border-white/40 shadow-inner", method.bg, method.color)}>
+           <div key={i} className="bg-white rounded-[2rem] p-8 border border-slate-100 shadow-sm hover:shadow-md transition-all cursor-pointer group relative overflow-hidden">
+              <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center mb-6 border border-slate-100 shadow-sm", method.bg.replace('/10', ''), method.color)}>
                  {method.icon}
               </div>
-              <h3 className="text-2xl font-black text-[#1e293b] mb-2">{method.title}</h3>
-              <p className="text-slate-500 font-bold text-sm mb-6 leading-relaxed">{method.desc}</p>
-              <div className="flex items-center gap-2 text-[#4b7bff] font-black text-sm group-hover:translate-x-1 transition-transform">
+              <h3 className="text-2xl font-bold text-slate-800 mb-2">{method.title}</h3>
+              <p className="text-slate-500 font-semibold text-sm mb-6 leading-relaxed">{method.desc}</p>
+              <div className="flex items-center gap-2 text-blue-600 font-bold text-sm group-hover:translate-x-1 transition-transform">
                  Contact Us <ArrowRight className="w-4 h-4" />
               </div>
            </div>
@@ -107,18 +105,18 @@ const Support = () => {
             
             <div className="space-y-4">
                {faqs.map((faq, i) => (
-                 <div key={i} className="bg-white/25 backdrop-blur-xl border border-white/60 rounded-3xl overflow-hidden shadow-sm hover:border-blue-500/20 transition-all">
+                 <div key={i} className="bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm hover:border-blue-500/20 transition-all">
                    <button 
                        onClick={() => toggleFaq(i)}
                        className="w-full flex items-center justify-between p-6 text-left"
                      >
-                       <span className="font-bold text-[#334155] pr-8">{faq.q}</span>
-                       <div className={cn("w-8 h-8 rounded-full border border-slate-200 flex items-center justify-center transition-transform", activeFaq === i ? "rotate-45 text-orange-500 border-orange-200 bg-orange-50" : "text-slate-400")}>
+                       <span className="font-semibold text-slate-700 pr-8">{faq.q}</span>
+                       <div className={cn("w-8 h-8 rounded-full border border-slate-200 flex items-center justify-center transition-transform", activeFaq === i ? "rotate-45 text-amber-500 border-amber-200 bg-amber-50" : "text-slate-400")}>
                           <Plus className="w-4 h-4" />
                        </div>
                     </button>
                     {activeFaq === i && (
-                      <div className="px-6 pb-6 text-slate-500 font-bold text-sm leading-relaxed border-t border-white/40 pt-4">
+                      <div className="px-6 pb-6 text-slate-500 font-medium text-sm leading-relaxed border-t border-slate-50 pt-4">
                         {faq.a}
                       </div>
                     )}
@@ -128,15 +126,15 @@ const Support = () => {
          </div>
 
          
-         <div className="bg-white/30 backdrop-blur-3xl rounded-[3rem] p-10 border border-white/70 shadow-[0_60px_100px_-20px_rgba(15,23,42,0.3),inset_0_1px_4px_rgba(255,255,255,0.6)] relative overflow-hidden">
+         <div className="bg-white rounded-[2.5rem] p-10 border border-slate-100 shadow-sm relative overflow-hidden">
             <div className="relative z-10">
                <div className="flex items-center gap-4 mb-8">
-                  <div className="w-12 h-12 bg-slate-900 rounded-2xl flex items-center justify-center text-white shadow-xl">
+                  <div className="w-12 h-12 bg-slate-900 rounded-2xl flex items-center justify-center text-white shadow-lg">
                      <MessageSquare className="w-6 h-6" />
                   </div>
                   <div>
-                     <h3 className="text-2xl font-black text-[#1e293b] tracking-tight">Submit a Support Ticket</h3>
-                     <p className="text-slate-400 font-bold text-sm">We'll get back to you very soon.</p>
+                     <h3 className="text-2xl font-bold text-slate-800 tracking-tight">Submit a Support Ticket</h3>
+                     <p className="text-slate-500 font-semibold text-sm">We'll get back to you very soon.</p>
                   </div>
                </div>
 

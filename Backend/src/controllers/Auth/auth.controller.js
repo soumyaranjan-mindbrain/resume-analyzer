@@ -4,7 +4,7 @@ const User = require("../../models/User");
 const { generateAccessToken, generateRefreshToken } = require("../../utils/generateToken");
 
 // Helper to send access and refresh tokens in HTTP-only cookies
-const sendTokens = async (res, user) => {
+const sendTokens = async (res, user, message = "Login successful", status = 200) => {
   const accessToken = generateAccessToken(user);
   const refreshToken = generateRefreshToken(user);
 
@@ -26,9 +26,9 @@ const sendTokens = async (res, user) => {
       path: "/",
       maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
     })
-    .status(200)
+    .status(status)
     .json({
-      msg: "Login successful",
+      msg: message,
       token: accessToken,
       user: {
         id: user._id,
@@ -66,15 +66,9 @@ const register = async (req, res) => {
     });
 
     await newUser.save();
-    res.status(201).json({
-      msg: "User registered successfully",
-      user: {
-        id: newUser._id,
-        name: newUser.name,
-        email: newUser.email,
-        role: newUser.role,
-      },
-    });
+    
+    // Automatically log in the user after registration
+    await sendTokens(res, newUser, "User registered and logged in successfully", 201);
 
   } catch (err) {
     if (err.code === 11000) {

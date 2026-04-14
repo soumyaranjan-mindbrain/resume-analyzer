@@ -57,10 +57,9 @@ const Auth = () => {
         const redirectPath = userData.role === 'admin' ? '/admin' : '/dashboard';
         navigate(redirectPath, { replace: true });
       } else {
-        await register({ name, email, password, role: 'student' });
-        setError('');
-        setIsLogin(true); // Switch to login after registration
-        alert('Registration successful! Please login.');
+        const userData = await register({ name, email, password, role: 'student' });
+        const redirectPath = userData.role === 'admin' ? '/admin' : '/dashboard';
+        navigate(redirectPath, { replace: true });
       }
     } catch (err) {
       setError(err.error || err.message || 'Authentication failed');

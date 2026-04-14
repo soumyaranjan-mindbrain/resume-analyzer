@@ -140,8 +140,8 @@ const Upload = () => {
   return (
     <div className="max-w-4xl mx-auto py-12 px-4" ref={containerRef}>
       <div className="text-center mb-12 space-y-4">
-        <h1 className="text-5xl font-black text-slate-900 tracking-tighter">
-          Elevate Your <span className="text-[#4b7bff]">Career</span>
+        <h1 className="text-5xl font-bold text-slate-800 tracking-tight">
+          Elevate Your <span className="text-blue-600">Career</span>
         </h1>
         <p className="text-slate-500 text-lg font-medium max-w-xl mx-auto">
           Upload your resume and let our advanced AI engine analyze it for ATS compatibility and job matching.
@@ -153,7 +153,7 @@ const Upload = () => {
         <div className="absolute -top-20 -left-20 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl" />
         <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-purple-500/5 rounded-full blur-3xl" />
 
-        <div className="bg-white/40 backdrop-blur-2xl rounded-[3rem] p-10 border border-white/60 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.12),inset_0_1px_2px_rgba(255,255,255,0.5)] relative z-10">
+        <div className="bg-white rounded-[3rem] p-10 border border-slate-100 shadow-sm relative z-10">
           
           {!file && (
             <div 
@@ -162,10 +162,10 @@ const Upload = () => {
               onDragLeave={handleDragLeave}
               onDrop={handleDrop}
               className={cn(
-                "border-4 border-dashed rounded-[2.5rem] p-16 flex flex-col items-center justify-center gap-6 cursor-pointer transition-all duration-500 group",
+                "border-2 border-dashed rounded-[2.5rem] p-16 flex flex-col items-center justify-center gap-6 cursor-pointer transition-all duration-300 group",
                 isDragging 
-                  ? "border-[#4b7bff] bg-blue-50/50 scale-[1.02] shadow-2xl shadow-blue-500/10" 
-                  : "border-slate-200 hover:border-[#4b7bff]/30 hover:bg-blue-50/30"
+                  ? "border-blue-500 bg-blue-50" 
+                  : "border-slate-200 bg-slate-50/50 hover:border-blue-400 hover:bg-white"
               )}
             >
 
@@ -176,26 +176,26 @@ const Upload = () => {
                 className="hidden" 
                 accept=".pdf,.docx"
               />
-              <div className="w-24 h-24 rounded-[2rem] bg-white flex items-center justify-center shadow-xl shadow-blue-500/10 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
-                <UploadIcon className="w-10 h-10 text-[#4b7bff]" />
+              <div className="w-20 h-20 rounded-2xl bg-white flex items-center justify-center shadow-md border border-slate-100 group-hover:scale-110 transition-transform duration-500">
+                <UploadIcon className="w-8 h-8 text-blue-600" />
               </div>
               <div className="text-center space-y-2">
-                <h3 className="text-2xl font-black text-slate-800">Drop your PDF or DOCX here</h3>
-                <p className="text-slate-500 font-bold uppercase tracking-widest text-xs">Maximum file size 5MB</p>
+                <h3 className="text-2xl font-bold text-slate-800">Drop your PDF or DOCX here</h3>
+                <p className="text-slate-400 font-bold uppercase tracking-wider text-[10px]">Maximum file size 5MB</p>
               </div>
             </div>
           )}
 
           {file && (
             <div className="space-y-8">
-              <div className="flex items-center justify-between p-6 bg-white/60 rounded-3xl border border-white/80 shadow-sm">
+              <div className="flex items-center justify-between p-6 bg-slate-50 rounded-2xl border border-slate-100 shadow-sm">
                 <div className="flex items-center gap-5">
-                  <div className="w-16 h-16 rounded-2xl bg-red-50 text-red-500 flex items-center justify-center shadow-inner">
+                  <div className="w-16 h-16 rounded-xl bg-white text-red-500 flex items-center justify-center shadow-sm border border-slate-100">
                     <FileText className="w-8 h-8" />
                   </div>
                   <div>
-                    <h4 className="text-lg font-black text-slate-800 line-clamp-1">{file.name}</h4>
-                    <p className="text-slate-400 font-bold text-xs uppercase tracking-widest">
+                    <h4 className="text-lg font-bold text-slate-800 line-clamp-1">{file.name}</h4>
+                    <p className="text-slate-400 font-bold text-xs uppercase tracking-wider">
                       {(file.size / 1024 / 1024).toFixed(2)} MB • {file.name.toLowerCase().endsWith('.pdf') ? 'PDF' : 'DOCX'} Document
                     </p>
                   </div>
@@ -203,7 +203,7 @@ const Upload = () => {
                 {!uploading && (
                   <button 
                     onClick={removeFile}
-                    className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 hover:bg-red-50 hover:text-red-500 transition-all"
+                    className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-slate-400 hover:text-red-500 shadow-sm border border-slate-100 transition-all"
                   >
                     <X className="w-5 h-5" />
                   </button>
@@ -215,22 +215,20 @@ const Upload = () => {
                   <div className="space-y-3">
                     <div className="flex justify-between items-end">
                       <div className="space-y-1">
-                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#4b7bff]">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-blue-600">
                           {status === 'uploading' ? 'Transmitting Data' : 'AI Analysis in Progress'}
                         </span>
-                        <h5 className="text-xl font-black text-slate-800">
+                        <h5 className="text-xl font-bold text-slate-800">
                           {status === 'uploading' ? 'Uploading to Secure Cloud...' : 'Parsing Resume Metadata...'}
                         </h5>
                       </div>
-                      <span className="text-3xl font-black text-[#4b7bff]">{progress}%</span>
+                      <span className="text-3xl font-bold text-blue-600">{progress}%</span>
                     </div>
-                    <div className="h-4 w-full bg-slate-100 rounded-full overflow-hidden p-1 shadow-inner">
+                    <div className="h-3 w-full bg-slate-100 rounded-full overflow-hidden border border-slate-200">
                       <div 
-                        className="h-full bg-gradient-to-r from-[#4b7bff] to-[#6366f1] rounded-full transition-all duration-500 relative"
+                        className="h-full bg-blue-600 rounded-full transition-all duration-500"
                         style={{ width: `${progress}%` }}
-                      >
-                        <div className="absolute inset-0 bg-white/20 animate-pulse" />
-                      </div>
+                      />
                     </div>
                   </div>
 
@@ -240,9 +238,9 @@ const Upload = () => {
                       { icon: Cpu, label: 'AI Match', active: progress > 50 },
                       { icon: Zap, label: 'Fast Sync', active: progress > 80 }
                     ].map((item, i) => (
-                      <div key={i} className={`p-4 rounded-2xl border transition-all duration-500 flex flex-col items-center gap-2 ${item.active ? 'bg-white border-blue-100 shadow-sm text-blue-600' : 'bg-slate-50/50 border-transparent text-slate-300'}`}>
+                      <div key={i} className={`p-4 rounded-2xl border transition-all duration-500 flex flex-col items-center gap-2 ${item.active ? 'bg-blue-50 border-blue-100 text-blue-600' : 'bg-slate-50 border-slate-100 text-slate-300'}`}>
                         <item.icon className="w-5 h-5" />
-                        <span className="text-[10px] font-black uppercase tracking-widest">{item.label}</span>
+                        <span className="text-[10px] font-bold uppercase tracking-wider">{item.label}</span>
                       </div>
                     ))}
                   </div>
@@ -250,7 +248,7 @@ const Upload = () => {
               ) : (
                 <button 
                   onClick={handleUpload}
-                  className="w-full bg-[#4b7bff] text-white py-6 rounded-[2rem] text-lg font-black uppercase tracking-widest hover:bg-[#3b63d6] transition-all shadow-2xl shadow-blue-500/40 flex items-center justify-center gap-3 hover:scale-[1.01] active:scale-95"
+                  className="w-full bg-blue-600 text-white py-5 rounded-2xl text-lg font-bold uppercase tracking-wider hover:bg-blue-700 transition-all shadow-md shadow-blue-500/10 flex items-center justify-center gap-3 hover:scale-[1.01] active:scale-95"
                 >
                   Start AI Analysis
                   <ArrowRight className="w-6 h-6" />

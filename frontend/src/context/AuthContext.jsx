@@ -55,7 +55,11 @@ export const AuthProvider = ({ children }) => {
   const registerUser = async (userData) => {
     try {
       const data = await authService.register(userData);
-      return data;
+      const userResData = data.user;
+      if (userResData.role === 'student') userResData.role = 'user';
+      setUser(userResData);
+      localStorage.setItem('kredo_user', JSON.stringify(userResData));
+      return userResData;
     } catch (error) {
       throw error;
     }
