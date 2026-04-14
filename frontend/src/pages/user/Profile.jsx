@@ -33,20 +33,49 @@ const LinkedinIcon = ({ className }) => (
 );
 
 const Profile = () => {
-  const { user } = useAuth();
+  const { user, checkAuth } = useAuth();
   const [loading, setLoading] = useState(false);
+  
+  // Split user.name into firstName and lastName
+  const getNameParts = (fullName) => {
+    if (!fullName) return { first: '', last: '' };
+    const parts = fullName.trim().split(/\s+/);
+    if (parts.length <= 1) return { first: parts[0] || '', last: '' };
+    return {
+      first: parts[0],
+      last: parts.slice(1).join(' ')
+    };
+  };
+
   const [formData, setFormData] = useState({
-    name: user?.name || '',
-    email: user?.email || '',
-    location: user?.location || '',
-    phone: user?.phone || '',
-    title: user?.title || 'Student'
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: ''
   });
+
+  // Sync formData when user context changes
+  React.useEffect(() => {
+    if (user) {
+      const nameParts = getNameParts(user.name);
+      setFormData({
+        firstName: nameParts.first,
+        lastName: nameParts.last,
+        email: user.email || '',
+        phone: user.phone || ''
+      });
+    }
+  }, [user]);
 
   const handleUpdate = async () => {
     try {
       setLoading(true);
-      await updateProfile(user._id || user.id, formData);
+      const fullName = `${formData.firstName} ${formData.lastName}`.trim();
+      await updateProfile(user._id || user.id, { 
+        name: fullName, 
+        phone: formData.phone 
+      });
+      await checkAuth(); // Refresh user context
       alert('Profile updated successfully!');
     } catch (error) {
       console.error('Update failed:', error);
@@ -79,7 +108,7 @@ const Profile = () => {
             </div>
 
             <h2 className="text-2xl font-bold text-slate-800 tracking-tight mb-1">{user?.name}</h2>
-            <p className="text-slate-500 font-normal text-[10px] uppercase tracking-widest mb-6">{formData.title}</p>
+            <p className="text-slate-500 font-normal text-[10px] uppercase tracking-widest mb-6">{user?.role || 'Student'}</p>
 
             <div className="flex gap-3 mb-8">
               {[GithubIcon, TwitterIcon, LinkedinIcon].map((Icon, i) => (
@@ -87,27 +116,6 @@ const Profile = () => {
                   <Icon className="w-4 h-4" />
                 </button>
               ))}
-            </div>
-
-            <div className="w-full space-y-4">
-              <div className="bg-slate-50/50 p-4 rounded-xl border border-slate-200 flex items-center gap-4 group transition-all">
-                <div className="w-10 h-10 bg-white text-blue-600 rounded-xl flex items-center justify-center shadow-sm">
-                  <Mail className="w-5 h-5" />
-                </div>
-                 <div className="text-left">
-                  <p className="text-[10px] font-normal text-slate-500 uppercase tracking-widest">Email Address</p>
-                  <p className="text-sm font-medium text-slate-700">{user?.email}</p>
-                </div>
-              </div>
-              <div className="bg-slate-50/50 p-4 rounded-xl border border-slate-200 flex items-center gap-4 group transition-all">
-                <div className="w-10 h-10 bg-white text-emerald-600 rounded-xl flex items-center justify-center shadow-sm">
-                  <MapPin className="w-5 h-5" />
-                </div>
-                 <div className="text-left">
-                  <p className="text-[10px] font-normal text-slate-500 uppercase tracking-widest">Location</p>
-                  <p className="text-sm font-medium text-slate-700">{user?.location || 'Not Specified'}</p>
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -117,29 +125,20 @@ const Profile = () => {
             
           <div className="grid sm:grid-cols-2 gap-6 flex-1">
              <div className="space-y-2">
-              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest px-1">Full Name</label>
+              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest px-1">First Name</label>
               <input 
                 type="text" 
-                value={formData.name}
-                onChange={(e) => setFormData({...formData, name: e.target.value})}
+                value={formData.firstName}
+                onChange={(e) => setFormData({...formData, firstName: e.target.value})}
                 className="w-full bg-slate-50 border border-slate-200 rounded-xl px-5 py-4 text-sm font-medium text-slate-700 focus:outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-400 focus:bg-white transition-all shadow-sm"
               />
             </div>
              <div className="space-y-2">
-              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest px-1">Job Title</label>
+              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest px-1">Last Name</label>
               <input 
                 type="text" 
-                value={formData.title}
-                onChange={(e) => setFormData({...formData, title: e.target.value})}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-5 py-4 text-sm font-medium text-slate-700 focus:outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-400 focus:bg-white transition-all shadow-sm"
-              />
-            </div>
-             <div className="space-y-2">
-              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest px-1">Location</label>
-              <input 
-                type="text" 
-                value={formData.location}
-                onChange={(e) => setFormData({...formData, location: e.target.value})}
+                value={formData.lastName}
+                onChange={(e) => setFormData({...formData, lastName: e.target.value})}
                 className="w-full bg-slate-50 border border-slate-200 rounded-xl px-5 py-4 text-sm font-medium text-slate-700 focus:outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-400 focus:bg-white transition-all shadow-sm"
               />
             </div>
@@ -150,6 +149,15 @@ const Profile = () => {
                 value={formData.phone}
                 onChange={(e) => setFormData({...formData, phone: e.target.value})}
                 className="w-full bg-slate-50 border border-slate-200 rounded-xl px-5 py-4 text-sm font-medium text-slate-700 focus:outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-400 focus:bg-white transition-all shadow-sm"
+              />
+            </div>
+             <div className="space-y-2">
+              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest px-1">Email Address</label>
+              <input 
+                type="email" 
+                value={formData.email}
+                disabled
+                className="w-full bg-slate-100 border border-slate-200 rounded-xl px-5 py-4 text-sm font-medium text-slate-400 cursor-not-allowed outline-none shadow-sm"
               />
             </div>
           </div>

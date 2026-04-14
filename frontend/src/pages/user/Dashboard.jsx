@@ -79,7 +79,7 @@ const Dashboard = () => {
     },
     {
       label: 'Job Ready',
-      value: (stats?.atsScore || 0) > 70 ? '92%' : 'Low',
+      value: stats?.atsScore !== undefined ? `${Math.round(stats.atsScore * 1.1 > 100 ? 100 : stats.atsScore * 1.1)}%` : 'Low',
       tone: 'emerald',
       icon: ShieldCheck,
       detail: 'Based on ATS score and overall skill matching algorithms.'
@@ -189,10 +189,10 @@ const Dashboard = () => {
           <div className="flex flex-col xl:flex-row items-center gap-8 justify-between flex-1 relative z-10">
             <ul className="space-y-4 w-full xl:w-auto">
               {[
-                { label: "Technical Skills", color: "bg-blue-500", percent: `${Math.min(stats?.atsScore || 35, 40)}%` },
-                { label: "Experience Match", color: "bg-emerald-500", percent: `${Math.min(stats?.atsScore || 30, 30)}%` },
-                { label: "Keyword Density", color: "bg-indigo-500", percent: `${Math.min(stats?.atsScore || 20, 20)}%` },
-                { label: "Formatting", color: "bg-amber-500", percent: "15%" },
+                { label: "Technical Skills", color: "bg-blue-500", percent: `${((stats?.scoreBreakdown?.techSkills || 0) / 10 * 100).toFixed(0)}%` },
+                { label: "Experience Match", color: "bg-emerald-500", percent: `${((stats?.scoreBreakdown?.experience || 0) / 10 * 100).toFixed(0)}%` },
+                { label: "Keyword Density", color: "bg-indigo-500", percent: `${((stats?.scoreBreakdown?.keywords || 0) / 20 * 100).toFixed(0)}%` },
+                { label: "Formatting", color: "bg-amber-500", percent: `${((stats?.scoreBreakdown?.formatting || 0) / 7 * 100).toFixed(0)}%` },
               ].map((item, idx) => (
                 <li key={idx} className="flex items-center justify-between xl:justify-start gap-12 p-3 bg-slate-50 rounded-xl border border-slate-200 hover:bg-white transition-colors cursor-default">
                   <div className="flex items-center gap-3">

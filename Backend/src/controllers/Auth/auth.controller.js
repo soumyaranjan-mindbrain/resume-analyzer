@@ -35,6 +35,7 @@ const sendTokens = async (res, user, message = "Login successful", status = 200)
         name: user.name,
         email: user.email,
         role: user.role,
+        phone: user.phone || "",
       },
     });
 };
@@ -177,6 +178,7 @@ const logout = async (req, res) => {
             name: user.name,
             email: user.email,
             role: user.role,
+            phone: user.phone || "",
           }
           : null,
       });
@@ -191,7 +193,7 @@ const getMe = async (req, res) => {
   }
 
   try {
-    const user = await User.findById(req.user.id).select("name email role");
+    const user = await User.findById(req.user.id).select("name email role phone");
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
@@ -203,6 +205,7 @@ const getMe = async (req, res) => {
         name: user.name,
         email: user.email,
         role: user.role,
+        phone: user.phone || "",
       },
     });
   } catch (err) {

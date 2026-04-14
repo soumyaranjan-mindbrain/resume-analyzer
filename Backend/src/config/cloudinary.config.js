@@ -16,6 +16,7 @@ const uploadBufferToCloudinary = (buffer, originalname) => {
       {
         folder: "resumes",
         resource_type: "raw", // Required for PDFs and DOCX
+        access_mode: "public", // Ensure URL is publicly accessible
         public_id: `resume_${Date.now()}_${originalname.replace(/\s+/g, "_")}`,
       },
       (error, result) => {

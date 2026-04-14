@@ -9,6 +9,7 @@ const userSchema = new mongoose.Schema({
     enum: ["admin", "student"], 
     default: "student" 
   },
+  phone: { type: String, default: "" },
   refreshToken: { type: String, default: "" },
 });
 

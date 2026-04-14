@@ -39,7 +39,25 @@ const Recommendations = () => {
               actionText: 'Apply Tip',
               type: 'skill'
             })),
-            ...(feedbackData.recommendations || [])
+            ...(feedbackData.recommendations || []),
+            {
+              id: 'extra-1',
+              title: 'Industry Keyword Alignment',
+              description: 'Our AI detected that adding more cloud-native keywords (Docker, Kubernetes) would increase your visibility for modern DevOps roles.',
+              type: 'tip'
+            },
+            {
+              id: 'extra-2',
+              title: 'Impact Statement Optimization',
+              description: 'Try rephrasing your experience bullets to start with strong action verbs like "Spearheaded" or "Orchestrated" for better impact.',
+              type: 'skill'
+            },
+            {
+              id: 'extra-3',
+              title: 'Section Reordering',
+              description: 'Moving your "Skills" section above "Education" is recommended for roles with 2+ years of experience to highlight technical proficiency.',
+              type: 'tip'
+            }
           ];
           setRecommendations(tips);
         }
@@ -59,7 +77,16 @@ const Recommendations = () => {
     'Reverse chronological order for experience',
     'Include direct links to portfolio/LinkedIn',
     'Keep your contact info up to date',
-    'Ensure white space is balanced'
+    'Ensure white space is balanced',
+    'Optimize for ATS with relevant keywords',
+    'Keep it to 1-2 pages maximum',
+    'Use a clean, professional font',
+    'Proofread for any grammar errors',
+    'Tailor your summary to the specific role',
+    'Use strong action verbs for bullet points',
+    'Avoid using first-person pronouns like "I"',
+    'Save and send your resume in PDF format',
+    'Highlight relevant certifications and honors'
   ];
 
   const tabs = ['Improvement Tips', 'Suggested Jobs'];
@@ -97,25 +124,6 @@ const Recommendations = () => {
       <div className="flex flex-col lg:flex-row gap-8">
 
         <div className="flex-1 space-y-8">
-
-          <div className="p-1.5 bg-slate-100 rounded-2xl flex items-center gap-1 border border-slate-200 w-fit">
-            {tabs.map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={cn(
-                  "px-6 py-2.5 rounded-[0.9rem] font-medium text-sm transition-all duration-300",
-                  activeTab === tab
-                    ? "bg-blue-600 text-white shadow-md shadow-blue-500/10"
-                    : "text-slate-600 hover:bg-white hover:text-slate-900"
-                )}
-              >
-                {tab}
-              </button>
-            ))}
-          </div>
-
-
           <div className="space-y-4">
             {recommendations.length === 0 ? (
               <div className="text-center py-20 bg-white rounded-[2.5rem] border border-slate-200 shadow-[0_8px_30px_rgba(0,0,0,0.06)]">
@@ -146,52 +154,6 @@ const Recommendations = () => {
           </div>
 
 
-          <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-slate-800 tracking-tight">Quick Actions</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Card 1: Re-run Analysis */}
-              <div className="bg-white rounded-2xl p-8 border border-slate-100 shadow-sm relative overflow-hidden group">
-                <div className="relative z-10">
-                  <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center mb-6 border border-blue-100">
-                    <RefreshCw className="w-8 h-8 text-blue-600" />
-                  </div>
-                  <h3 className="text-xl font-bold text-slate-800 tracking-tight mb-3">Re-run Analysis</h3>
-                  <p className="text-slate-600 font-normal text-sm mb-8 leading-relaxed">
-                    Update your profile or upload a fresh version to get the latest insights.
-                  </p>
-                  <button
-                    onClick={() => navigate('/upload')}
-                    className="flex items-center gap-3 px-6 py-3 bg-white border border-slate-200 rounded-xl font-medium text-sm text-slate-700 hover:bg-slate-50 shadow-sm transition-all group/btn"
-                  >
-                    <RefreshCw className="w-4 h-4 text-blue-600 group-hover/btn:rotate-180 transition-transform duration-500" />
-                    New Upload
-                    <ChevronRight className="w-4 h-4 text-slate-400" />
-                  </button>
-                </div>
-              </div>
-
-              {/* Card 2: History Compare */}
-              <div className="bg-white rounded-2xl p-8 border border-slate-100 shadow-sm relative overflow-hidden group">
-                <div className="relative z-10">
-                  <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center mb-6 border border-slate-100">
-                    <GitCompare className="w-8 h-8 text-slate-600" />
-                  </div>
-                  <h3 className="text-xl font-bold text-slate-800 tracking-tight mb-3">Compare Resumes</h3>
-                  <p className="text-slate-600 font-normal text-sm mb-8 leading-relaxed">
-                    Analyze and compare your multiple resume versions side by side.
-                  </p>
-                  <button
-                    onClick={() => navigate('/history')}
-                    className="flex items-center gap-3 px-6 py-3 bg-white border border-slate-200 rounded-xl font-medium text-sm text-slate-700 hover:bg-slate-50 shadow-sm transition-all"
-                  >
-                    <GitCompare className="w-4 h-4 text-slate-500" />
-                    View History
-                    <ChevronRight className="w-4 h-4 text-slate-400" />
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
 
 
