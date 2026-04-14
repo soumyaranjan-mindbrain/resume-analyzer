@@ -59,18 +59,18 @@ const Support = () => {
       
       
       <div className="text-center mb-16 relative">
-        <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 rounded-full text-blue-600 font-bold text-[11px] mb-6 border border-blue-100">
+        <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 rounded-full text-blue-600 font-medium text-[11px] mb-6 border border-blue-100">
            <LifeBuoy className="w-4 h-4" /> HELP CENTER
         </div>
         <h1 className="text-5xl font-bold text-slate-800 tracking-tight mb-6">How can we help you today?</h1>
-        <p className="text-slate-500 font-medium text-xl max-w-2xl mx-auto mb-10">Search our knowledge base or get in touch with our expert team for personalized assistance.</p>
+        <p className="text-slate-600 font-normal text-xl max-w-2xl mx-auto mb-10">Search our knowledge base or get in touch with our expert team for personalized assistance.</p>
         
         <div className="max-w-xl mx-auto relative group">
            <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-blue-600 transition-colors" />
            <input 
               type="text" 
               placeholder="Search for articles, guides, or keywords..." 
-              className="w-full pl-14 pr-6 py-5 bg-white border border-slate-200 rounded-2xl shadow-sm outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-400 font-semibold text-slate-700 transition-all text-lg placeholder:text-slate-400"
+              className="w-full pl-14 pr-6 py-5 bg-white border border-slate-200 rounded-2xl shadow-sm outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-400 font-medium text-slate-600 transition-all text-lg placeholder:text-slate-400"
            />
         </div>
       </div>
@@ -83,8 +83,8 @@ const Support = () => {
                  {method.icon}
               </div>
               <h3 className="text-2xl font-bold text-slate-800 mb-2">{method.title}</h3>
-              <p className="text-slate-500 font-semibold text-sm mb-6 leading-relaxed">{method.desc}</p>
-              <div className="flex items-center gap-2 text-blue-600 font-bold text-sm group-hover:translate-x-1 transition-transform">
+              <p className="text-slate-600 font-normal text-sm mb-6 leading-relaxed">{method.desc}</p>
+              <div className="flex items-center gap-2 text-blue-600 font-medium text-sm group-hover:translate-x-1 transition-transform">
                  Contact Us <ArrowRight className="w-4 h-4" />
               </div>
            </div>
@@ -97,29 +97,29 @@ const Support = () => {
          
          <div>
             <div className="flex items-center gap-3 mb-8">
-               <div className="w-10 h-10 bg-[#4b7bff]/10 rounded-xl flex items-center justify-center text-[#4b7bff]">
-                  <BookOpen className="w-6 h-6" />
-               </div>
-               <h2 className="text-3xl font-black text-[#1e293b] tracking-tight">Popular Queries</h2>
+                <div className="w-10 h-10 bg-[#4b7bff]/10 rounded-xl flex items-center justify-center text-[#4b7bff]">
+                   <BookOpen className="w-6 h-6" />
+                </div>
+                <h2 className="text-3xl font-bold text-slate-800 tracking-tight">Popular Queries</h2>
             </div>
             
             <div className="space-y-4">
                {faqs.map((faq, i) => (
                  <div key={i} className="bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm hover:border-blue-500/20 transition-all">
-                   <button 
-                       onClick={() => toggleFaq(i)}
-                       className="w-full flex items-center justify-between p-6 text-left"
-                     >
-                       <span className="font-semibold text-slate-700 pr-8">{faq.q}</span>
-                       <div className={cn("w-8 h-8 rounded-full border border-slate-200 flex items-center justify-center transition-transform", activeFaq === i ? "rotate-45 text-amber-500 border-amber-200 bg-amber-50" : "text-slate-400")}>
-                          <Plus className="w-4 h-4" />
-                       </div>
-                    </button>
-                    {activeFaq === i && (
-                      <div className="px-6 pb-6 text-slate-500 font-medium text-sm leading-relaxed border-t border-slate-50 pt-4">
-                        {faq.a}
-                      </div>
-                    )}
+                    <button 
+                        onClick={() => toggleFaq(i)}
+                        className="w-full flex items-center justify-between p-6 text-left"
+                      >
+                        <span className="font-medium text-slate-600 pr-8 text-sm">{faq.q}</span>
+                        <div className={cn("w-8 h-8 rounded-full border border-slate-200 flex items-center justify-center transition-transform", activeFaq === i ? "rotate-45 text-amber-500 border-amber-200 bg-amber-50" : "text-slate-400")}>
+                           <Plus className="w-4 h-4" />
+                        </div>
+                     </button>
+                      {activeFaq === i && (
+                        <div className="px-6 pb-6 text-slate-500 font-medium text-sm leading-relaxed border-t border-slate-50 pt-4">
+                          {faq.a}
+                        </div>
+                      )}
                  </div>
                ))}
             </div>
@@ -129,41 +129,41 @@ const Support = () => {
          <div className="bg-white rounded-[2.5rem] p-10 border border-slate-100 shadow-sm relative overflow-hidden">
             <div className="relative z-10">
                <div className="flex items-center gap-4 mb-8">
-                  <div className="w-12 h-12 bg-slate-900 rounded-2xl flex items-center justify-center text-white shadow-lg">
-                     <MessageSquare className="w-6 h-6" />
-                  </div>
-                  <div>
-                     <h3 className="text-2xl font-bold text-slate-800 tracking-tight">Submit a Support Ticket</h3>
-                     <p className="text-slate-500 font-semibold text-sm">We'll get back to you very soon.</p>
-                  </div>
+                   <div className="w-12 h-12 bg-slate-900 rounded-2xl flex items-center justify-center text-white shadow-lg">
+                      <MessageSquare className="w-6 h-6" />
+                   </div>
+                   <div>
+                      <h3 className="text-2xl font-bold text-slate-800 tracking-tight">Submit a Support Ticket</h3>
+                      <p className="text-slate-600 font-normal text-sm">We'll get back to you very soon.</p>
+                   </div>
                </div>
 
                <form className="space-y-6">
-                  <div className="grid grid-cols-2 gap-6">
-                     <div className="space-y-2">
-                        <label className="text-xs font-black text-slate-500 uppercase tracking-widest pl-2">First Name</label>
-                        <input className="w-full px-5 py-4 bg-white/50 border border-white/60 rounded-2xl outline-none focus:border-blue-500/30 transition-all font-bold text-slate-700" placeholder="John" />
-                     </div>
-                     <div className="space-y-2">
-                        <label className="text-xs font-black text-slate-500 uppercase tracking-widest pl-2">Email Address</label>
-                        <input className="w-full px-5 py-4 bg-white/50 border border-white/60 rounded-2xl outline-none focus:border-blue-500/30 transition-all font-bold text-slate-700" placeholder="john@example.com" />
-                     </div>
-                  </div>
+                   <div className="grid grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                         <label className="text-xs font-bold text-slate-500 uppercase tracking-widest pl-2">First Name</label>
+                         <input className="w-full px-5 py-4 bg-white/50 border border-slate-100 rounded-2xl outline-none focus:border-blue-500/30 transition-all font-medium text-slate-700" placeholder="John" />
+                      </div>
+                      <div className="space-y-2">
+                         <label className="text-xs font-bold text-slate-500 uppercase tracking-widest pl-2">Email Address</label>
+                         <input className="w-full px-5 py-4 bg-white/50 border border-slate-100 rounded-2xl outline-none focus:border-blue-500/30 transition-all font-medium text-slate-700" placeholder="john@example.com" />
+                      </div>
+                   </div>
                   <div className="space-y-2">
-                     <label className="text-xs font-black text-slate-500 uppercase tracking-widest pl-2">Subject</label>
-                     <select className="w-full px-5 py-4 bg-white/50 border border-white/60 rounded-2xl outline-none focus:border-blue-500/30 transition-all font-bold text-slate-700 appearance-none">
-                        <option>Technical Issue</option>
+                     <label className="text-xs font-bold text-slate-500 uppercase tracking-widest pl-2">Subject</label>
+                     <select className="w-full px-5 py-4 bg-white/50 border border-slate-100 rounded-2xl outline-none focus:border-blue-500/30 transition-all font-medium text-slate-700 appearance-none">
+                        <option>General Inquiry</option>
                         <option>Billing Question</option>
                         <option>Feature Request</option>
                         <option>Other</option>
                      </select>
                   </div>
                   <div className="space-y-2">
-                     <label className="text-xs font-black text-slate-500 uppercase tracking-widest pl-2">Your Message</label>
-                     <textarea className="w-full px-5 py-4 bg-white/50 border border-white/60 rounded-3xl outline-none focus:border-blue-500/30 transition-all font-bold text-slate-700 h-32" placeholder="Tell us more about your issue..." />
+                     <label className="text-xs font-bold text-slate-500 uppercase tracking-widest pl-2">Your Message</label>
+                     <textarea className="w-full px-5 py-4 bg-white/50 border border-slate-100 rounded-2xl outline-none focus:border-blue-500/30 transition-all font-medium text-slate-700 min-h-[150px] resize-none" placeholder="Describe your issue in detail..." />
                   </div>
                   
-                  <button className="w-full py-5 bg-[#4b7bff] text-white rounded-[1.5rem] font-black tracking-tight text-lg shadow-2xl shadow-blue-500/40 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3">
+                  <button className="w-full py-5 bg-[#4b7bff] text-white rounded-[1.5rem] font-bold tracking-tight text-lg shadow-2xl shadow-blue-500/40 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3">
                      Send Message <Send className="w-5 h-5" />
                   </button>
                </form>
@@ -174,7 +174,7 @@ const Support = () => {
 
       
       <div className="mt-24 pt-10 border-t border-white/40 flex flex-col md:flex-row items-center justify-between gap-6">
-         <div className="flex items-center gap-8 text-slate-400 font-bold text-sm">
+         <div className="flex items-center gap-8 text-slate-400 font-semibold text-sm">
             <div className="flex items-center gap-2">
                <Globe className="w-4 h-4" />
                Global Support 24/7
@@ -184,7 +184,7 @@ const Support = () => {
                Secure SSL Encrypted
             </div>
          </div>
-         <p className="text-slate-400 font-bold text-sm">© 2026 Kredo AI Help Center</p>
+         <p className="text-slate-400 font-semibold text-sm">© 2026 Kredo AI Help Center</p>
       </div>
     </div>
   );

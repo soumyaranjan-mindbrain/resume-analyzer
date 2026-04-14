@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Menu, X, ArrowRight } from 'lucide-react';
 import { cn } from '../../utils/cn';
+import Logo from '../common/Logo';
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -31,16 +32,7 @@ const Navbar = () => {
     >
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
         
-        <div 
-          className="flex items-center gap-2 cursor-pointer group" 
-          onClick={() => navigate('/')}
-        >
-          <img 
-            src="/Kredo_logo_with_educational_theme-removebg-preview.png" 
-            alt="Kredo Logo" 
-            className="h-14 w-auto transition-transform duration-500 group-hover:scale-105"
-          />
-        </div>
+        <Logo size="lg" onClick={() => navigate('/')} />
 
         
         {isLandingPage && (

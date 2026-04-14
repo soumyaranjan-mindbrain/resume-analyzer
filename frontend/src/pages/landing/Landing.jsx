@@ -4,7 +4,6 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import {
   CheckCircle2,
-  Sparkles,
   Zap,
   ShieldCheck,
   BarChart3,
@@ -13,9 +12,12 @@ import {
   ChevronRight,
   Menu,
   X,
-  User
+  User,
+  Activity,
+  ArrowUpRight
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
+import Logo from '../../components/common/Logo';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -46,20 +48,14 @@ const Navbar = () => {
         "container mx-auto max-w-7xl rounded-2xl flex items-center justify-between px-8 py-4 transition-all duration-500",
         isScrolled ? "bg-white/60 backdrop-blur-xl border border-white/20 shadow-lg" : "bg-transparent"
       )}>
-        <div className="flex items-center gap-2 cursor-pointer group" onClick={() => navigate('/')}>
-          <img 
-            src="/Kredo_logo_with_educational_theme-removebg-preview.png" 
-            alt="Kredo Logo" 
-            className="h-10 w-auto transition-transform duration-500 group-hover:scale-105"
-          />
-        </div>
+        <Logo onClick={() => navigate('/')} />
 
         <div className="hidden md:flex items-center gap-10">
           
         </div>
 
         <div className="flex items-center gap-6">
-          <button onClick={() => navigate('/auth')} className="hidden sm:block text-sm font-black text-[var(--neutral-900)] uppercase tracking-widest">
+          <button onClick={() => navigate('/auth')} className="hidden sm:block text-sm font-bold text-[var(--neutral-900)] uppercase tracking-widest hover:text-blue-600 transition-colors">
             Login
           </button>
           <button
@@ -121,13 +117,13 @@ const Hero = () => {
 
       <div className="container mx-auto max-w-7xl grid grid-cols-1 lg:grid-cols-2 gap-20 items-center relative z-10">
         <div ref={textGroupRef} className="space-y-8">
-          <h1 className="hero-animate text-6xl md:text-8xl font-display font-black leading-[1.15] tracking-tighter text-[var(--neutral-900)]">
+          <h1 className="hero-animate text-5xl md:text-7xl font-bold leading-[1.1] tracking-tight text-slate-800">
             Land more <br />
             <span className="kredo-text inline-block py-1">Interview Calls</span> <br />
             with Kredo.
           </h1>
 
-          <p className="hero-animate text-xl text-[var(--neutral-900)]/70 max-w-xl leading-relaxed font-bold">
+          <p className="hero-animate text-xl text-slate-600 max-w-xl leading-relaxed font-medium">
             Optimize your professional identity against 240+ market variables. Our neural engine ensures your resume is visible to both Humans and ATS algorithms.
           </p>
 
@@ -152,8 +148,8 @@ const Hero = () => {
                 
                 <div className="flex justify-between items-start">
                   <div>
-                    <h4 className="text-2xl font-black text-[var(--neutral-900)] tracking-tighter mb-1">Alex Rivera</h4>
-                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-purple-600">Senior Systems Architect</p>
+                    <h4 className="text-xl font-semibold text-slate-800 tracking-tight mb-1">Alex Rivera</h4>
+                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-blue-600">Senior Systems Architect</p>
                   </div>
                   <div className="w-12 h-12 rounded-2xl bg-[var(--neutral-50)] border border-white flex items-center justify-center shadow-inner">
                     <User className="w-6 h-6 text-purple-200" />
@@ -162,8 +158,8 @@ const Hero = () => {
 
                 
                 <div className="space-y-2">
-                  <div className="text-[8px] font-black uppercase tracking-widest text-[var(--neutral-400)]">Professional Matrix</div>
-                  <p className="text-[11px] font-bold text-[var(--neutral-900)]/70 leading-relaxed italic">
+                  <div className="text-[8px] font-bold uppercase tracking-widest text-slate-400">Professional Matrix</div>
+                  <p className="text-[11px] font-medium text-slate-600 leading-relaxed italic">
                     "Driving technical excellence through neural-informed architecture and scalable cloud ecosystems. 8+ years of high-frequency engineering."
                   </p>
                 </div>
@@ -172,16 +168,16 @@ const Hero = () => {
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
                     <div className="h-[1px] flex-grow bg-[var(--neutral-100)]" />
-                    <span className="text-[8px] font-black uppercase tracking-widest text-[var(--neutral-300)]">Recent Nodes</span>
+                    <span className="text-[8px] font-bold uppercase tracking-widest text-[var(--neutral-300)]">Recent Nodes</span>
                     <div className="h-[1px] flex-grow bg-[var(--neutral-100)]" />
                   </div>
 
                   <div className="space-y-1">
                     <div className="flex justify-between items-end">
-                      <span className="text-xs font-black text-[var(--neutral-900)]">Lead Developer @ QuantumFlow</span>
-                      <span className="text-[9px] font-bold text-[var(--neutral-400)]">2021 - PRESENT</span>
+                      <span className="text-xs font-semibold text-slate-800">Lead Developer @ QuantumFlow</span>
+                      <span className="text-[9px] font-bold text-slate-500 text-right">2021 - PRESENT</span>
                     </div>
-                    <p className="text-[10px] font-bold text-[var(--neutral-900)]/60 leading-relaxed">
+                    <p className="text-[10px] font-medium text-slate-600 leading-relaxed">
                       - Orchestrated a 45% reduction in latent system overhead using AI-driven routing.<br />
                       - Scaled micro-service architecture to handle 1.2M concurrent data points.
                     </p>
@@ -191,7 +187,7 @@ const Hero = () => {
                 
                 <div className="flex flex-wrap gap-2 pt-4">
                   {['React', 'Node.js', 'PyTorch', 'AWS'].map(skill => (
-                    <span key={skill} className="px-3 py-1.5 rounded-lg bg-white border border-[var(--neutral-100)] text-[8px] font-black text-[var(--neutral-900)] shadow-sm uppercase tracking-tighter">
+                    <span key={skill} className="px-3 py-1.5 rounded-lg bg-white border border-slate-100 text-[8px] font-bold text-slate-600 shadow-sm uppercase tracking-tighter">
                       {skill}
                     </span>
                   ))}
@@ -200,8 +196,8 @@ const Hero = () => {
 
               
               <div className="absolute -top-10 -right-10 w-32 h-32 rounded-[2.5rem] bg-white shadow-2xl flex flex-col items-center justify-center border-4 border-white z-30 group hover:scale-110 transition-all duration-700">
-                <div className="text-4xl font-display font-black text-purple-600">78<span className="text-lg">%</span></div>
-                <div className="text-[8px] font-black text-[var(--neutral-400)] uppercase tracking-widest">ATS Match</div>
+                <div className="text-4xl font-bold text-purple-600">78<span className="text-lg">%</span></div>
+                <div className="text-[8px] font-bold text-[var(--neutral-400)] uppercase tracking-widest">ATS Match</div>
                 <div className="mt-2 text-[9px] font-bold text-emerald-500 bg-emerald-50 px-2 py-0.5 rounded-full">Optimal</div>
               </div>
             </div>
@@ -253,7 +249,7 @@ const Features = () => {
       title: "Placement Velocity",
       value: "3.2x",
       desc: "Faster hiring cycle achievement through real-time compatibility scores and targeted improvement paths.",
-      icon: <Sparkles className="w-6 h-6 text-pink-600" />,
+      icon: <Activity className="w-6 h-6 text-pink-600" />,
       tag: "Speed"
     },
     {
@@ -271,18 +267,18 @@ const Features = () => {
         <div className="mb-32 text-center max-w-4xl mx-auto">
           <div className="space-y-16">
             <div>
-              <h2 className="text-5xl md:text-7xl font-display font-black text-[var(--neutral-900)] tracking-tighter leading-[0.9] mb-8">
+              <h2 className="text-5xl md:text-6xl font-bold text-slate-800 tracking-tight leading-[1] mb-8">
                 Professional Edge, <br /> Engineering Precision.
               </h2>
-              <p className="text-xl text-[var(--neutral-900)]/60 font-bold leading-relaxed max-w-2xl mx-auto">
+              <p className="text-xl text-slate-600 font-medium leading-relaxed max-w-2xl mx-auto">
                 Stop guessing. Use the data-driven insights recruiters use to find you. Upgrade your professional matrix today.
               </p>
             </div>
 
-            <div className="flex flex-col items-center gap-4 pt-12 border-t border-[var(--neutral-100)]">
-              <span className="px-5 py-2 rounded-full bg-purple-50 text-[10px] font-black uppercase tracking-[0.3em] text-purple-600">The Neural Methodology</span>
-              <h3 className="text-3xl font-black text-[var(--neutral-900)] tracking-tight">Engineered for the Elite Tier.</h3>
-              <p className="text-[var(--neutral-900)]/50 font-bold max-w-2xl leading-relaxed">
+            <div className="flex flex-col items-center gap-4 pt-12 border-t border-slate-100">
+              <span className="px-5 py-2 rounded-full bg-blue-50 text-[10px] font-bold uppercase tracking-[0.3em] text-blue-600">The Neural Methodology</span>
+              <h3 className="text-3xl font-semibold text-slate-800 tracking-tight">Engineered for the Elite Tier.</h3>
+              <p className="text-slate-500 font-medium max-w-2xl leading-relaxed">
                 Kredo processes your document through 240+ validation nodes. We don't just check for keywords; we analyze semantic resonance, layout heatmaps, and role-specific density to ensure your resume dominates the recruitment funnel.
               </p>
             </div>
@@ -296,20 +292,20 @@ const Features = () => {
                 <div className="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center border border-purple-100 shadow-sm transition-all duration-700 group-hover:scale-110 group-hover:rotate-6">
                   {React.cloneElement(card.icon, { className: 'w-4 h-4 ' + card.icon.props.className.split(' ').slice(2).join(' ') })}
                 </div>
-                <span className="px-2.5 py-1 rounded-md bg-[var(--neutral-100)]/50 border border-[var(--neutral-200)]/30 text-[7px] font-black uppercase tracking-[0.2em] text-[var(--neutral-600)] shadow-sm">
+                <span className="px-2.5 py-1 rounded-md bg-slate-50 border border-slate-200 text-[7px] font-bold uppercase tracking-[0.2em] text-slate-500 shadow-sm">
                   {card.tag}
                 </span>
               </div>
 
               <div className="mb-4">
-                <div className="text-3xl font-display font-black text-purple-600 tracking-tighter leading-none mb-1">{card.value}</div>
+                <div className="text-3xl font-bold text-blue-600 tracking-tighter leading-none mb-1">{card.value}</div>
                 <div className="min-h-[3rem] flex items-center">
-                  <h4 className="text-[17px] font-black leading-tight text-[var(--neutral-900)] tracking-tight">{card.title}</h4>
+                  <h4 className="text-[17px] font-semibold leading-tight text-slate-800 tracking-tight">{card.title}</h4>
                 </div>
               </div>
 
               <div className="mt-auto">
-                <p className="text-[var(--neutral-600)] leading-relaxed font-bold text-[13px]">
+                <p className="text-slate-500 leading-relaxed font-medium text-[13px]">
                   {card.desc}
                 </p>
               </div>
@@ -332,17 +328,17 @@ const CTA = () => {
           <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary-200/40 blur-[100px] rounded-full -translate-y-1/2 translate-x-1/2" />
 
           <div className="relative z-10 max-w-4xl mx-auto">
-            <h2 className="text-5xl md:text-7xl font-display font-black text-[var(--neutral-900)] tracking-tighter mb-10 leading-[0.9]">
+            <h2 className="text-5xl md:text-6xl font-bold text-slate-800 tracking-tight mb-10 leading-[1]">
               Accelerate Your <br /> Career Trajectory.
             </h2>
-            <p className="text-lg text-[var(--neutral-900)]/60 font-bold mb-12 max-w-2xl mx-auto">
+            <p className="text-lg text-slate-600 font-medium mb-12 max-w-2xl mx-auto">
               Join 10,000+ candidates who have optimized their resumes to land roles at the world's most innovative firms.
             </p>
             <div className="flex flex-wrap justify-center items-center gap-6">
               <button onClick={() => navigate('/auth')} className="btn-kredo !px-14 !py-7 text-sm">
                 Analyze My Resume Today {'->'}
               </button>
-              <button className="px-10 py-7 rounded-2xl border-2 border-white/50 bg-white/10 backdrop-blur-md text-sm font-black text-[var(--neutral-900)] uppercase tracking-widest hover:bg-white/30 transition-all">
+              <button className="px-10 py-7 rounded-2xl border-2 border-slate-100 bg-white/10 backdrop-blur-md text-sm font-bold text-slate-800 uppercase tracking-widest hover:bg-white/30 transition-all">
                 View Sample Results
               </button>
             </div>

@@ -83,7 +83,7 @@ const AddJobRole = () => {
             
             <div className="space-y-4">
               <div className="space-y-2">
-                <label className="text-[11px] font-black uppercase tracking-widest text-slate-500 ml-1">Job Title</label>
+                <label className="text-[11px] font-bold uppercase tracking-widest text-slate-500 ml-1">Job Title</label>
                 <div className="relative">
                   <Briefcase className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                   <input 
@@ -98,7 +98,7 @@ const AddJobRole = () => {
               </div>
 
               <div className="space-y-2">
-                <label className="text-[11px] font-black uppercase tracking-widest text-slate-500 ml-1">Job Description</label>
+                <label className="text-[11px] font-bold uppercase tracking-widest text-slate-500 ml-1">Job Description</label>
                 <textarea 
                   name="description"
                   value={formData.description}
@@ -111,7 +111,7 @@ const AddJobRole = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="text-[11px] font-black uppercase tracking-widest text-slate-500 ml-1">Requirements</label>
+                  <label className="text-[11px] font-bold uppercase tracking-widest text-slate-500 ml-1">Requirements</label>
                   <textarea 
                     name="requirements"
                     value={formData.requirements}
@@ -122,7 +122,7 @@ const AddJobRole = () => {
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[11px] font-black uppercase tracking-widest text-slate-500 ml-1">Responsibilities</label>
+                  <label className="text-[11px] font-bold uppercase tracking-widest text-slate-500 ml-1">Responsibilities</label>
                   <textarea 
                     name="responsibilities"
                     value={formData.responsibilities}
@@ -191,7 +191,7 @@ const AddJobRole = () => {
             
             <div className="space-y-4">
               <div className="space-y-2">
-                <label className="text-[11px] font-black uppercase tracking-widest text-slate-500 ml-1">Company Name</label>
+                <label className="text-[11px] font-bold uppercase tracking-widest text-slate-500 ml-1">Company Name</label>
                 <div className="relative">
                   <Building2 className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                   <input 
@@ -206,7 +206,7 @@ const AddJobRole = () => {
               </div>
 
               <div className="space-y-2">
-                <label className="text-[11px] font-black uppercase tracking-widest text-slate-500 ml-1">Location</label>
+                <label className="text-[11px] font-bold uppercase tracking-widest text-slate-500 ml-1">Location</label>
                 <div className="relative">
                   <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                   <input 
@@ -221,7 +221,7 @@ const AddJobRole = () => {
               </div>
 
               <div className="space-y-2">
-                <label className="text-[11px] font-black uppercase tracking-widest text-slate-500 ml-1">Employment Type</label>
+                <label className="text-[11px] font-bold uppercase tracking-widest text-slate-500 ml-1">Employment Type</label>
                 <select 
                   name="type"
                   value={formData.type}
@@ -237,7 +237,7 @@ const AddJobRole = () => {
               </div>
 
               <div className="space-y-2">
-                <label className="text-[11px] font-black uppercase tracking-widest text-slate-500 ml-1">Experience Required</label>
+                <label className="text-[11px] font-bold uppercase tracking-widest text-slate-500 ml-1">Experience Required</label>
                 <div className="relative">
                   <Target className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                   <input 

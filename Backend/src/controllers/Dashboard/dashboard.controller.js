@@ -77,7 +77,10 @@ exports.getAnalytics = async (req, res) => {
             { name: 'Unit Testing', value: 30, color: 'bg-emerald-400' }
           ],
           inDemandSkills,
-          courses
+          courses,
+          roadmap: analyzed[0]?.analysis?.roadmap || null,
+          topStrengths: analyzed[0]?.analysis?.topStrengths || [],
+          weaknesses: analyzed[0]?.analysis?.weaknesses || []
         }
       });
     }
@@ -306,8 +309,7 @@ exports.getDashboard = async (req, res) => {
       return res.json({
         type: "student",
         atsScore: latest?.atsScore || 0,
-        keywordsMissing:
-          latest?.keywordsMissing?.length || 0,
+        keywordsMissing: latest?.keywordsMissing || [],
         jobsMatched: latest?.jobsMatched || 0,
         jobMatch: latest?.jobsMatched || 0,
         suggestions: latest?.suggestions || [],
@@ -315,6 +317,8 @@ exports.getDashboard = async (req, res) => {
         skillExtraction: Array.isArray(latest?.trends)
           ? latest.trends
           : [],
+        topStrengths: latest?.topStrengths || latest?.improvements || [],
+        weaknesses: latest?.weaknesses || latest?.missing_keywords || [],
       });
     }
 

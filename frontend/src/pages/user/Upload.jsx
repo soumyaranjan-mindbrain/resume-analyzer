@@ -140,10 +140,10 @@ const Upload = () => {
   return (
     <div className="max-w-4xl mx-auto py-12 px-4" ref={containerRef}>
       <div className="text-center mb-12 space-y-4">
-        <h1 className="text-5xl font-bold text-slate-800 tracking-tight">
+        <h1 className="text-6xl font-bold text-slate-800 tracking-tight">
           Elevate Your <span className="text-blue-600">Career</span>
         </h1>
-        <p className="text-slate-500 text-lg font-medium max-w-xl mx-auto">
+        <p className="text-slate-600 text-lg font-normal max-w-xl mx-auto">
           Upload your resume and let our advanced AI engine analyze it for ATS compatibility and job matching.
         </p>
       </div>
@@ -180,8 +180,8 @@ const Upload = () => {
                 <UploadIcon className="w-8 h-8 text-blue-600" />
               </div>
               <div className="text-center space-y-2">
-                <h3 className="text-2xl font-bold text-slate-800">Drop your PDF or DOCX here</h3>
-                <p className="text-slate-400 font-bold uppercase tracking-wider text-[10px]">Maximum file size 5MB</p>
+                <h3 className="text-2xl font-medium text-slate-800">Drop your PDF or DOCX here</h3>
+                <p className="text-slate-500 font-normal uppercase tracking-wider text-[10px]">Maximum file size 5MB</p>
               </div>
             </div>
           )}
@@ -194,8 +194,8 @@ const Upload = () => {
                     <FileText className="w-8 h-8" />
                   </div>
                   <div>
-                    <h4 className="text-lg font-bold text-slate-800 line-clamp-1">{file.name}</h4>
-                    <p className="text-slate-400 font-bold text-xs uppercase tracking-wider">
+                    <h4 className="text-lg font-medium text-slate-700 line-clamp-1">{file.name}</h4>
+                    <p className="text-slate-400 font-normal text-[10px] uppercase tracking-wider">
                       {(file.size / 1024 / 1024).toFixed(2)} MB • {file.name.toLowerCase().endsWith('.pdf') ? 'PDF' : 'DOCX'} Document
                     </p>
                   </div>
@@ -203,7 +203,8 @@ const Upload = () => {
                 {!uploading && (
                   <button 
                     onClick={removeFile}
-                    className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-slate-400 hover:text-red-500 shadow-sm border border-slate-100 transition-all"
+                    className="p-3 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
+                    disabled={uploading}
                   >
                     <X className="w-5 h-5" />
                   </button>
@@ -215,7 +216,7 @@ const Upload = () => {
                   <div className="space-y-3">
                     <div className="flex justify-between items-end">
                       <div className="space-y-1">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-blue-600">
+                        <span className="text-[10px] font-semibold uppercase tracking-wider text-blue-600">
                           {status === 'uploading' ? 'Transmitting Data' : 'AI Analysis in Progress'}
                         </span>
                         <h5 className="text-xl font-bold text-slate-800">
@@ -240,7 +241,7 @@ const Upload = () => {
                     ].map((item, i) => (
                       <div key={i} className={`p-4 rounded-2xl border transition-all duration-500 flex flex-col items-center gap-2 ${item.active ? 'bg-blue-50 border-blue-100 text-blue-600' : 'bg-slate-50 border-slate-100 text-slate-300'}`}>
                         <item.icon className="w-5 h-5" />
-                        <span className="text-[10px] font-bold uppercase tracking-wider">{item.label}</span>
+                        <span className="text-[10px] font-semibold uppercase tracking-wider">{item.label}</span>
                       </div>
                     ))}
                   </div>
@@ -248,24 +249,31 @@ const Upload = () => {
               ) : (
                 <button 
                   onClick={handleUpload}
-                  className="w-full bg-blue-600 text-white py-5 rounded-2xl text-lg font-bold uppercase tracking-wider hover:bg-blue-700 transition-all shadow-md shadow-blue-500/10 flex items-center justify-center gap-3 hover:scale-[1.01] active:scale-95"
+                  className="w-full bg-blue-600 text-white py-5 rounded-2xl text-lg font-semibold uppercase tracking-wider hover:bg-blue-700 transition-all shadow-md shadow-blue-500/10 flex items-center justify-center gap-3 hover:scale-[1.01] active:scale-95"
                 >
                   Start AI Analysis
                   <ArrowRight className="w-6 h-6" />
                 </button>
               )}
 
+              {status === 'analyzing' && (
+                <div className="flex flex-col items-center gap-4 py-8">
+                  <div className="w-16 h-16 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin" />
+                  <p className="text-blue-600 font-medium animate-pulse">Deep Analyzing Resume...</p>
+                </div>
+              )}
+
               {status === 'success' && (
                 <div className="flex flex-col items-center gap-3 text-emerald-500 animate-bounce mt-4">
                   <CheckCircle2 className="w-12 h-12" />
-                  <span className="font-black uppercase tracking-widest text-xs">Analysis Complete! Redirecting...</span>
+                  <span className="font-bold uppercase tracking-widest text-xs">Analysis Complete! Redirecting...</span>
                 </div>
               )}
 
               {error && (
                 <div className="flex items-center gap-3 p-5 bg-red-50 rounded-2xl border border-red-100 text-red-600 mt-4">
                   <AlertCircle className="w-6 h-6 shrink-0" />
-                  <p className="text-sm font-bold">{error}</p>
+                  <p className="text-sm font-semibold">{error}</p>
                 </div>
               )}
             </div>

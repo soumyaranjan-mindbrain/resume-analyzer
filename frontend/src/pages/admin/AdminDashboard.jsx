@@ -65,11 +65,11 @@ const AdminDashboard = () => {
               <div className={cn("w-10 h-10 rounded-lg flex items-center justify-center", stat.bg, stat.color)}>
                 <stat.icon className="w-5 h-5" />
               </div>
-              <span className="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">{stat.trend}</span>
+              <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">{stat.trend}</span>
             </div>
             <div>
               <p className="text-sm font-medium text-slate-500 mb-1">{stat.label}</p>
-              <h3 className="text-2xl font-bold text-slate-900">{stat.value}</h3>
+              <h3 className="text-2xl font-bold text-slate-900 tracking-tight">{stat.value}</h3>
             </div>
           </div>
         ))}
@@ -82,8 +82,8 @@ const AdminDashboard = () => {
 
           <div className="flex items-center justify-between mb-12 relative z-10">
             <div>
-                <h3 className="text-lg font-bold text-slate-900">Platform Growth Analysis</h3>
-                <p className="text-slate-500 text-sm mt-1">Detailed monthly metrics for resume processing and success rates.</p>
+                <h3 className="text-lg font-bold text-slate-900 tracking-tight">Platform Growth Analysis</h3>
+                <p className="text-slate-500 text-sm font-normal mt-1">Detailed monthly metrics for resume processing and success rates.</p>
             </div>
             <div className="flex gap-2 bg-slate-50 p-1 rounded-lg border border-slate-200">
                 <button className="px-4 py-1.5 text-slate-600 rounded-md font-medium text-sm hover:bg-white transition-all">Week</button>

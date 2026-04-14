@@ -75,7 +75,7 @@ const JobReadiness = () => {
         ) : (
           stats.map((stat, i) => (
             <div key={i} className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm relative group overflow-hidden">
-               <p className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-2">{stat.label}</p>
+               <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">{stat.label}</p>
                <div className="flex items-baseline justify-between">
                   <h3 className="text-3xl font-bold text-slate-900">{stat.value}</h3>
                   <span className={cn(
@@ -143,16 +143,16 @@ const JobReadiness = () => {
                 <div key={student.id} className="p-4 bg-slate-50 border border-slate-100 rounded-lg hover:bg-white hover:border-blue-200 transition-all cursor-pointer group shadow-sm hover:shadow-md flex flex-col justify-between h-48">
                   <div className="flex items-start justify-between">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center font-semibold text-blue-600 shadow-sm">
+                        <div className="w-10 h-10 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center font-bold text-blue-600 shadow-sm">
                             {student.name?.charAt(0) || 'S'}
                         </div>
                         <div>
-                            <h5 className="font-semibold text-slate-900 group-hover:text-blue-600 transition-colors">{student.name}</h5>
+                            <h5 className="font-bold text-slate-900 group-hover:text-blue-600 tracking-tight transition-colors">{student.name}</h5>
                             <p className="text-xs text-slate-500">{student.role}</p>
                         </div>
                       </div>
-                      <div className={cn(
-                        "text-[10px] font-semibold px-2 py-0.5 rounded-full border",
+                       <div className={cn(
+                        "text-[10px] font-bold px-2 py-0.5 rounded-full border",
                         student.readiness === 'Ready' ? "bg-emerald-50 text-emerald-700 border-emerald-100" : "bg-blue-50 text-blue-700 border-blue-100"
                       )}>
                         {student.readiness === 'Ready' ? <CheckCircle2 className="w-3 h-3 inline mr-1" /> : <Clock className="w-3 h-3 inline mr-1" />}
@@ -181,7 +181,7 @@ const JobReadiness = () => {
                       <TrendingUp className="w-3.5 h-3.5 text-blue-500" />
                       <span className="text-xs font-bold text-slate-600">ATS: {student.score}%</span>
                     </div>
-                    <button className="text-blue-600 font-semibold text-xs flex items-center gap-1 hover:text-blue-700 transition-colors">
+                    <button className="text-blue-600 font-bold text-xs flex items-center gap-1 hover:text-blue-700 transition-colors">
                       Profile <ArrowUpRight className="w-3 h-3" />
                     </button>
                   </div>

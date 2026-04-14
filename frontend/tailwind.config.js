@@ -35,8 +35,9 @@ export default {
         },
       },
       fontFamily: {
-        sans: ['Hanken Grotesk', 'ui-sans-serif', 'system-ui'],
-        display: ['Outfit', 'ui-sans-serif', 'system-ui'],
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+        display: ['Inter', 'system-ui', 'sans-serif'],
+        accent: ['Inter', 'system-ui', 'sans-serif'],
       },
       transitionTimingFunction: {
         'beast': 'cubic-bezier(0.16, 1, 0.3, 1)',

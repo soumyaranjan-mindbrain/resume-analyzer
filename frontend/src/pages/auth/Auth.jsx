@@ -7,13 +7,11 @@ import {
   Eye, 
   EyeOff, 
   User, 
-  ArrowRight, 
-  Sparkles, 
-  ShieldCheck, 
-  Zap 
+  ArrowRight 
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
 import { useAuth } from '../../context/AuthContext';
+import Logo from '../../components/common/Logo';
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -75,13 +73,14 @@ const Auth = () => {
         
         
         <div ref={leftPanelRef} className="hidden lg:block space-y-12">
+          <Logo size="lg" onClick={() => navigate('/')} />
           <div className="space-y-6">
-            <h1 className="text-6xl font-display font-black tracking-tighter text-[var(--neutral-900)] leading-[1.1]">
+            <h1 className="text-5xl md:text-6xl font-bold tracking-tight text-[var(--neutral-900)] leading-[1.1]">
               Elevate your <br />
               <span className="kredo-text">Professional</span> <br />
               frequency.
             </h1>
-              <p className="text-xl text-[var(--neutral-500)] font-bold max-w-md leading-relaxed">
+              <p className="text-xl text-[var(--neutral-600)] font-bold max-w-md leading-relaxed">
                 Step into the future of resume intelligence. One node away from peak career optimization.
               </p>
           </div>
@@ -93,12 +92,15 @@ const Auth = () => {
           <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--primary-200)] blur-[120px] rounded-full opacity-40 -translate-y-1/2 translate-x-1/4 pointer-events-none" />
           
           <div className="relative z-10 space-y-8">
+            <div className="lg:hidden mb-6">
+              <Logo size="lg" onClick={() => navigate('/')} />
+            </div>
 
             <div className="space-y-2">
-              <h2 className="text-3xl font-display font-black tracking-tighter text-[#1e293b]">
+              <h2 className="text-3xl font-bold tracking-tight text-[#1e293b]">
                 {isLogin ? 'Sign In' : 'Create Account'}
               </h2>
-              <p className="text-slate-500 font-bold text-sm">
+              <p className="text-slate-600 font-bold text-sm">
                 {isLogin ? 'Welcome back. Please enter your details.' : 'Join Kredo to optimize your career.'}
               </p>
             </div>
@@ -113,7 +115,7 @@ const Auth = () => {
             <form onSubmit={handleAuth} className="space-y-4">
               {!isLogin && (
                 <div className="space-y-2">
-                  <label className="text-[11px] font-black uppercase tracking-widest text-slate-500 ml-1">Full Name</label>
+                  <label className="text-xs font-bold uppercase tracking-widest text-slate-600 ml-1">Full Name</label>
                   <div className="relative">
                     <User className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                     <input 
@@ -129,7 +131,7 @@ const Auth = () => {
               )}
 
               <div className="space-y-2">
-                <label className="text-[11px] font-black uppercase tracking-widest text-slate-500 ml-1">Email Address</label>
+                <label className="text-xs font-bold uppercase tracking-widest text-slate-600 ml-1">Email Address</label>
                 <div className="relative">
                   <Mail className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                   <input 
@@ -145,9 +147,9 @@ const Auth = () => {
 
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <label className="text-[11px] font-black uppercase tracking-widest text-slate-500 ml-1">Password</label>
+                  <label className="text-xs font-bold uppercase tracking-widest text-slate-600 ml-1">Password</label>
                   {isLogin && (
-                    <button type="button" className="text-[11px] font-bold text-indigo-500 hover:text-indigo-600">
+                    <button type="button" className="text-xs font-bold text-indigo-600 hover:text-indigo-700">
                       Forgot Password?
                     </button>
                   )}
@@ -195,7 +197,7 @@ const Auth = () => {
             <div className="text-center pt-2">
               <button 
                 onClick={() => setIsLogin(!isLogin)}
-                className="text-[11px] font-black text-slate-500 hover:text-indigo-600 transition-colors uppercase tracking-widest"
+                className="text-xs font-bold text-slate-600 hover:text-indigo-700 transition-colors uppercase tracking-widest"
               >
                 {isLogin ? "Don't have an account? Sign up" : "Already have an account? Log in"}
               </button>

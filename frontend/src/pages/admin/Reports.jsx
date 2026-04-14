@@ -162,8 +162,8 @@ const Reports = () => {
                     <tr key={report.resumeId} className="hover:bg-slate-50 transition-colors">
                       <td className="py-4 px-6">
                         <div>
-                          <p className="text-sm font-semibold text-slate-900">{report.studentName}</p>
-                          <p className="text-xs text-slate-500 mt-0.5">{new Date(report.createdAt).toLocaleDateString()}</p>
+                          <p className="text-sm font-bold text-slate-900 tracking-tight">{report.studentName}</p>
+                          <p className="text-xs font-normal text-slate-500 mt-0.5">{new Date(report.createdAt).toLocaleDateString()}</p>
                         </div>
                       </td>
                       <td className="py-4 px-6">
@@ -184,12 +184,12 @@ const Reports = () => {
                          </div>
                       </td>
                       <td className="py-4 px-6 text-center">
-                         <span className={cn(
-                            "inline-block text-[11px] font-semibold px-2.5 py-1 rounded-full border",
-                            statusClass(report.atsScore)
-                          )}>
-                            {getStatusLabel(report.atsScore)}
-                         </span>
+                          <span className={cn(
+                             "inline-block text-[11px] font-bold px-2.5 py-1 rounded-full border",
+                             statusClass(report.atsScore)
+                           )}>
+                             {getStatusLabel(report.atsScore)}
+                          </span>
                       </td>
                       <td className="py-4 px-6 text-right">
                          <div className="flex items-center justify-end gap-2">
@@ -231,14 +231,14 @@ const Reports = () => {
                         {report.score}
                     </div>
                     <span className={cn(
-                        "text-[11px] font-semibold px-2.5 py-1 rounded-full border",
+                        "text-[11px] font-bold px-2.5 py-1 rounded-full border",
                         statusClass(report.status)
                     )}>{report.status}</span>
                   </div>
                   
                   <div className="mb-6">
-                    <h4 className="font-bold text-slate-900 text-lg">{report.student}</h4>
-                    <p className="text-slate-500 font-medium text-sm mt-1">{report.role}</p>
+                    <h4 className="font-bold text-slate-900 text-lg tracking-tight">{report.student}</h4>
+                    <p className="text-slate-500 font-normal text-sm mt-1">{report.role}</p>
                   </div>
                   
                   <div className="pt-4 border-t border-slate-100 flex items-center justify-between">

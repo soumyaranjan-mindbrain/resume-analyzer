@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
 import { useAuth } from '../../context/AuthContext';
+import Logo from '../common/Logo';
 
 const AppLayout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -72,7 +73,7 @@ const AppLayout = ({ children }) => {
   const currentPage = pageInfo[location.pathname];
 
   return (
-    <div className="min-h-screen bg-[#f4f7fc] flex font-sans w-full h-[100dvh] overflow-hidden">
+    <div className="min-h-screen bg-[#f4f7fc] flex w-full h-[100dvh] overflow-hidden">
         
       
       {sidebarOpen && (
@@ -94,11 +95,7 @@ const AppLayout = ({ children }) => {
           <div className="absolute inset-0 bg-gradient-to-b from-slate-50/50 to-transparent pointer-events-none" />
           
           <div className="relative z-10 flex items-center gap-3 px-6 mb-10 shrink-0">
-            <img 
-              src="/Kredo_logo_with_educational_theme-removebg-preview.png" 
-              alt="Kredo Logo" 
-              className="h-12 w-auto"
-            />
+            <Logo size="sm" onClick={() => navigate('/')} />
             <button 
               className="ml-auto lg:hidden text-slate-400 hover:text-slate-600"
               onClick={() => setSidebarOpen(false)}
@@ -118,13 +115,13 @@ const AppLayout = ({ children }) => {
                   key={item.path}
                   to={item.path}
                   className={cn(
-                    "flex items-center gap-3 px-4 py-3.5 rounded-2xl font-semibold text-sm transition-all duration-200",
+                    "flex items-center gap-3 px-4 py-3.5 rounded-2xl font-bold text-[13px] transition-all duration-200",
                     isActive 
                       ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20 translate-x-1" 
-                      : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
+                      : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
                   )}
                 >
-                  <Icon className={cn("w-5 h-5", isActive ? "text-white" : "text-slate-400")} />
+                  <Icon className={cn("w-5 h-5", isActive ? "text-white" : "text-slate-500")} />
                   {item.label}
                 </NavLink>
               );
@@ -140,7 +137,7 @@ const AppLayout = ({ children }) => {
                   "flex items-center gap-3 w-full px-4 py-3 border rounded-2xl font-bold text-xs transition-all",
                   isActive 
                     ? "bg-blue-600 text-white shadow-md border-transparent" 
-                    : "bg-white shadow-sm border-slate-200 text-slate-500 hover:text-slate-900 hover:bg-slate-50"
+                    : "bg-white shadow-sm border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50"
                 )}
               >
                 <HelpCircle className="w-5 h-5" />
@@ -184,7 +181,7 @@ const AppLayout = ({ children }) => {
               {currentPage && (
                 <div className="animate-in fade-in slide-in-from-left-4 duration-500">
                   <h2 className="text-xl font-bold text-slate-800 tracking-tight">{currentPage.title}</h2>
-                  <p className="text-xs font-semibold text-slate-400 tracking-wide">{currentPage.subtitle}</p>
+                  <p className="text-xs font-medium text-slate-500 tracking-wide">{currentPage.subtitle}</p>
                 </div>
               )}
             </div>
@@ -203,9 +200,9 @@ const AppLayout = ({ children }) => {
                       user?.name?.charAt(0) || 'U'
                     )}
                   </div>
-                  <span className="text-sm font-semibold text-slate-700 hidden sm:block">{user?.name || 'User'}</span>
+                   <span className="text-sm font-bold text-slate-700 hidden sm:block">{user?.name || 'User'}</span>
 
-                  <ChevronDown className={cn("w-4 h-4 text-slate-400 hidden sm:block transition-transform", profileOpen && "rotate-180")} />
+                  <ChevronDown className={cn("w-4 h-4 text-slate-500 hidden sm:block transition-transform", profileOpen && "rotate-180")} />
                 </button>
 
                 {profileOpen && (

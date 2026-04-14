@@ -98,8 +98,8 @@ const JobDescriptions = () => {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-slate-50 border-b border-slate-200">
-                  <th className="py-3 px-8 text-xs font-semibold uppercase tracking-wider text-slate-500">Position</th>
-                  <th className="py-3 px-6 text-xs font-semibold uppercase tracking-wider text-slate-500">Company</th>
+                  <th className="py-3 px-8 text-xs font-bold uppercase tracking-wider text-slate-500">Position</th>
+                  <th className="py-3 px-6 text-xs font-bold uppercase tracking-wider text-slate-500">Company</th>
                   <th className="py-3 px-6 text-xs font-semibold uppercase tracking-wider text-slate-500 text-center">Applicants</th>
                   <th className="py-3 px-8 text-right text-xs font-semibold uppercase tracking-wider text-slate-500">Actions</th>
                 </tr>
@@ -110,7 +110,7 @@ const JobDescriptions = () => {
                     <td className="py-5 px-8">
                         <div>
                           <div className="flex items-center gap-2">
-                              <p className="text-sm font-semibold text-slate-900">{job.title}</p>
+                              <p className="text-sm font-bold text-slate-900 tracking-tight">{job.title}</p>
                               {job.status === 'Draft' && (
                                 <span className="bg-slate-100 text-slate-500 text-[10px] px-1.5 py-0.5 rounded font-bold border border-slate-200">Draft</span>
                               )}
@@ -129,7 +129,7 @@ const JobDescriptions = () => {
                         </div>
                     </td>
                     <td className="py-5 px-6 text-center">
-                        <span className="text-sm font-semibold text-slate-700 bg-slate-100 px-3 py-1 rounded-full border border-slate-200">{job.applicants}</span>
+                        <span className="text-sm font-bold text-slate-700 bg-slate-100 px-3 py-1 rounded-full border border-slate-200">{job.applicants}</span>
                     </td>
                     <td className="py-5 px-8 text-right">
                         <div className="flex items-center justify-end gap-1">

@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
   Lightbulb,
   Search,
-  BookOpen,
-  Sparkles,
+  Activity,
   GitCompare,
   ChevronRight,
   ClipboardList,
@@ -54,22 +53,6 @@ const Recommendations = () => {
     fetchData();
   }, []);
 
-  const courses = [
-    {
-      id: 1,
-      name: 'Advanced React Patterns',
-      platform: 'Coursera',
-      rating: 5,
-      duration: '12 hours content'
-    },
-    {
-      id: 2,
-      name: 'System Design for Interviews',
-      platform: 'Udemy',
-      rating: 4,
-      duration: '20+ hours content'
-    }
-  ];
 
   const checklist = [
     'Use quantitative metrics (e.g. 20% growth)',
@@ -79,7 +62,7 @@ const Recommendations = () => {
     'Ensure white space is balanced'
   ];
 
-  const tabs = ['Improvement Tips', 'Suggested Jobs', 'Skill Courses'];
+  const tabs = ['Improvement Tips', 'Suggested Jobs'];
 
   if (loading) {
     return (
@@ -95,8 +78,8 @@ const Recommendations = () => {
         <div className="w-24 h-24 bg-yellow-50 rounded-[2.5rem] flex items-center justify-center mx-auto mb-6 text-yellow-600 shadow-xl shadow-yellow-500/10">
           <Lightbulb className="w-10 h-10" />
         </div>
-        <h2 className="text-3xl font-bold text-slate-800 tracking-tight mb-4">No Recommendations Yet</h2>
-        <p className="text-slate-500 max-w-md mx-auto mb-10 font-medium">
+        <h2 className="text-3xl font-bold text-slate-900 tracking-tight mb-4">No Recommendations Yet</h2>
+        <p className="text-slate-600 max-w-md mx-auto mb-10 font-normal">
           Once you upload your resume, our AI will provide personalized tips, keywords, and courses to help you land your dream job.
         </p>
         <button
@@ -121,10 +104,10 @@ const Recommendations = () => {
                 key={tab}
                 onClick={() => setActiveTab(tab)}
                 className={cn(
-                  "px-6 py-2.5 rounded-[0.9rem] font-semibold text-sm transition-all duration-300",
+                  "px-6 py-2.5 rounded-[0.9rem] font-medium text-sm transition-all duration-300",
                   activeTab === tab
                     ? "bg-blue-600 text-white shadow-md shadow-blue-500/10"
-                    : "text-slate-500 hover:bg-white hover:text-slate-800"
+                    : "text-slate-600 hover:bg-white hover:text-slate-900"
                 )}
               >
                 {tab}
@@ -149,16 +132,13 @@ const Recommendations = () => {
                   <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
                     <div className="flex items-center gap-6">
                       <div className="w-14 h-14 bg-slate-50 rounded-2xl flex items-center justify-center border border-slate-100 shadow-sm">
-                        {rec.type === 'skill' ? <Sparkles className="w-6 h-6 text-blue-600" /> : <Lightbulb className="w-6 h-6 text-amber-500" />}
+                        {rec.type === 'skill' ? <Activity className="w-6 h-6 text-blue-600" /> : <Lightbulb className="w-6 h-6 text-amber-500" />}
                       </div>
                       <div>
-                        <h3 className="text-xl font-bold text-slate-900 tracking-tight mb-1">{rec.title}</h3>
-                        <p className="text-slate-500 font-semibold text-sm max-w-[450px] leading-relaxed">{rec.description}</p>
+                        <h3 className="text-xl font-bold text-slate-800 tracking-tight mb-1">{rec.title}</h3>
+                        <p className="text-slate-600 font-normal text-sm max-w-[450px] leading-relaxed">{rec.description}</p>
                       </div>
                     </div>
-                    <button className="px-6 py-2.5 bg-blue-600 text-white rounded-xl font-bold text-xs hover:bg-blue-700 transition-all shadow-sm whitespace-nowrap active:scale-95">
-                      {rec.actionText || 'Implementation Tip'}
-                    </button>
                   </div>
                 </div>
               ))
@@ -175,13 +155,13 @@ const Recommendations = () => {
                   <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center mb-6 border border-blue-100">
                     <RefreshCw className="w-8 h-8 text-blue-600" />
                   </div>
-                  <h3 className="text-xl font-bold text-slate-900 tracking-tight mb-3">Re-run Analysis</h3>
-                  <p className="text-slate-500 font-semibold text-sm mb-8 leading-relaxed">
+                  <h3 className="text-xl font-bold text-slate-800 tracking-tight mb-3">Re-run Analysis</h3>
+                  <p className="text-slate-600 font-normal text-sm mb-8 leading-relaxed">
                     Update your profile or upload a fresh version to get the latest insights.
                   </p>
                   <button
                     onClick={() => navigate('/upload')}
-                    className="flex items-center gap-3 px-6 py-3 bg-white border border-slate-200 rounded-xl font-bold text-sm text-slate-700 hover:bg-slate-50 shadow-sm transition-all group/btn"
+                    className="flex items-center gap-3 px-6 py-3 bg-white border border-slate-200 rounded-xl font-medium text-sm text-slate-700 hover:bg-slate-50 shadow-sm transition-all group/btn"
                   >
                     <RefreshCw className="w-4 h-4 text-blue-600 group-hover/btn:rotate-180 transition-transform duration-500" />
                     New Upload
@@ -196,13 +176,13 @@ const Recommendations = () => {
                   <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center mb-6 border border-slate-100">
                     <GitCompare className="w-8 h-8 text-slate-600" />
                   </div>
-                  <h3 className="text-xl font-bold text-slate-900 tracking-tight mb-3">Compare Resumes</h3>
-                  <p className="text-slate-500 font-semibold text-sm mb-8 leading-relaxed">
+                  <h3 className="text-xl font-bold text-slate-800 tracking-tight mb-3">Compare Resumes</h3>
+                  <p className="text-slate-600 font-normal text-sm mb-8 leading-relaxed">
                     Analyze and compare your multiple resume versions side by side.
                   </p>
                   <button
                     onClick={() => navigate('/history')}
-                    className="flex items-center gap-3 px-6 py-3 bg-white border border-slate-200 rounded-xl font-bold text-sm text-slate-700 hover:bg-slate-50 shadow-sm transition-all"
+                    className="flex items-center gap-3 px-6 py-3 bg-white border border-slate-200 rounded-xl font-medium text-sm text-slate-700 hover:bg-slate-50 shadow-sm transition-all"
                   >
                     <GitCompare className="w-4 h-4 text-slate-500" />
                     View History
@@ -223,7 +203,7 @@ const Recommendations = () => {
                 <div className="w-12 h-12 bg-slate-50 rounded-xl flex items-center justify-center border border-slate-100">
                   <ClipboardList className="w-6 h-6 text-blue-600" />
                 </div>
-                <h3 className="text-2xl font-bold text-slate-900 tracking-tight">Best Practices</h3>
+                <h3 className="text-2xl font-bold text-slate-800 tracking-tight">Best Practices</h3>
               </div>
 
               <div className="space-y-4 mb-10">
@@ -232,14 +212,14 @@ const Recommendations = () => {
                     <div className="w-5 h-5 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center shrink-0 mt-0.5">
                       <Star className="w-2.5 h-2.5 text-emerald-600 fill-emerald-600" />
                     </div>
-                    <span className="text-slate-600 font-semibold text-sm leading-relaxed">{item}</span>
+                    <span className="text-slate-600 font-medium text-sm leading-relaxed">{item}</span>
                   </div>
                 ))}
               </div>
 
               <button
                 onClick={() => navigate('/upload')}
-                className="w-full py-4 bg-slate-50 border border-slate-100 rounded-xl font-bold text-slate-600 text-sm hover:bg-slate-100 hover:text-blue-600 transition-all"
+                className="w-full py-4 bg-slate-50 border border-slate-100 rounded-xl font-medium text-slate-500 text-sm hover:bg-slate-100 hover:text-blue-600 transition-all"
               >
                 Optimize Now
               </button>
@@ -247,37 +227,6 @@ const Recommendations = () => {
           </div>
 
 
-          <div className="bg-white rounded-2xl p-8 border border-slate-100 relative overflow-hidden shadow-sm">
-            <div className="relative z-10">
-              <h3 className="text-2xl font-bold text-slate-900 tracking-tight mb-8">Upskilling Path</h3>
-
-              <div className="space-y-8">
-                {courses.map((course) => (
-                  <div key={course.id} className="space-y-4">
-                    <div className="flex gap-4">
-                      <div className="w-12 h-12 bg-slate-50 rounded-xl flex items-center justify-center shrink-0">
-                        <BookOpen className="w-6 h-6 text-blue-600" />
-                      </div>
-                      <div>
-                        <h4 className="font-bold text-slate-900 text-base mb-1">{course.name}</h4>
-                        <div className="flex items-center gap-3">
-                          <span className="text-slate-400 text-xs font-semibold">{course.platform}</span>
-                          <div className="flex items-center gap-0.5">
-                            {[...Array(5)].map((_, i) => (
-                              <Star key={i} className={cn("w-3 h-3 pt-0.5", i < course.rating ? "fill-yellow-400 text-yellow-400" : "text-slate-300")} />
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <button className="w-full py-3 bg-blue-600 text-white rounded-xl font-bold text-xs shadow-md shadow-blue-500/10 hover:bg-blue-700 transition-all active:scale-95">
-                      Enroll Path
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </div>

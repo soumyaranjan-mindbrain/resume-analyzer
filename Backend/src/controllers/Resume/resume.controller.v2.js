@@ -4,6 +4,7 @@ const {
   extractTextFromPdf,
   extractTextFromDocx,
   analyzeResumeText,
+  generateCareerRoadmap,
 } = require("../../services/resumeAnalysis.service");
 
 const BASE_SKILLS = [
@@ -34,6 +35,7 @@ async function saveAnalysis(resumeId, analysisData) {
     experienceLevel: analysisData.experienceLevel,
     topStrengths: analysisData.topStrengths,
     weaknesses: analysisData.weaknesses,
+    roadmap: analysisData.roadmap,
   };
 
   return prisma.analysis.upsert({
@@ -82,13 +84,19 @@ const uploadResume = async (req, res) => {
     // Step 1: Extract text from buffer BEFORE uploading to Cloudinary
     const isDocx = file.originalname.toLowerCase().endsWith(".docx");
     let extractedText = "";
+    console.log(`[Upload] Starting extraction for ${file.originalname} (${file.size} bytes). Type: ${isDocx ? 'DOCX' : 'PDF'}`);
+    
     try {
       extractedText = isDocx
         ? await extractTextFromDocx(file.buffer)
         : await extractTextFromPdf(file.buffer);
+      
+      console.log(`[Upload] Extraction complete. Text length: ${extractedText?.length || 0}`);
+      if (extractedText) {
+        console.log(`[Upload] Sample text: "${extractedText.substring(0, 50)}..."`);
+      }
     } catch (extractErr) {
       console.error("[Upload] Text extraction failed:", extractErr.message);
-      // Continue without text - analysis will use empty text
     }
 
     // Step 2: Upload buffer to Cloudinary
@@ -116,6 +124,16 @@ const uploadResume = async (req, res) => {
     try {
       if (extractedText) {
         analysisData = await analyzeResumeText(extractedText);
+        
+        // Step 4.5: Generate Career Roadmap
+        console.log("[Upload] Generating Career Roadmap...");
+        try {
+          const roadmap = await generateCareerRoadmap(analysisData);
+          analysisData.roadmap = roadmap;
+        } catch (roadmapErr) {
+          console.error("[Upload] Roadmap generation failed:", roadmapErr.message);
+          analysisData.roadmap = null;
+        }
       } else {
         throw new Error("No text extracted from resume");
       }
@@ -206,7 +224,7 @@ const reanalyzeResume = async (req, res) => {
     if (!extractedText) {
       const isDocx = resume.fileUrl.toLowerCase().endsWith(".docx");
       extractedText = isDocx
-        ? await extractTextFromDocx(resume.fileUrl)
+        ? await extractTextFromDocx(resume.fileUrl) // Note: Docx extraction might need a buffer, but re-analyzing might need a download if buffer is gone
         : await extractTextFromPdf(resume.fileUrl);
 
       await prisma.resume.update({ where: { id: resume.id }, data: { extractedText } });
@@ -215,6 +233,15 @@ const reanalyzeResume = async (req, res) => {
     let analysisData;
     try {
       analysisData = await analyzeResumeText(`${extractedText}\n\nJob Description:\n${jobDescription}`);
+      
+      // Generate Roadmap for the combined context if needed, or just standard roadmap
+      console.log("[Reanalyze] Generating Career Roadmap...");
+      try {
+        const roadmap = await generateCareerRoadmap(analysisData);
+        analysisData.roadmap = roadmap;
+      } catch (roadmapErr) {
+        console.error("[Reanalyze] Roadmap generation failed:", roadmapErr.message);
+      }
     } catch (analysisError) {
       analysisData = {
         atsScore: 0,

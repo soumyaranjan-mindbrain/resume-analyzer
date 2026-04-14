@@ -18,15 +18,32 @@ import {
   PlayCircle,
   X,
   Target,
-  Sparkles,
-  Zap,
+  Activity,
+  ShieldCheck,
   TrendingUp,
   XCircle,
   AlertCircle,
+  Zap,
   Hash
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
 import { getResumes, deleteResume, analyzeResume } from '../../services/api';
+
+const getNameFromPath = (resume) => {
+  if (!resume) return 'Untitled Resume';
+  
+  // Try finding a name in common properties
+  const path = resume.fileName || resume.fileUrl || resume.file_path;
+  
+  if (!path) return 'Untitled Resume';
+  
+  // Handle both URL-style (Cloudinary) and local paths
+  const parts = path.split(/[/\\]/);
+  const fileName = parts[parts.length - 1];
+  
+  // Remove UUID prefix if present
+  return fileName.replace(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}-/, '');
+};
 
 const ReportModal = ({ isOpen, onClose, resume }) => {
   if (!isOpen || !resume) return null;
@@ -46,7 +63,7 @@ const ReportModal = ({ isOpen, onClose, resume }) => {
   }, [isOpen]);
 
   return (
-    <div className="fixed inset-0 lg:left-64 z-[100] flex flex-col bg-[#fcfdfe] overflow-hidden animate-in slide-in-from-right duration-500 shadow-2xl">
+    <div className="fixed inset-0 lg:left-64 z-[100] flex flex-col bg-white overflow-hidden animate-in slide-in-from-right duration-500 shadow-2xl">
       {/* Background Decor - Subtle & Professional */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-20">
         <div className="absolute top-[-10%] right-[-10%] w-[600px] h-[600px] bg-slate-100 rounded-full blur-[120px]" />
@@ -58,14 +75,14 @@ const ReportModal = ({ isOpen, onClose, resume }) => {
         <div className="max-w-[1240px] mx-auto w-full flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-md border border-blue-50">
-              <Sparkles className="w-5 h-5 text-blue-600" />
+              <ShieldCheck className="w-5 h-5 text-blue-600" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-slate-900 tracking-tight leading-none mb-1.5">Career Strategy Report</h2>
+              <h2 className="text-2xl font-bold text-slate-900 tracking-tight leading-none mb-1.5">Career Strategy Report</h2>
               <div className="flex items-center gap-2">
-                <span className="text-blue-600 font-bold text-[10px] uppercase tracking-widest leading-none">Analysis: {resume.fileName}</span>
-                <span className="w-1 h-1 bg-slate-200 rounded-full" />
-                <span className="px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded text-[9px] font-bold uppercase tracking-widest border border-blue-100">AI Intelligence</span>
+                <span className="text-blue-700 font-bold text-[11px] uppercase tracking-widest leading-none">Analysis: {getNameFromPath(resume)}</span>
+                <span className="w-1.5 h-1.5 bg-slate-300 rounded-full" />
+                <span className="px-2 py-0.5 bg-blue-50 text-blue-700 rounded text-[10px] font-bold uppercase tracking-widest border border-blue-200">Executive Intelligence</span>
               </div>
             </div>
           </div>
@@ -118,15 +135,15 @@ const ReportModal = ({ isOpen, onClose, resume }) => {
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
                   <span className="text-6xl font-bold text-slate-900 tracking-tight">{atsScore}</span>
-                  <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 mt-1">ATS INDEX</span>
+                  <span className="text-[11px] font-bold uppercase tracking-[0.25em] text-slate-500 mt-1">ATS INDEX</span>
                 </div>
               </div>
               <div className="space-y-1.5">
-                <h3 className="text-xl font-bold text-slate-900 tracking-tight">
+                <h3 className="text-2xl font-bold text-slate-900 tracking-tight">
                   {atsScore >= 75 ? "Executive Ready" : "Optimization Needed"}
                 </h3>
-                <p className="text-slate-500 text-xs font-medium">
-                  Matches <span className="text-slate-900 font-semibold tracking-tight">Tier-1 Standards</span>
+                <p className="text-slate-600 text-sm font-bold">
+                  Matches <span className="text-blue-700 font-bold tracking-tight">Tier-1 Standards</span>
                 </p>
               </div>
             </div>
@@ -134,25 +151,25 @@ const ReportModal = ({ isOpen, onClose, resume }) => {
             {/* Summary & Tags */}
             <div className="lg:col-span-8 bg-white border border-slate-100 rounded-[2.5rem] p-10 shadow-sm flex flex-col justify-center relative overflow-hidden">
               <div className="relative z-10 space-y-6">
-                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-blue-50 text-blue-600 rounded-full text-[10px] font-bold uppercase tracking-widest border border-blue-100">
-                  <Sparkles className="w-3.5 h-3.5" />
-                  Executive Summary
+                <div className="inline-flex items-center gap-2 px-4 py-2 bg-slate-50 text-slate-700 rounded-full text-[11px] font-bold uppercase tracking-widest border border-slate-200">
+                  <Activity className="w-4 h-4 text-blue-600" />
+                  Executive Assessment
                 </div>
-                <h3 className="text-2xl font-medium text-slate-800 leading-[1.6]">
-                  {analysis.summary || "Your resume represents a strong professional profile with significant growth potential."}
+                <h3 className="text-2xl italic font-medium text-slate-800 leading-[1.6]">
+                  "{analysis.summary || "Your resume represents a strong professional profile with significant growth potential and strategic alignment."}"
                 </h3>
                 <div className="pt-8 grid grid-cols-2 lg:grid-cols-3 gap-10">
                   <div className="space-y-1">
-                    <span className="text-slate-400 text-[10px] font-bold uppercase tracking-widest block mb-1">Experience Level</span>
+                    <span className="text-slate-500 text-[11px] font-bold uppercase tracking-widest block mb-1">Experience Level</span>
                     <span className="text-xl font-bold text-slate-900">{analysis.experienceLevel || "Professional"}</span>
                   </div>
                   <div className="space-y-1">
-                    <span className="text-slate-400 text-[10px] font-bold uppercase tracking-widest block mb-1">Target Role</span>
+                    <span className="text-slate-500 text-[11px] font-bold uppercase tracking-widest block mb-1">Target Role</span>
                     <span className="text-xl font-bold text-slate-900">Software Engineer</span>
                   </div>
                   <div className="space-y-1">
-                    <span className="text-slate-400 text-[10px] font-bold uppercase tracking-widest block mb-1">Assessment</span>
-                    <span className="text-xl font-bold text-blue-600">A+ Grade</span>
+                    <span className="text-slate-500 text-[11px] font-bold uppercase tracking-widest block mb-1">Assessment</span>
+                    <span className="text-xl font-bold text-blue-700">A+ Grade</span>
                   </div>
                 </div>
               </div>
@@ -197,11 +214,11 @@ const ReportModal = ({ isOpen, onClose, resume }) => {
               </div>
               <div className="space-y-4">
                 {(analysis.weaknesses || ["Keyword Density", "Quantifiable Metrics", "Actionable Headers"]).map((w, i) => (
-                  <div key={i} className="flex items-start gap-4 p-4 bg-slate-50/50 rounded-2xl border border-slate-100">
-                    <div className="w-6 h-6 rounded-full bg-rose-500 text-white flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5 shadow-sm">
+                  <div key={i} className="flex items-start gap-4 p-4 bg-slate-50/50 rounded-2xl border border-slate-200">
+                    <div className="w-6 h-6 rounded-full bg-rose-600 text-white flex items-center justify-center text-[11px] font-bold shrink-0 mt-0.5 shadow-sm">
                       {i + 1}
                     </div>
-                    <p className="text-slate-700 font-semibold text-sm leading-relaxed">{w}</p>
+                    <p className="text-slate-800 font-bold text-sm leading-relaxed">{w}</p>
                   </div>
                 ))}
               </div>
@@ -229,7 +246,7 @@ const ReportModal = ({ isOpen, onClose, resume }) => {
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {analysis.suggestions.map((step, i) => (
                       <div key={i} className="p-6 bg-slate-50 rounded-2xl border border-slate-100 hover:border-blue-200 transition-all">
-                        <div className="w-8 h-8 rounded-lg bg-white text-blue-600 flex items-center justify-center text-xs font-bold mb-4 border border-slate-100 shadow-sm">0{i+1}</div>
+                        <div className="w-8 h-8 rounded-lg bg-white text-blue-600 flex items-center justify-center text-xs font-bold mb-4 border border-slate-100 shadow-sm">0{i + 1}</div>
                         <p className="font-bold text-sm leading-[1.6] text-slate-700">{step}</p>
                       </div>
                     ))}
@@ -252,7 +269,7 @@ const ReportModal = ({ isOpen, onClose, resume }) => {
                 </div>
                 <div className="flex flex-wrap gap-2.5">
                   {analysis.keywordsMissing.map((kw, i) => (
-                    <span key={kw} className="px-4 py-2 bg-slate-50 rounded-xl text-slate-600 text-xs font-bold border border-slate-100 hover:border-indigo-200 hover:text-indigo-600 transition-all cursor-default">
+                    <span key={kw} className="px-4 py-2 bg-white rounded-xl text-slate-700 text-xs font-bold border border-slate-200 hover:border-indigo-300 hover:text-indigo-700 transition-all cursor-default shadow-sm">
                       {kw}
                     </span>
                   ))}
@@ -340,9 +357,9 @@ const History = () => {
       <div className="space-y-8">
         {resumes.length === 0 ? (
           <div className="text-center py-20 bg-white rounded-2xl border border-slate-200 shadow-[0_8px_30px_rgba(0,0,0,0.06)]">
-            <FileText className="w-16 h-16 text-slate-200 mx-auto mb-6" />
-            <h3 className="text-xl font-bold text-slate-400 tracking-tight">History is Empty</h3>
-            <p className="text-slate-400 font-semibold mt-2 mb-10">Upload your first resume to see AI insights here.</p>
+            <FileText className="w-16 h-16 text-slate-300 mx-auto mb-6" />
+            <h3 className="text-xl font-bold text-slate-800 tracking-tight">History is Empty</h3>
+            <p className="text-slate-500 font-medium mt-2 mb-10">Upload your first resume to see AI insights here.</p>
             <button
               onClick={() => navigate('/upload')}
               className="px-10 py-4 bg-blue-600 text-white rounded-2xl font-bold flex items-center gap-2 mx-auto hover:bg-blue-700 transition-all shadow-lg active:scale-95"
@@ -375,25 +392,27 @@ const History = () => {
 
                     <div className="flex-1 min-w-0 pt-1">
                       <div className="flex items-center gap-2.5 mb-2.5 flex-wrap">
-                        <h3 className="text-xl font-extrabold text-slate-800 truncate tracking-tight group-hover/card:text-blue-600 transition-colors">
-                          {resume.fileName || "Draft Scan"}
+                        <h3 className="text-xl font-bold text-slate-800 tracking-tight group-hover/card:text-blue-600 transition-colors">
+                          {getNameFromPath(resume)}
                         </h3>
                         <span className={cn(
-                          "px-3 py-1 rounded-lg font-black text-[9px] uppercase tracking-wider border",
+                          "px-3 py-1 rounded-lg font-medium text-[10px] uppercase tracking-wider border",
                           isAnalyzed
-                            ? "bg-emerald-50 text-emerald-600 border-emerald-100"
-                            : "bg-amber-50 text-amber-600 border-amber-100"
+                            ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                            : "bg-amber-50 text-amber-700 border-amber-200"
                         )}>
-                          {isAnalyzed ? 'Optimized' : 'Draft'}
+                          {isAnalyzed ? 'Analyzed' : 'Draft'}
                         </span>
                       </div>
-                      
-                      <div className="flex items-center gap-5 text-slate-400 font-bold text-[9px] uppercase tracking-widest">
-                        <div className="flex items-center gap-1.5 bg-slate-50/50 py-1.5 px-3 rounded-lg border border-slate-100/30">
-                          <Clock className="w-3.5 h-3.5 opacity-70" />
-                          {resume.updatedAt ? new Date(resume.updatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'No Date'}
+
+                      <div className="flex items-center gap-5 text-slate-400 font-medium text-[10px] uppercase tracking-widest">
+                        <div className="flex items-center gap-1.5 bg-slate-50 py-1.5 px-3 rounded-lg border border-slate-200">
+                          <Clock className="w-3.5 h-3.5 opacity-90" />
+                          <span className="font-medium">
+                            {resume.updatedAt ? new Date(resume.updatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'No Date'}
+                          </span>
                         </div>
-                        <div className="flex items-center gap-1.5 opacity-50">
+                        <div className="flex items-center gap-1.5 opacity-70">
                           <Hash className="w-3.5 h-3.5" />
                           {rId.slice(-6).toUpperCase()}
                         </div>
@@ -405,27 +424,27 @@ const History = () => {
                   {isAnalyzed && (
                     <div className="relative group/score flex items-center gap-6 py-3.5 px-7 bg-white border border-slate-100 rounded-3xl shadow-[0_4px_15px_rgba(0,0,0,0.02)] shrink-0 scale-90 md:scale-100 origin-right transition-all hover:border-blue-100">
                       <div className="flex flex-col items-end">
-                        <span className="text-5xl font-black text-slate-900 tracking-tighter leading-none mb-1">
+                        <span className="text-5xl font-bold text-slate-800 tracking-tighter leading-none mb-1">
                           {atsScore}
-                          <span className="text-xl text-blue-500 font-bold ml-1">%</span>
+                          <span className="text-xl text-blue-600 font-medium ml-1">%</span>
                         </span>
-                        <span className="text-[9px] font-black text-slate-300 uppercase tracking-[0.25em] leading-none">ATS Index</span>
+                        <span className="text-[10px] font-medium text-slate-400 uppercase tracking-[0.25em] leading-none">ATS Index</span>
                       </div>
                       <div className="relative w-16 h-16 flex items-center justify-center shrink-0">
                         <svg className="w-full h-full transform -rotate-90">
                           <circle cx="32" cy="32" r="28" fill="none" stroke="#f1f5f9" strokeWidth="4" />
-                          <circle 
-                            cx="32" cy="32" r="28" fill="none" 
-                            stroke={atsScore >= 80 ? "#10b981" : atsScore >= 50 ? "#3b82f6" : "#f59e0b"} 
-                            strokeWidth="4" 
-                            strokeDasharray={176} 
-                            strokeDashoffset={176 - (176 * atsScore) / 100} 
-                            strokeLinecap="round" 
+                          <circle
+                            cx="32" cy="32" r="28" fill="none"
+                            stroke={atsScore >= 80 ? "#10b981" : atsScore >= 50 ? "#3b82f6" : "#f59e0b"}
+                            strokeWidth="4"
+                            strokeDasharray={176}
+                            strokeDashoffset={176 - (176 * atsScore) / 100}
+                            strokeLinecap="round"
                             className="transition-all duration-1000"
                           />
                         </svg>
                         <div className="absolute inset-0 bg-white m-2 rounded-full flex items-center justify-center shadow-inner border border-slate-50">
-                           <Sparkles className="w-4 h-4 text-blue-300" />
+                          <TrendingUp className="w-4 h-4 text-blue-300" />
                         </div>
                       </div>
                     </div>
@@ -452,7 +471,7 @@ const History = () => {
                         onClick={() => handleAnalyze(rId)}
                         className="flex-1 sm:flex-none flex items-center justify-center gap-2.5 px-8 py-3 bg-slate-900 text-white rounded-xl font-bold text-[11px] uppercase tracking-widest shadow-lg hover:bg-slate-800 active:scale-95 transition-all w-full sm:w-auto"
                       >
-                        <Zap className="w-4 h-4" />
+                        <Activity className="w-4 h-4" />
                         Generate Strategy
                       </button>
                     )}

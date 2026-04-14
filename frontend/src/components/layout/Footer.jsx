@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Mail } from 'lucide-react';
+import Logo from '../common/Logo';
 
 
 const TwitterIcon = ({ className }) => (
@@ -42,16 +43,10 @@ const Footer = () => {
         <div className="grid grid-cols-2 md:grid-cols-5 gap-12 md:gap-8 mb-20">
           
           <div className="col-span-2 md:col-span-1 space-y-6">
-            <div 
-              className="flex items-center gap-2 cursor-pointer group" 
-              onClick={() => navigate('/')}
-            >
-              <img 
-                src="/Kredo_logo_with_educational_theme-removebg-preview.png" 
-                alt="Kredo Logo" 
-                className="h-14 w-auto transition-transform duration-500 group-hover:scale-105"
-              />
-            </div>
+            <Logo 
+              size="md"
+              onClick={() => navigate('/')} 
+            />
             <p className="text-sm text-[var(--neutral-500)] font-medium leading-relaxed max-w-xs">
               AI-driven career acceleration for the modern professional. Built for depth, clarity, and results.
             </p>
@@ -76,7 +71,7 @@ const Footer = () => {
           
           {Object.entries(footerLinks).map(([title, links]) => (
             <div key={title} className="space-y-6">
-                <h4 className="text-xs font-black text-[var(--neutral-900)] uppercase tracking-widest">{title}</h4>
+                <h4 className="text-xs font-bold text-[var(--neutral-900)] uppercase tracking-widest">{title}</h4>
                 <ul className="space-y-4">
                   {links.map((link) => (
                     <li key={link}>
@@ -95,12 +90,12 @@ const Footer = () => {
 
         
         <div className="pt-10 border-t border-white/40 flex flex-col md:flex-row items-center justify-between gap-6">
-          <p className="text-[11px] text-[var(--neutral-400)] font-black uppercase tracking-widest">
+          <p className="text-[11px] text-[var(--neutral-400)] font-bold uppercase tracking-widest">
             © {currentYear} Kredo AI Technologies.
           </p>
           <div className="flex items-center gap-3 px-4 py-2 rounded-full bg-white/50 border border-white shadow-[inset_2px_2px_6px_rgba(0,0,0,0.02)]">
             <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
-            <span className="text-[10px] text-[var(--neutral-500)] font-black uppercase tracking-widest">
+            <span className="text-[10px] text-[var(--neutral-500)] font-bold uppercase tracking-widest">
               Engine Pulse: Operational
             </span>
           </div>

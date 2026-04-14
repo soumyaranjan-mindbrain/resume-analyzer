@@ -95,10 +95,10 @@ const Students = () => {
           <div key={i} className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-slate-500 mb-1">{stat.label}</p>
-              <span className="text-2xl font-bold text-slate-900">{stat.value}</span>
+              <span className="text-2xl font-bold text-slate-900 tracking-tight">{stat.value}</span>
             </div>
             <span className={cn(
-              "text-xs font-medium px-2 py-1 rounded-lg",
+              "text-xs font-bold px-2 py-1 rounded-lg",
               stat.status === 'up' ? "bg-emerald-50 text-emerald-700" : "bg-red-50 text-red-700"
             )}>
               {stat.change}
@@ -189,13 +189,13 @@ const Students = () => {
                    <tr key={student.id} className="hover:bg-slate-50 transition-colors">
                      <td className="py-4 px-6">
                        <div className="flex items-center gap-3">
-                         <div className="w-9 h-9 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center font-semibold text-blue-600 text-sm shrink-0">
-                            {student.name?.charAt(0)}
-                         </div>
-                         <div>
-                           <p className="text-sm font-medium text-slate-900">{student.name}</p>
-                           <p className="text-sm text-slate-500">{student.email}</p>
-                         </div>
+                          <div className="w-9 h-9 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center font-bold text-blue-600 text-sm shrink-0">
+                             {student.name?.charAt(0)}
+                          </div>
+                          <div>
+                            <p className="text-sm font-bold text-slate-900 tracking-tight">{student.name}</p>
+                            <p className="text-sm font-normal text-slate-500">{student.email}</p>
+                          </div>
                        </div>
                      </td>
                      <td className="py-4 px-6">
@@ -228,7 +228,7 @@ const Students = () => {
                           {student.status || 'Active'}
                        </div>
                      </td>
-                     <td className="py-4 px-6 text-sm text-slate-500">{student.lastActive || new Date(student.updatedAt).toLocaleDateString()}</td>
+                     <td className="py-4 px-6 text-sm font-normal text-slate-500">{student.lastActive || new Date(student.updatedAt).toLocaleDateString()}</td>
                      <td className="py-4 px-6">
                        <div className="flex items-center justify-end gap-1">
                           <button className="p-1.5 text-slate-400 hover:text-blue-600 rounded-md hover:bg-blue-50 transition-colors" title="View details">
@@ -259,11 +259,11 @@ const Students = () => {
              <p className="text-sm text-slate-500">Showing <span className="font-medium text-slate-900">{filteredStudents.length > pageSize ? pageSize : filteredStudents.length}</span> of <span className="font-medium text-slate-900">{filteredStudents.length}</span> students</p>
              
              <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-sm">
-               <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Show</span>
+               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Show</span>
                <select 
                 value={pageSize}
                 onChange={(e) => setPageSize(Number(e.target.value))}
-                className="bg-transparent text-xs font-black text-slate-700 outline-none cursor-pointer"
+                className="bg-transparent text-xs font-bold text-slate-700 outline-none cursor-pointer"
                >
                  {[5, 15, 25, 50].map(size => (
                    <option key={size} value={size}>{size}</option>
@@ -313,7 +313,7 @@ const Students = () => {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label className="text-sm font-semibold text-slate-700">Course</label>
+                  <label className="text-sm font-bold text-slate-700">Course</label>
                   <input
                     type="text"
                     value={newStudent.course}
@@ -323,7 +323,7 @@ const Students = () => {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-sm font-semibold text-slate-700">Phone</label>
+                  <label className="text-sm font-bold text-slate-700">Phone</label>
                   <input
                     type="text"
                     value={newStudent.phone}

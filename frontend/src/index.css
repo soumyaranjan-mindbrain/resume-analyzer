@@ -1,4 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Inter:wght@100..900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+/* Global Typography: Inter (Primary: 700, Secondary: 500, Tertiary: 400) */
 
 @import "tailwindcss/base";
 @import "tailwindcss/components";
@@ -29,12 +30,13 @@
     --neutral-100: #eef1f6;
     --neutral-200: #e2e8f0;
     --neutral-300: #cbd5e1;
-    --neutral-400: #94a3b8;
-    --neutral-500: #64748b;
-    --neutral-600: #475569;
+    --neutral-400: #64748b; /* Increased contrast from #94a3b8 */
+    --neutral-500: #475569; /* Increased contrast from #64748b */
+    --neutral-600: #334155; /* Increased contrast from #475569 */
     --neutral-700: #334155;
-    --neutral-800: #1e293b;
-    --neutral-900: #0f172a;
+    --neutral-800: #334155;
+    --neutral-900: #1e293b; /* Softened from #0f172a for smoothness */
+    --neutral-950: #0f172a;
 
     
     --brand-gradient: linear-gradient(135deg, #7b61ff 0%, #4da3ff 100%);
@@ -56,7 +58,10 @@
   body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-smoothing: grayscale;
-    font-family: 'Inter', sans-serif;
+    text-rendering: optimizeLegibility;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-feature-settings: "cv02", "cv05", "kern", "liga";
+    font-variant-ligatures: common-ligatures;
     background: linear-gradient(135deg, #f0f7ff 0%, #e0efff 50%, #f8faff 100%);
     background-attachment: fixed;
     min-height: 100vh;
@@ -103,10 +108,10 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: 'Inter', sans-serif;
     letter-spacing: -0.02em;
     color: var(--neutral-900);
-    font-weight: 900;
+    font-weight: 700;
   }
 }
 
@@ -152,10 +157,10 @@
     border-radius: 1rem;
     background-image: linear-gradient(to right, #9333ea, #4f46e5);
     color: #ffffff;
-    font-weight: 900;
+    font-weight: 700;
     font-size: 11px;
     text-transform: uppercase;
-    letter-spacing: 0.2em;
+    letter-spacing: 0.15em;
     box-shadow: 0 10px 15px -3px rgba(139, 92, 246, 0.2);
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   }
@@ -193,7 +198,7 @@
     border-radius: 1rem;
     background-color: #fafbff;
     border: 1px solid #ffffff;
-    font-weight: 700;
+    font-weight: 500;
     color: var(--neutral-900);
     transition: all 0.2s;
     box-shadow: 

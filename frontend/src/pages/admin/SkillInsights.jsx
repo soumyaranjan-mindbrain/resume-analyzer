@@ -32,7 +32,7 @@ const SkillInsights = () => {
   if (topSkills.length === 0) {
     return (
       <div className="bg-white rounded-xl p-12 border border-slate-200 shadow-sm text-center">
-        <p className="text-slate-500 font-medium">No skill data available yet. Analyzed resumes and job roles will populate this section.</p>
+        <p className="text-slate-500 font-semibold">No skill data available yet. Analyzed resumes and job roles will populate this section.</p>
       </div>
     );
   }

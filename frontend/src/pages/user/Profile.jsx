@@ -68,7 +68,7 @@ const Profile = () => {
                 {user?.profilePic ? (
                   <img src={user.profilePic} alt={user?.name} className="w-full h-full object-cover" />
                 ) : (
-                  <span className="text-4xl font-bold text-blue-600">
+                  <span className="text-4xl font-medium text-blue-600">
                     {user?.name?.charAt(0) || 'U'}
                   </span>
                 )}
@@ -78,8 +78,8 @@ const Profile = () => {
               </button>
             </div>
 
-            <h2 className="text-2xl font-bold text-slate-900 tracking-tight mb-1">{user?.name}</h2>
-            <p className="text-slate-500 font-semibold text-xs uppercase tracking-widest mb-6">{formData.title}</p>
+            <h2 className="text-2xl font-bold text-slate-800 tracking-tight mb-1">{user?.name}</h2>
+            <p className="text-slate-500 font-normal text-[10px] uppercase tracking-widest mb-6">{formData.title}</p>
 
             <div className="flex gap-3 mb-8">
               {[GithubIcon, TwitterIcon, LinkedinIcon].map((Icon, i) => (
@@ -94,71 +94,71 @@ const Profile = () => {
                 <div className="w-10 h-10 bg-white text-blue-600 rounded-xl flex items-center justify-center shadow-sm">
                   <Mail className="w-5 h-5" />
                 </div>
-                <div className="text-left">
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Email Address</p>
-                  <p className="text-sm font-semibold text-slate-700">{user?.email}</p>
+                 <div className="text-left">
+                  <p className="text-[10px] font-normal text-slate-500 uppercase tracking-widest">Email Address</p>
+                  <p className="text-sm font-medium text-slate-700">{user?.email}</p>
                 </div>
               </div>
               <div className="bg-slate-50/50 p-4 rounded-xl border border-slate-200 flex items-center gap-4 group transition-all">
                 <div className="w-10 h-10 bg-white text-emerald-600 rounded-xl flex items-center justify-center shadow-sm">
                   <MapPin className="w-5 h-5" />
                 </div>
-                <div className="text-left">
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Location</p>
-                  <p className="text-sm font-semibold text-slate-700">{user?.location || 'Not Specified'}</p>
+                 <div className="text-left">
+                  <p className="text-[10px] font-normal text-slate-500 uppercase tracking-widest">Location</p>
+                  <p className="text-sm font-medium text-slate-700">{user?.location || 'Not Specified'}</p>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="lg:col-span-2 bg-white rounded-2xl p-8 shadow-[0_8px_30px_rgba(0,0,0,0.06)] border border-slate-200 relative flex flex-col h-full">
-          <h3 className="text-xl font-bold text-slate-900 mb-8 tracking-tight">Account Settings</h3>
+         <div className="lg:col-span-2 bg-white rounded-2xl p-8 shadow-[0_8px_30px_rgba(0,0,0,0.06)] border border-slate-200 relative flex flex-col h-full">
+          <h3 className="text-2xl font-bold text-slate-800 mb-8 tracking-tight">Account Settings</h3>
             
           <div className="grid sm:grid-cols-2 gap-6 flex-1">
-            <div className="space-y-2">
-              <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest px-1">Full Name</label>
+             <div className="space-y-2">
+              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest px-1">Full Name</label>
               <input 
                 type="text" 
                 value={formData.name}
                 onChange={(e) => setFormData({...formData, name: e.target.value})}
-                className="w-full bg-slate-50 border border-slate-300 rounded-xl px-5 py-4 text-sm font-semibold text-slate-700 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 focus:bg-white transition-all shadow-sm"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-5 py-4 text-sm font-medium text-slate-700 focus:outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-400 focus:bg-white transition-all shadow-sm"
               />
             </div>
-            <div className="space-y-2">
-              <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest px-1">Job Title</label>
+             <div className="space-y-2">
+              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest px-1">Job Title</label>
               <input 
                 type="text" 
                 value={formData.title}
                 onChange={(e) => setFormData({...formData, title: e.target.value})}
-                className="w-full bg-slate-50 border border-slate-300 rounded-xl px-5 py-4 text-sm font-semibold text-slate-700 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 focus:bg-white transition-all shadow-sm"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-5 py-4 text-sm font-medium text-slate-700 focus:outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-400 focus:bg-white transition-all shadow-sm"
               />
             </div>
-            <div className="space-y-2">
-              <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest px-1">Location</label>
+             <div className="space-y-2">
+              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest px-1">Location</label>
               <input 
                 type="text" 
                 value={formData.location}
                 onChange={(e) => setFormData({...formData, location: e.target.value})}
-                className="w-full bg-slate-50 border border-slate-300 rounded-xl px-5 py-4 text-sm font-semibold text-slate-700 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 focus:bg-white transition-all shadow-sm"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-5 py-4 text-sm font-medium text-slate-700 focus:outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-400 focus:bg-white transition-all shadow-sm"
               />
             </div>
-            <div className="space-y-2">
-              <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest px-1">Phone Number</label>
+             <div className="space-y-2">
+              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest px-1">Phone Number</label>
               <input 
                 type="text" 
                 value={formData.phone}
                 onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                className="w-full bg-slate-50 border border-slate-300 rounded-xl px-5 py-4 text-sm font-semibold text-slate-700 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 focus:bg-white transition-all shadow-sm"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-5 py-4 text-sm font-medium text-slate-700 focus:outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-400 focus:bg-white transition-all shadow-sm"
               />
             </div>
           </div>
 
-          <div className="mt-8 flex justify-end pt-6 border-t border-slate-50">
+           <div className="mt-8 flex justify-end pt-6 border-t border-slate-50">
             <button 
               onClick={handleUpdate}
               disabled={loading}
-              className="px-8 py-4 bg-blue-600 text-white rounded-xl font-bold text-sm uppercase tracking-widest shadow-md hover:bg-blue-700 hover:shadow-lg transition-all disabled:opacity-50"
+              className="px-8 py-4 bg-blue-600 text-white rounded-xl font-medium text-sm uppercase tracking-widest shadow-md hover:bg-blue-700 hover:shadow-lg transition-all disabled:opacity-50"
             >
               {loading ? 'Saving...' : 'Update Settings'}
             </button>
