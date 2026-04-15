@@ -89,6 +89,11 @@ export const getAllJobs = async () => {
   return response.data;
 };
 
+export const getJobById = async (id) => {
+  const response = await apiClient.get(`/jobs/${id}`);
+  return response.data;
+};
+
 export const getMatchedJobs = async () => {
   const response = await apiClient.get('/jobs/user/my-jobs');
   return response.data;

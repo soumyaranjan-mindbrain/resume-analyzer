@@ -15,6 +15,7 @@ import { uploadResume } from '../../services/api';
 import { cn } from '../../utils/cn';
 import gsap from 'gsap';
 
+const APPLY_CONTEXT_KEY = 'apply_job_context_v1';
 
 const Upload = () => {
   const navigate = useNavigate();
@@ -102,7 +103,8 @@ const Upload = () => {
       simulateProgress(40, 800, async () => {
         try {
           const uploadResponse = await uploadResume(uploadFormData);
-          if (!uploadResponse?.resume?.id && !uploadResponse?.resume?._id) {
+          const resumeId = uploadResponse?.resume?.id || uploadResponse?.resume?._id;
+          if (!resumeId) {
             throw new Error('Upload failed: No resume ID returned');
           }
 
@@ -112,6 +114,19 @@ const Upload = () => {
             setProgress(100);
             setStatus('success');
             setTimeout(() => {
+              try {
+                const raw = sessionStorage.getItem(APPLY_CONTEXT_KEY);
+                if (raw) {
+                  const ctx = JSON.parse(raw);
+                  if (ctx?.jobId) {
+                    sessionStorage.setItem(APPLY_CONTEXT_KEY, JSON.stringify({ ...ctx, resumeId }));
+                    navigate('/matches');
+                    return;
+                  }
+                }
+              } catch {
+                // ignore
+              }
               navigate('/dashboard');
             }, 1200);
           }, 800);

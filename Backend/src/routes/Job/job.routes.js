@@ -14,12 +14,12 @@ const {
 
 // Public
 router.get("/", getJobs);
+router.get("/user/my-jobs", authMiddleware, getMyJobs);
 router.get("/:id", getJobById);
 
 // Protected
 router.post("/", authMiddleware, createJob);
 router.put("/:id", authMiddleware, updateJob);
 router.delete("/:id", authMiddleware, deleteJob);
-router.get("/user/my-jobs", authMiddleware, getMyJobs);
 
 module.exports = router;

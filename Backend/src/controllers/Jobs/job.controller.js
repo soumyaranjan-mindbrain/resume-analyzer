@@ -18,7 +18,7 @@ exports.createJob = async (req, res) => {
         responsibilities,
         skillsRequired: tags || [], // frontend sends 'tags'
         salary,
-        userId: req.user.id
+        userId: req.userId || req.user?.id || req.user?._id
       }
     });
 
