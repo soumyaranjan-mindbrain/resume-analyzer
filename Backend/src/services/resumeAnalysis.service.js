@@ -26,7 +26,7 @@ async function extractTextFromPdf(input) {
     // Correct usage for pdf-parse v2: Pass data directly to constructor
     const { PDFParse } = require("pdf-parse");
     const parser = new PDFParse({ data: buffer });
-    
+
     // getText() returns the result directly in v2
     const result = await parser.getText();
     await parser.destroy();
@@ -118,10 +118,10 @@ Return ONLY valid JSON:
   },
   "keywordsMissing": ["specifically", "missing", "technical", "terms"],
   "suggestions": ["specific actionable advice"],
-  "topStrengths": ["proven skill with evidence"],
-  "weaknesses": ["clear improvement area"],
+  "topStrengths": ["Exactly 4 specific proven strengths"],
+  "weaknesses": ["Exactly 4 specific improvement areas"],
   "experienceLevel": "Entry | Mid | Senior",
-  "summaryAnalysis": "Critique of their summary"
+  "summaryAnalysis": "Deep executive critique of the candidate's professional standing and resume quality (minimum 6-8 lines). Focus on specific areas for improvement, technical gaps, and strategic market positioning."
 }
 
 RESUME:
@@ -130,19 +130,64 @@ ${resumeText.slice(0, 8000)}
 ---`;
 }
 
-async function analyzeResumeText(resumeText) {
+function buildMatchPrompt(resumeText, jobDescription) {
+  return `You are a Tier-1 Technical Recruiter. Your task is to perform a pin-pointed comparison between a Candidate's Resume and a specific Job Description (JD).
+
+ATS MATCH SCORING RUBRIC (Max 100):
+1. Skill Alignment (40 pts): Direct match of required technical skills, languages, and tools mentioned in the JD.
+2. Experience Relevance (30 pts): How well the work history matches the specific responsibilities and seniority requested.
+3. Keyword Optimization (20 pts): Specific industry terms and tools found in the JD.
+4. Quantifiable Impact (10 pts): Evidence of results (%, $, #) that are relevant to this specific role.
+
+CRITICAL INSTRUCTIONS:
+- If the JD is random text, jibberish, placeholder text, or completely irrelevant to the candidates career (e.g., candidate is a Coder but JD is for a Chef), the total score MUST be very low (below 30).
+- Be EXTREMELY STRICT. If the candidate misses 20% of required tech stack, they lose 15+ points in Skill Alignment.
+- The score must reflect the ELIGIBILITY for THIS specific role.
+
+Return ONLY valid JSON:
+{
+  "breakdown": {
+    "skillAlignment": 0-40,
+    "experienceRelevance": 0-30,
+    "keywords": 0-20,
+    "impact": 0-10
+  },
+  "keywordsMissing": ["specific", "missing", "tech", "from", "JD"],
+  "suggestions": ["actions to take specifically for THIS application"],
+  "topStrengths": ["Exactly 4 specific matches vs JD"],
+  "weaknesses": ["Exactly 4 specific gaps vs JD"],
+  "experienceLevel": "Entry | Mid | Senior",
+  "summaryAnalysis": "Deep executive critique of the role-fit (minimum 6-8 lines). Compare specific technical depth vs the JD requirements, highlight critical alignment gaps, and provide a strategic verdict on candidacy."
+}
+
+RESUME:
+---
+${resumeText.slice(0, 6000)}
+---
+
+JOB DESCRIPTION:
+---
+${jobDescription.slice(0, 4000)}
+---`;
+}
+
+async function analyzeResumeText(resumeText, jobDescription = null) {
   if (!process.env.GROQ_API_KEY) throw new Error("GROQ_API_KEY not found");
 
   if (!resumeText || resumeText.trim().length < 30) {
     throw new Error("Resume content too short to analyze.");
   }
 
+  const prompt = jobDescription
+    ? buildMatchPrompt(resumeText, jobDescription)
+    : buildAnalysisPrompt(resumeText);
+
   try {
     const response = await groq.chat.completions.create({
       model: GROQ_MODEL,
       messages: [
         { role: "system", content: "You are a specialized ATS grading system. Respond with valid JSON ONLY." },
-        { role: "user", content: buildAnalysisPrompt(resumeText) },
+        { role: "user", content: prompt },
       ],
       temperature: 0.1,
     });
@@ -172,20 +217,27 @@ async function analyzeResumeText(resumeText) {
     };
 
     // Robust Scoring Logic
-    const breakdown = {
-      keywords: gv(["keywords", "keyword_density", "keywordMatch"], 20),
-      achievements: gv(["achievements", "quantifiability", "impact"], 15),
-      techSkills: gv(["techSkills", "technical_depth", "skills"], 10),
-      experience: gv(["experience", "experience_quality", "workHistory"], 10),
-      education: gv(["education", "academic", "credentials"], 8),
-      projects: gv(["projects", "portfolio", "side_projects"], 8),
-      formatting: gv(["formatting", "ats_compliance", "structure"], 7),
-      summary: gv(["summary", "professional_summary", "valueProp"], 6),
-      certifications: gv(["certifications", "certs", "licenses"], 5),
-      onlinePresence: gv(["onlinePresence", "links", "presence"], 5),
-      softSkills: gv(["softSkills", "leadership", "mentoring"], 4),
-      grammar: gv(["grammar", "language", "typos"], 2)
-    };
+    const breakdown = jobDescription
+      ? {
+        skillAlignment: gv(["skillAlignment", "skills"], 40),
+        experienceRelevance: gv(["experienceRelevance", "experience"], 30),
+        keywords: gv(["keywords", "keywordMatch"], 20),
+        impact: gv(["impact", "achievements"], 10)
+      }
+      : {
+        keywords: gv(["keywords", "keyword_density", "keywordMatch"], 20),
+        achievements: gv(["achievements", "quantifiability", "impact"], 15),
+        techSkills: gv(["techSkills", "technical_depth", "skills"], 10),
+        experience: gv(["experience", "experience_quality", "workHistory"], 10),
+        education: gv(["education", "academic", "credentials"], 8),
+        projects: gv(["projects", "portfolio", "side_projects"], 8),
+        formatting: gv(["formatting", "ats_compliance", "structure"], 7),
+        summary: gv(["summary", "professional_summary", "valueProp"], 6),
+        certifications: gv(["certifications", "certs", "licenses"], 5),
+        onlinePresence: gv(["onlinePresence", "links", "presence"], 5),
+        softSkills: gv(["softSkills", "leadership", "mentoring"], 4),
+        grammar: gv(["grammar", "language", "typos"], 2)
+      };
 
     const calcScore = Object.values(breakdown).reduce((sum, v) => sum + v, 0);
     const atsScore = Math.min(100, Math.max(0, Math.round(calcScore)));

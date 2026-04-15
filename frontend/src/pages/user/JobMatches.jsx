@@ -1,25 +1,37 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  Briefcase, 
-  MapPin, 
-  DollarSign, 
-  Clock, 
-  CheckCircle2, 
+import React, { useState, useEffect, useRef } from 'react';
+import {
+  Briefcase,
+  MapPin,
+  DollarSign,
+  Clock,
+  CheckCircle2,
   ChevronRight,
   Activity,
   Star,
   Search,
   X,
-  FileText
+  FileText,
+  Upload as UploadIcon,
+  AlertCircle,
+  ShieldCheck,
+  Cpu,
+  Zap,
+  TrendingDown,
+  TrendingUp,
+  Target,
+  Lightbulb,
+  ArrowRight
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
-import { getAllJobs, getJobById, getResumes, reanalyzeResume } from '../../services/api';
+import { getAllJobs, getJobById, getResumes, reanalyzeResume, uploadResume, applyToJob } from '../../services/api';
 import { useNavigate } from 'react-router-dom';
 
 const APPLY_CONTEXT_KEY = 'apply_job_context_v1';
 
 const JobMatches = () => {
   const navigate = useNavigate();
+  const fileInputRef = useRef(null);
+
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState('All');
@@ -29,10 +41,15 @@ const JobMatches = () => {
   const [selectedJob, setSelectedJob] = useState(null);
 
   const [applyOpen, setApplyOpen] = useState(false);
-  const [applyStep, setApplyStep] = useState('choose'); // choose | processing | result | error
+  const [applyStep, setApplyStep] = useState('choose'); // choose | uploading | processing | result | error
   const [resumeChoice, setResumeChoice] = useState('latest'); // latest | upload
   const [applyError, setApplyError] = useState('');
   const [applyResult, setApplyResult] = useState(null);
+
+  const [uploadFile, setUploadFile] = useState(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [currentResumeId, setCurrentResumeId] = useState(null);
+  const [isApplying, setIsApplying] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -68,7 +85,6 @@ const JobMatches = () => {
 
       sessionStorage.removeItem(APPLY_CONTEXT_KEY);
       openApply(job);
-      // immediately proceed with the newly uploaded resume
       void runApply(job, ctx.resumeId);
     } catch {
       // ignore
@@ -82,10 +98,8 @@ const JobMatches = () => {
     const company = String(job.company || '').toLowerCase();
 
     if (activeFilter !== 'All') {
-      // Placeholder for future filters (e.g., only active postings)
       if (activeFilter === 'Open Now') {
-        // If backend later adds a status field, we can filter here.
-        // For now, treat all jobs as open.
+        // Future filter
       }
     }
 
@@ -97,6 +111,8 @@ const JobMatches = () => {
   const closeModals = () => {
     setDetailsOpen(false);
     setApplyOpen(false);
+    setUploadFile(null);
+    setUploadProgress(0);
   };
 
   const openDetails = (job) => {
@@ -110,6 +126,8 @@ const JobMatches = () => {
     setApplyError('');
     setApplyResult(null);
     setApplyStep('choose');
+    setUploadFile(null);
+    setUploadProgress(0);
     setApplyOpen(true);
   };
 
@@ -128,6 +146,17 @@ const JobMatches = () => {
     setApplyError('');
     setApplyResult(null);
     setApplyStep('processing');
+    setUploadProgress(0);
+    setCurrentResumeId(null);
+
+    // Synthetic progress for processing phase
+    const progressInterval = setInterval(() => {
+      setUploadProgress(prev => {
+        if (prev >= 95) return prev;
+        return prev + Math.floor(Math.random() * 5) + 1;
+      });
+    }, 200);
+
     try {
       const jobId = job?.id || job?._id;
       if (!jobId) throw new Error('Job ID missing');
@@ -144,28 +173,92 @@ const JobMatches = () => {
       if (!jobDescription) throw new Error('Job description missing');
 
       const analysis = await reanalyzeResume(resumeId, jobDescription);
+
+      clearInterval(progressInterval);
+      setUploadProgress(100);
+      setCurrentResumeId(resumeId);
+      await new Promise(r => setTimeout(r, 500));
+
       setApplyResult(analysis);
       setApplyStep('result');
     } catch (e) {
+      clearInterval(progressInterval);
       setApplyError(e?.message || 'Apply failed. Please try again.');
       setApplyStep('error');
+    }
+  };
+
+  const handleFinalApply = async () => {
+    if (!selectedJob || !currentResumeId) return;
+
+    try {
+      setIsApplying(true);
+      const jobId = selectedJob.id || selectedJob._id;
+      await applyToJob(jobId, currentResumeId);
+      setApplyStep('success');
+    } catch (err) {
+      setApplyError(err.message || 'Application failed');
+      setApplyStep('error');
+    } finally {
+      setIsApplying(false);
     }
   };
 
   const handleApplyContinue = async () => {
     if (!selectedJob) return;
 
-    if (resumeChoice === 'upload') {
-      const jobId = selectedJob?.id || selectedJob?._id;
-      sessionStorage.setItem(
-        APPLY_CONTEXT_KEY,
-        JSON.stringify({ jobId })
-      );
-      navigate('/upload');
-      return;
+    if (resumeChoice === 'latest') {
+      await runApply(selectedJob);
+    } else if (resumeChoice === 'upload' && uploadFile) {
+      await handleFileUploadAndApply();
     }
+  };
 
-    await runApply(selectedJob);
+  const handleFileUploadAndApply = async () => {
+    if (!uploadFile || !selectedJob) return;
+
+    setApplyStep('uploading');
+    setApplyError('');
+    setUploadProgress(0);
+
+    try {
+      const formData = new FormData();
+      formData.append('file', uploadFile);
+
+      // Smooth progress simulation
+      const smoothInterval = setInterval(() => {
+        setUploadProgress(prev => (prev < 90 ? prev + 1 : prev));
+      }, 50);
+
+      const uploadResp = await uploadResume(formData, (progressEvent) => {
+        const realPercent = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+        setUploadProgress(prev => Math.max(prev, Math.min(realPercent, 99)));
+      });
+
+      clearInterval(smoothInterval);
+      setUploadProgress(100);
+      await new Promise(resolve => setTimeout(resolve, 800)); // Brief pause at 100% for feedback
+
+      const resumeId = uploadResp?.resume?.id || uploadResp?.resume?._id;
+      if (!resumeId) throw new Error('Upload failed');
+
+      await runApply(selectedJob, resumeId);
+    } catch (err) {
+      setApplyError(err.message || 'File upload failed');
+      setApplyStep('choose');
+    }
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        setApplyError('File size exceeds 5MB limit.');
+        return;
+      }
+      setUploadFile(file);
+      setApplyError('');
+    }
   };
 
   if (loading) {
@@ -178,7 +271,8 @@ const JobMatches = () => {
 
   return (
     <div className="max-w-[1400px] mx-auto py-8">
-      
+
+      {/* Header / Filter Section */}
       <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-8">
         <div className="flex flex-wrap items-center gap-3">
           {filterTags.map((tag) => (
@@ -187,8 +281,8 @@ const JobMatches = () => {
               onClick={() => setActiveFilter(tag)}
               className={cn(
                 "px-5 py-2.5 rounded-xl font-medium text-sm transition-all duration-300 border",
-                activeFilter === tag 
-                  ? "bg-blue-600 text-white border-blue-600 shadow-sm" 
+                activeFilter === tag
+                  ? "bg-blue-600 text-white border-blue-600 shadow-sm"
                   : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50 hover:text-slate-900"
               )}
             >
@@ -210,7 +304,7 @@ const JobMatches = () => {
         </div>
       </div>
 
-      
+      {/* Main Jobs List */}
       <div className="space-y-6">
         {filteredJobs.length === 0 ? (
           <div className="text-center py-20 bg-white/20 backdrop-blur-md rounded-[2.8rem] border border-white/40">
@@ -220,7 +314,7 @@ const JobMatches = () => {
           </div>
         ) : (
           filteredJobs.map((job) => (
-            <div 
+            <div
               key={job._id || job.id}
               className="bg-white rounded-[1.75rem] p-6 border border-slate-100 relative overflow-hidden shadow-[0_4px_25px_rgba(0,0,0,0.03)] group/card hover:shadow-[0_15px_45px_rgba(0,0,0,0.07)] transition-all duration-500"
             >
@@ -228,20 +322,25 @@ const JobMatches = () => {
                 <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-8">
                   <div className="flex items-start gap-6 flex-1 min-w-0">
                     <div className="w-16 h-16 bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-center p-3 shrink-0 shadow-sm group-hover:scale-105 transition-transform duration-500">
-                       <img src={job.logo || `https://ui-avatars.com/api/?name=${job.company}&background=random`} alt={job.company} className="w-full h-full object-contain mix-blend-multiply" />
+                      <img src={job.logo || `https://ui-avatars.com/api/?name=${job.company}&background=random`} alt={job.company} className="w-full h-full object-contain mix-blend-multiply" />
                     </div>
 
                     <div className="flex-1 min-w-0 pt-1">
                       <div className="flex items-center gap-3 mb-2 flex-wrap">
-                         <h3 className="text-2xl font-bold text-slate-800 tracking-tight group-hover/card:text-blue-600 transition-colors">{job.title}</h3>
-                         <span className="px-2.5 py-1 bg-blue-50 text-blue-700 rounded-lg font-medium text-[9px] uppercase tracking-wider border border-blue-200">
-                           {job.type || 'Full-time'}
-                         </span>
+                        <h3 className="text-2xl font-bold text-slate-800 tracking-tight group-hover/card:text-blue-600 transition-colors uppercase tracking-tight">{job.title}</h3>
+                        <span className="px-2.5 py-1 bg-blue-50 text-blue-700 rounded-lg font-medium text-[9px] uppercase tracking-wider border border-blue-200">
+                          {job.type || 'Full-time'}
+                        </span>
+                        {job.category && (
+                          <span className="px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded-lg font-medium text-[9px] uppercase tracking-wider border border-emerald-200">
+                            {job.category}
+                          </span>
+                        )}
                       </div>
-                      
+
                       <div className="flex flex-wrap items-center gap-x-5 gap-y-2 mb-4">
-                        <span className="text-blue-600 font-medium text-sm hover:underline cursor-pointer">{job.company}</span>
-                         <div className="flex items-center gap-1.5 text-slate-600 font-normal text-[10px] uppercase tracking-widest">
+                        <span className="text-blue-600 font-bold text-sm hover:underline cursor-pointer">{job.company}</span>
+                        <div className="flex items-center gap-1.5 text-slate-600 font-normal text-[10px] uppercase tracking-widest">
                           <MapPin className="w-3.5 h-3.5" />
                           {job.location || 'Remote'}
                         </div>
@@ -252,37 +351,37 @@ const JobMatches = () => {
                       </div>
 
                       <div className="flex flex-wrap items-center gap-2">
-                          {(job.skills || []).slice(0, 4).map((skill, idx) => (
-                             <div key={idx} className="flex items-center gap-1.5 px-3 py-1 bg-slate-50/50 rounded-lg border border-slate-200 text-slate-600 font-normal text-[9px] uppercase tracking-tight">
-                                <CheckCircle2 className="w-3 h-3 text-emerald-500" />
-                                {skill}
-                             </div>
-                          ))}
-                          {(job.skills?.length > 4) && (
-                            <div className="px-3 py-1 text-slate-400 font-normal text-[9px] uppercase tracking-widest">
-                                +{job.skills.length - 4}
-                            </div>
-                          )}
+                        {(job.skills || []).slice(0, 4).map((skill, idx) => (
+                          <div key={idx} className="flex items-center gap-1.5 px-3 py-1 bg-slate-50/50 rounded-lg border border-slate-200 text-slate-600 font-normal text-[9px] uppercase tracking-tight">
+                            <CheckCircle2 className="w-3 h-3 text-emerald-500" />
+                            {skill}
+                          </div>
+                        ))}
+                        {(job.skills?.length > 4) && (
+                          <div className="px-3 py-1 text-slate-400 font-normal text-[9px] uppercase tracking-widest">
+                            +{job.skills.length - 4}
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-6 shrink-0">
-                      <button
-                        onClick={() => openDetails(job)}
-                        className="flex items-center gap-2.5 px-6 py-3.5 bg-white text-slate-800 rounded-xl font-semibold text-[11px] uppercase tracking-widest shadow-sm border border-slate-200 hover:bg-slate-50 active:scale-95 transition-all"
-                      >
-                          View Details
-                          <ChevronRight className="w-4 h-4" />
-                      </button>
+                    <button
+                      onClick={() => openDetails(job)}
+                      className="flex items-center gap-2.5 px-6 py-3.5 bg-white text-slate-800 rounded-xl font-semibold text-[11px] uppercase tracking-widest shadow-sm border border-slate-200 hover:bg-slate-50 active:scale-95 transition-all"
+                    >
+                      View Details
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
 
-                      <button
-                        onClick={() => openApply(job)}
-                        className="flex items-center gap-2.5 px-8 py-3.5 bg-slate-900 text-white rounded-xl font-semibold text-[11px] uppercase tracking-widest shadow-md hover:bg-slate-800 active:scale-95 transition-all"
-                      >
-                          Apply Now
-                          <ChevronRight className="w-4 h-4" />
-                      </button>
+                    <button
+                      onClick={() => openApply(job)}
+                      className="flex items-center gap-2.5 px-8 py-3.5 bg-slate-900 text-white rounded-xl font-semibold text-[11px] uppercase tracking-widest shadow-md hover:bg-slate-800 active:scale-95 transition-all"
+                    >
+                      Apply Now
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
                   </div>
                 </div>
               </div>
@@ -294,66 +393,98 @@ const JobMatches = () => {
       {/* Details Modal */}
       {detailsOpen && selectedJob && (
         <>
-          <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40" onClick={closeModals} />
+          <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-40" onClick={closeModals} />
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div className="w-full max-w-3xl bg-white rounded-[2rem] border border-slate-200 shadow-[0_30px_80px_-25px_rgba(15,23,42,0.4)] overflow-hidden">
-              <div className="p-6 flex items-start justify-between gap-4 border-b border-slate-100">
-                <div className="min-w-0">
-                  <h3 className="text-2xl font-bold text-slate-900 tracking-tight truncate">{selectedJob.title}</h3>
-                  <p className="text-sm font-medium text-slate-500 truncate">{selectedJob.company} • {selectedJob.location || 'Remote'} • {selectedJob.type || 'Full-time'}</p>
+            <div className="w-full max-w-4xl bg-white rounded-[2.5rem] border border-slate-200 shadow-[0_30px_100px_-25px_rgba(15,23,42,0.5)] overflow-hidden flex flex-col max-h-[90vh]">
+              <div className="p-8 flex items-start justify-between gap-6 border-b border-slate-100 bg-slate-50/50">
+                <div className="flex items-center gap-6">
+                  <div className="w-20 h-20 bg-white border border-slate-200 rounded-3xl flex items-center justify-center p-4 shadow-sm shrink-0">
+                    <img src={selectedJob.logo || `https://ui-avatars.com/api/?name=${selectedJob.company}&background=random`} alt={selectedJob.company} className="w-full h-full object-contain mix-blend-multiply" />
+                  </div>
+                  <div className="min-w-0">
+                    <h3 className="text-3xl font-bold text-slate-900 tracking-tight truncate uppercase">{selectedJob.title}</h3>
+                    <div className="flex flex-wrap items-center gap-4 mt-2">
+                      <span className="text-blue-600 font-bold uppercase tracking-widest text-[11px]">{selectedJob.company}</span>
+                      <span className="w-1.5 h-1.5 rounded-full bg-slate-300" />
+                      <span className="text-slate-500 font-medium text-[11px] uppercase tracking-widest flex items-center gap-1.5">
+                        <MapPin className="w-3.5 h-3.5" /> {selectedJob.location || 'Remote'}
+                      </span>
+                      <span className="w-1.5 h-1.5 rounded-full bg-slate-300" />
+                      <span className="text-slate-500 font-medium text-[11px] uppercase tracking-widest flex items-center gap-1.5">
+                        <Briefcase className="w-3.5 h-3.5" /> {selectedJob.type || 'Full-time'}
+                      </span>
+                    </div>
+                  </div>
                 </div>
-                <button onClick={closeModals} className="p-2 rounded-xl hover:bg-slate-50 text-slate-500">
+                <button onClick={closeModals} className="p-3 rounded-2xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-400 hover:text-red-500 transition-all shadow-sm">
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
-              <div className="p-6 space-y-6 max-h-[70vh] overflow-y-auto">
-                <div className="flex flex-wrap gap-2">
-                  {(selectedJob.skills || []).map((s, i) => (
-                    <span key={i} className="px-3 py-1 rounded-lg bg-slate-50 border border-slate-200 text-[10px] font-semibold uppercase tracking-wider text-slate-600">
-                      {s}
-                    </span>
-                  ))}
+              <div className="p-8 space-y-8 overflow-y-auto custom-scrollbar flex-1">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="bg-slate-50 rounded-2xl p-5 border border-slate-100">
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Estimated Salary</p>
+                    <p className="text-lg font-bold text-slate-800">{selectedJob.salary || 'Market Rate'}</p>
+                  </div>
+                  <div className="bg-slate-50 rounded-2xl p-5 border border-slate-100">
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Job Category</p>
+                    <p className="text-lg font-bold text-slate-800">{selectedJob.category || 'Tech'}</p>
+                  </div>
+                  <div className="bg-slate-50 rounded-2xl p-5 border border-slate-100">
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Posted On</p>
+                    <p className="text-lg font-bold text-slate-800">{selectedJob.createdAt ? new Date(selectedJob.createdAt).toLocaleDateString() : 'Recent'}</p>
+                  </div>
                 </div>
 
-                {selectedJob.salary && (
-                  <div className="text-sm font-medium text-slate-700">
-                    Salary: <span className="text-slate-900 font-bold">{selectedJob.salary}</span>
+                <div>
+                  <h4 className="text-xs font-bold uppercase tracking-widest text-blue-600 mb-4 flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4" /> Skills Required
+                  </h4>
+                  <div className="flex flex-wrap gap-2">
+                    {(selectedJob.skills || []).map((s, i) => (
+                      <span key={i} className="px-4 py-2 rounded-xl bg-slate-900 text-white text-[10px] font-bold uppercase tracking-wider">
+                        {s}
+                      </span>
+                    ))}
                   </div>
-                )}
+                </div>
 
                 {selectedJob.description && (
                   <div>
-                    <h4 className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Job Description</h4>
-                    <p className="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap">{selectedJob.description}</p>
+                    <h4 className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-4 border-b border-slate-100 pb-2">Full Description</h4>
+                    <p className="text-md text-slate-700 leading-relaxed whitespace-pre-wrap font-normal">{selectedJob.description}</p>
                   </div>
                 )}
 
-                {selectedJob.requirements && (
-                  <div>
-                    <h4 className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Requirements</h4>
-                    <p className="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap">{selectedJob.requirements}</p>
-                  </div>
-                )}
-
-                {selectedJob.responsibilities && (
-                  <div>
-                    <h4 className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Responsibilities</h4>
-                    <p className="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap">{selectedJob.responsibilities}</p>
+                {(selectedJob.requirements || selectedJob.responsibilities) && (
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 pt-4 border-t border-slate-100">
+                    {selectedJob.requirements && (
+                      <div>
+                        <h4 className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-4">Core Requirements</h4>
+                        <p className="text-sm text-slate-600 leading-relaxed whitespace-pre-wrap">{selectedJob.requirements}</p>
+                      </div>
+                    )}
+                    {selectedJob.responsibilities && (
+                      <div>
+                        <h4 className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-4">Internal Responsibilities</h4>
+                        <p className="text-sm text-slate-600 leading-relaxed whitespace-pre-wrap">{selectedJob.responsibilities}</p>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
 
-              <div className="p-6 border-t border-slate-100 flex items-center justify-end gap-3">
+              <div className="p-8 border-t border-slate-100 bg-slate-50/30 flex items-center justify-end gap-4">
                 <button
                   onClick={closeModals}
-                  className="px-6 py-3 rounded-xl border border-slate-200 bg-white text-slate-700 font-semibold text-sm hover:bg-slate-50"
+                  className="px-8 py-4 rounded-2xl border border-slate-200 bg-white text-slate-700 font-bold text-xs uppercase tracking-widest hover:bg-slate-50 transition-all active:scale-95"
                 >
                   Close
                 </button>
                 <button
                   onClick={() => { setDetailsOpen(false); openApply(selectedJob); }}
-                  className="px-7 py-3 rounded-xl bg-slate-900 text-white font-semibold text-sm hover:bg-slate-800"
+                  className="px-10 py-4 rounded-2xl bg-slate-900 text-white font-bold text-xs uppercase tracking-widest hover:bg-slate-800 transition-all shadow-xl shadow-slate-900/10 active:scale-95"
                 >
                   Apply Now
                 </button>
@@ -363,141 +494,355 @@ const JobMatches = () => {
         </>
       )}
 
-      {/* Apply Modal */}
+      {/* Apply & Analysis Modal */}
       {applyOpen && selectedJob && (
         <>
-          <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40" onClick={closeModals} />
+          <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-40" onClick={closeModals} />
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div className="w-full max-w-xl bg-white rounded-[2rem] border border-slate-200 shadow-[0_30px_80px_-25px_rgba(15,23,42,0.4)] overflow-hidden">
-              <div className="p-6 flex items-start justify-between gap-4 border-b border-slate-100">
-                <div className="min-w-0">
-                  <h3 className="text-xl font-bold text-slate-900 tracking-tight truncate">Apply: {selectedJob.title}</h3>
-                  <p className="text-sm font-medium text-slate-500 truncate">{selectedJob.company}</p>
+            <div className="w-full max-w-2xl bg-white rounded-[2.5rem] border border-slate-200 shadow-[0_30px_100px_-25px_rgba(15,23,42,0.5)] overflow-hidden flex flex-col max-h-[95vh]">
+              <div className="p-8 flex items-start justify-between gap-4 border-b border-slate-100 bg-slate-50/50">
+                <div className="flex items-center gap-5">
+                  <div className="w-14 h-14 bg-white border border-slate-200 rounded-2xl flex items-center justify-center p-3 shadow-sm shrink-0">
+                    <img src={selectedJob.logo || `https://ui-avatars.com/api/?name=${selectedJob.company}&background=random`} alt={selectedJob.company} className="w-full h-full object-contain mix-blend-multiply" />
+                  </div>
+                  <div className="min-w-0">
+                    <h3 className="text-xl font-bold text-slate-900 tracking-tight truncate uppercase">Apply: {selectedJob.title}</h3>
+                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">{selectedJob.company}</p>
+                  </div>
                 </div>
-                <button onClick={closeModals} className="p-2 rounded-xl hover:bg-slate-50 text-slate-500">
+                <button onClick={closeModals} className="p-3 rounded-2xl hover:bg-slate-50 text-slate-400">
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
-              <div className="p-6 space-y-5">
+              <div className={cn("p-8 space-y-6 overflow-y-auto flex-1", applyStep === 'result' ? 'bg-slate-50/30' : '')}>
                 {applyStep === 'choose' && (
                   <>
-                    <div className="space-y-3">
-                      <label className="flex items-start gap-3 p-4 rounded-2xl border border-slate-200 hover:bg-slate-50 cursor-pointer">
-                        <input
-                          type="radio"
-                          name="resumeChoice"
-                          checked={resumeChoice === 'latest'}
-                          onChange={() => setResumeChoice('latest')}
-                          className="mt-1"
-                        />
-                        <div>
-                          <div className="text-sm font-bold text-slate-800">Proceed with latest uploaded resume</div>
-                          <div className="text-xs text-slate-500">We’ll compare your most recent resume with this job description.</div>
+                    <div className="space-y-4">
+                      <label
+                        className={cn(
+                          "flex items-start gap-5 p-6 rounded-3xl border transition-all duration-300 cursor-pointer group",
+                          resumeChoice === 'latest' ? "border-blue-500 bg-blue-50/50 shadow-md" : "border-slate-100 hover:border-slate-200 bg-white"
+                        )}
+                        onClick={() => setResumeChoice('latest')}
+                      >
+                        <div className={cn(
+                          "w-5 h-5 rounded-full border-2 mt-1 flex items-center justify-center shrink-0",
+                          resumeChoice === 'latest' ? "border-blue-600 bg-blue-600" : "border-slate-200"
+                        )}>
+                          <div className="w-2 h-2 rounded-full bg-white" />
+                        </div>
+                        <div className="flex-1">
+                          <div className="text-md font-bold text-slate-800 group-hover:text-blue-600 transition-colors">Compare with Latest Resume</div>
+                          <div className="text-xs text-slate-500 mt-1 font-medium">Use your existing resume stored in your profile.</div>
                         </div>
                       </label>
 
-                      <label className="flex items-start gap-3 p-4 rounded-2xl border border-slate-200 hover:bg-slate-50 cursor-pointer">
-                        <input
-                          type="radio"
-                          name="resumeChoice"
-                          checked={resumeChoice === 'upload'}
-                          onChange={() => setResumeChoice('upload')}
-                          className="mt-1"
-                        />
-                        <div>
-                          <div className="text-sm font-bold text-slate-800">Upload a new resume</div>
-                          <div className="text-xs text-slate-500">Upload a fresh version, then we’ll run the comparison automatically.</div>
+                      <div className={cn(
+                        "flex flex-col gap-5 p-6 rounded-3xl border transition-all duration-300 cursor-default",
+                        resumeChoice === 'upload' ? "border-blue-500 bg-blue-50/50 shadow-md" : "border-slate-100 hover:border-slate-200 bg-white"
+                      )}>
+                        <div className="flex items-start gap-5 cursor-pointer" onClick={() => { setResumeChoice('upload'); fileInputRef.current?.click(); }}>
+                          <div className={cn(
+                            "w-5 h-5 rounded-full border-2 mt-1 flex items-center justify-center shrink-0",
+                            resumeChoice === 'upload' ? "border-blue-600 bg-blue-600" : "border-slate-200"
+                          )}>
+                            <div className="w-2 h-2 rounded-full bg-white" />
+                          </div>
+                          <div className="flex-1">
+                            <div className="text-md font-bold text-slate-800">Upload Fresh Resume</div>
+                            <div className="text-xs text-slate-500 mt-1 font-medium">Upload a specifically tailored resume for this role.</div>
+                          </div>
                         </div>
-                      </label>
+
+                        {resumeChoice === 'upload' && (
+                          <div
+                            className={cn(
+                              "mt-2 p-5 border-2 border-dashed rounded-2xl flex flex-col items-center justify-center gap-3 transition-all",
+                              uploadFile ? "border-emerald-400 bg-emerald-50/30" : "border-slate-200 bg-white hover:border-blue-300"
+                            )}
+                            onClick={() => fileInputRef.current.click()}
+                          >
+                            <input
+                              type="file"
+                              ref={fileInputRef}
+                              onChange={handleFileChange}
+                              className="hidden"
+                              accept=".pdf,.docx"
+                            />
+                            {uploadFile ? (
+                              <>
+                                <FileText className="w-8 h-8 text-emerald-500" />
+                                <div className="text-center">
+                                  <p className="text-sm font-bold text-slate-800">{uploadFile.name}</p>
+                                  <p className="text-[10px] text-emerald-600 font-bold uppercase tracking-widest mt-1">Ready to Analyze</p>
+                                </div>
+                              </>
+                            ) : (
+                              <>
+                                <UploadIcon className="w-8 h-8 text-slate-300" />
+                                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Select PDF or DOCX</p>
+                              </>
+                            )}
+                          </div>
+                        )}
+                      </div>
                     </div>
 
                     {applyError && (
-                      <div className="p-4 rounded-2xl bg-rose-50 border border-rose-100 text-rose-700 text-sm font-semibold">
-                        {applyError}
+                      <div className="p-5 rounded-2xl bg-rose-50 border border-rose-100 flex items-center gap-3 text-rose-700 animate-shake">
+                        <AlertCircle className="w-6 h-6 shrink-0" />
+                        <p className="text-sm font-bold">{applyError}</p>
                       </div>
                     )}
                   </>
                 )}
 
-                {applyStep === 'processing' && (
-                  <div className="flex items-center gap-4 p-5 rounded-2xl bg-slate-50 border border-slate-200">
-                    <div className="w-10 h-10 rounded-xl border-4 border-blue-100 border-t-blue-600 animate-spin" />
-                    <div className="min-w-0">
-                      <div className="text-sm font-bold text-slate-800">Comparing your resume with the job description…</div>
-                      <div className="text-xs text-slate-500">This usually takes a few seconds.</div>
+                {applyStep === 'uploading' && (
+                  <div className="py-12 flex flex-col items-center justify-center gap-8">
+                    <div className="relative w-32 h-32 flex items-center justify-center">
+                      <div className="absolute inset-0 border-8 border-slate-100 rounded-full" />
+                      <div
+                        className="absolute inset-0 border-8 border-blue-600 rounded-full border-t-transparent animate-spin"
+                      />
+                      <div className="text-2xl font-black text-blue-600">{uploadProgress}%</div>
+                    </div>
+                    <div className="text-center space-y-2">
+                      <h4 className="text-xl font-bold text-slate-800">Transmitting Resume...</h4>
+                      <p className="text-sm font-medium text-slate-500 px-10">We are securely uploading your file to our AI matching engine.</p>
                     </div>
                   </div>
                 )}
 
-                {applyStep === 'result' && (
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between p-5 rounded-2xl bg-emerald-50 border border-emerald-100">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-white border border-emerald-100 text-emerald-600 flex items-center justify-center">
-                          <CheckCircle2 className="w-5 h-5" />
+                {applyStep === 'processing' && (
+                  <div className="py-12 flex flex-col items-center justify-center gap-8 text-center">
+                    <div className="relative w-32 h-32 flex items-center justify-center">
+                      <div className="absolute inset-0 border-8 border-slate-100 rounded-full" />
+                      <div
+                        className="absolute inset-0 border-8 border-blue-600 rounded-full border-t-transparent animate-spin"
+                      />
+                      <div className="text-2xl font-black text-blue-600">{uploadProgress}%</div>
+                    </div>
+                    <div className="space-y-3">
+                      <h4 className="text-2xl font-bold text-slate-800">Deep Parsing Context...</h4>
+                      <p className="text-sm font-medium text-slate-500 px-12 leading-relaxed">
+                        Our AI is currently benchmarking your experience against the <span className="text-slate-900 font-bold">{selectedJob.title}</span> requirements.
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-4 mt-4">
+                      {[ShieldCheck, Cpu, Zap].map((Icon, i) => (
+                        <div key={i} className="flex flex-col items-center gap-2">
+                          <div className="w-12 h-12 bg-white border border-slate-100 rounded-2xl flex items-center justify-center shadow-sm">
+                            <Icon className="w-5 h-5 text-slate-400" />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {applyStep === 'result' && applyResult && (
+                  <div className="space-y-8 animate-fade-in">
+
+                    {/* Score Summary */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="bg-white rounded-[2rem] p-8 border border-slate-100 shadow-sm flex flex-col items-center text-center justify-center">
+                        <div className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-600 mb-4">ATS Compatibility Score</div>
+                        <div className="relative w-32 h-32 flex items-center justify-center mb-4">
+                          <svg className="w-full h-full -rotate-90">
+                            <circle cx="64" cy="64" r="58" fill="none" stroke="#f1f5f9" strokeWidth="12" />
+                            <circle
+                              cx="64" cy="64" r="58" fill="none" stroke="currentColor" strokeWidth="12"
+                              strokeDasharray={2 * Math.PI * 58}
+                              strokeDashoffset={2 * Math.PI * 58 * (1 - (applyResult?.analysis?.atsScore ?? 0) / 100)}
+                              className={cn(
+                                "transition-all duration-1000 ease-out",
+                                (applyResult?.analysis?.atsScore ?? 0) >= 80 ? "text-emerald-500" : (applyResult?.analysis?.atsScore ?? 0) >= 60 ? "text-amber-500" : "text-rose-500"
+                              )}
+                            />
+                          </svg>
+                          <div className="absolute inset-0 flex flex-col items-center justify-center">
+                            <span className={cn(
+                              "text-4xl font-black",
+                              (applyResult?.analysis?.atsScore ?? 0) >= 80 ? "text-emerald-600" : (applyResult?.analysis?.atsScore ?? 0) >= 60 ? "text-amber-600" : "text-rose-600"
+                            )}>
+                              {applyResult?.analysis?.atsScore ?? 0}
+                            </span>
+                            <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">Percent</span>
+                          </div>
+                        </div>
+                        <p className="text-sm font-bold text-slate-700">
+                          {(applyResult?.analysis?.atsScore ?? 0) >= 80 ? 'Exceptional Match!' : (applyResult?.analysis?.atsScore ?? 0) >= 60 ? 'Strong Potential' : 'Needs Optimization'}
+                        </p>
+                      </div>
+
+                      <div className="bg-white rounded-[2rem] p-8 border border-slate-100 shadow-sm space-y-6">
+                        <div>
+                          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-2">Experience Level</p>
+                          <span className="px-4 py-2 bg-slate-900 text-white text-[11px] font-bold uppercase tracking-widest rounded-xl">
+                            {applyResult?.analysis?.experienceLevel || 'Identified'}
+                          </span>
                         </div>
                         <div>
-                          <div className="text-xs font-bold uppercase tracking-widest text-emerald-600">Comparison Ready</div>
-                          <div className="text-sm font-bold text-slate-900">ATS Score: {applyResult?.analysis?.atsScore ?? applyResult?.atsScore ?? 0}%</div>
+                          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-2">Key Strengths</p>
+                          <div className="flex flex-wrap gap-2">
+                            {(applyResult?.analysis?.topStrengths || []).slice(0, 3).map((st, i) => (
+                              <span key={i} className="px-3 py-1.5 bg-emerald-50 text-emerald-700 text-[10px] font-bold rounded-lg border border-emerald-100">
+                                {st}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                        <div>
+                          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-2">Recommendation</p>
+                          <p className="text-xs font-medium text-slate-600 leading-relaxed italic">
+                            "{applyResult?.analysis?.summary || 'Review your full analysis in the dashboard for detailed insights.'}"
+                          </p>
                         </div>
                       </div>
-                      <button
-                        onClick={() => { closeModals(); navigate('/dashboard'); }}
-                        className="px-5 py-3 rounded-xl bg-slate-900 text-white font-semibold text-xs uppercase tracking-widest"
-                      >
-                        View Dashboard
-                      </button>
                     </div>
 
-                    <div className="p-5 rounded-2xl bg-white border border-slate-200">
-                      <div className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-3">Quick Summary</div>
-                      <div className="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap line-clamp-6">
-                        {applyResult?.analysis?.summary || applyResult?.summary || 'Your comparison is ready. Check dashboard for detailed breakdown.'}
+                    {/* Pinpointed Details */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                      <div className="space-y-4">
+                        <h5 className="flex items-center gap-2 text-rose-600 font-black text-[11px] uppercase tracking-[0.2em]">
+                          <TrendingDown className="w-4 h-4" /> Areas for Improvement
+                        </h5>
+                        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden text-left">
+                          {(applyResult?.analysis?.weaknesses || []).map((w, i) => (
+                            <div key={i} className="p-4 border-b border-slate-50 last:border-0 flex items-start gap-3">
+                              <div className="w-1.5 h-1.5 rounded-full bg-rose-400 mt-2 shrink-0" />
+                              <p className="text-xs font-bold text-slate-700 leading-relaxed">{w}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="space-y-4">
+                        <h5 className="flex items-center gap-2 text-blue-600 font-black text-[11px] uppercase tracking-[0.2em]">
+                          <Target className="w-4 h-4" /> Missing Keywords
+                        </h5>
+                        <div className="flex flex-wrap gap-2">
+                          {(applyResult?.analysis?.keywordsMissing || []).length > 0 ? (
+                            (applyResult?.analysis?.keywordsMissing || []).map((kw, i) => (
+                              <span key={i} className="px-3 py-1.5 bg-slate-50 text-slate-600 text-[10px] font-bold rounded-lg border border-slate-200 uppercase tracking-tight">
+                                {kw}
+                              </span>
+                            ))
+                          ) : (
+                            <p className="text-xs font-medium text-slate-400 italic">No critical keywords missing!</p>
+                          )}
+                        </div>
+                        <div className="mt-4 p-4 bg-amber-50 rounded-2xl border border-amber-100">
+                          <div className="flex items-center gap-2 text-amber-700 font-bold text-[10px] uppercase tracking-widest mb-1">
+                            <Lightbulb className="w-3.5 h-3.5" /> Pro Tip
+                          </div>
+                          <p className="text-[11px] text-amber-800 font-medium leading-relaxed">
+                            Injecting these missing keywords naturally into your experience can boost your score by up to 15%.
+                          </p>
+                        </div>
                       </div>
                     </div>
                   </div>
                 )}
 
                 {applyStep === 'error' && (
-                  <div className="p-5 rounded-2xl bg-rose-50 border border-rose-100 text-rose-700">
-                    <div className="text-sm font-bold mb-1">Apply failed</div>
-                    <div className="text-sm font-medium">{applyError || 'Please try again.'}</div>
+                  <div className="py-12 flex flex-col items-center justify-center gap-6 text-center">
+                    <div className="w-20 h-20 bg-rose-50 rounded-3xl flex items-center justify-center">
+                      <AlertCircle className="w-10 h-10 text-rose-500" />
+                    </div>
+                    <div className="space-y-2 px-8">
+                      <h4 className="text-xl font-bold text-slate-800 uppercase tracking-tight">System Interruption</h4>
+                      <p className="text-sm font-medium text-slate-500">{applyError || 'We encountered a technical hurdle while processing your request. Please try again.'}</p>
+                    </div>
+                  </div>
+                )}
+
+                {applyStep === 'success' && (
+                  <div className="py-20 flex flex-col items-center justify-center gap-8 text-center animate-fade-in">
+                    <div className="w-24 h-24 bg-emerald-50 rounded-[2.5rem] flex items-center justify-center shadow-xl shadow-emerald-500/10 relative">
+                      <CheckCircle2 className="w-12 h-12 text-emerald-500" />
+                      <div className="absolute -top-2 -right-2 w-8 h-8 bg-emerald-500 text-white rounded-full flex items-center justify-center animate-bounce">
+                        <Star className="w-4 h-4 fill-white" />
+                      </div>
+                    </div>
+                    <div className="space-y-4 px-10">
+                      <h4 className="text-3xl font-black text-slate-900 tracking-tight">Application Transmitted!</h4>
+                      <p className="text-slate-500 font-medium leading-relaxed">
+                        Your optimized resume has been successfully sent to <span className="text-slate-900 font-bold">{selectedJob.company}</span>.
+                        Our AI has verified its competitive alignment with the requirements.
+                      </p>
+                    </div>
+                    <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100 flex items-center gap-4 text-left">
+                      <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm">
+                        <Activity className="w-5 h-5 text-blue-600" />
+                      </div>
+                      <p className="text-xs font-bold text-slate-600 leading-tight">
+                        You can track this application and view your <br /> historical matching stats in the dashboard.
+                      </p>
+                    </div>
                   </div>
                 )}
               </div>
 
-              <div className="p-6 border-t border-slate-100 flex items-center justify-between gap-3">
+              <div className="p-8 border-t border-slate-100 bg-slate-50/50 flex items-center justify-between gap-4">
                 <button
                   onClick={closeModals}
-                  className="px-6 py-3 rounded-xl border border-slate-200 bg-white text-slate-700 font-semibold text-sm hover:bg-slate-50"
+                  className="px-8 py-4 rounded-2xl border border-slate-200 bg-white text-slate-700 font-bold text-xs uppercase tracking-widest hover:bg-slate-50 transition-all active:scale-95"
                 >
-                  Close
+                  {applyStep === 'result' ? 'Close Analysis' : (applyStep === 'success' ? 'Finish' : 'Cancel')}
                 </button>
 
                 {applyStep === 'choose' && (
                   <button
                     onClick={handleApplyContinue}
-                    className="px-7 py-3 rounded-xl bg-slate-900 text-white font-semibold text-sm hover:bg-slate-800 inline-flex items-center gap-2"
+                    disabled={resumeChoice === 'upload' && !uploadFile}
+                    className={cn(
+                      "px-10 py-4 rounded-2xl bg-slate-900 text-white font-bold text-xs uppercase tracking-widest transition-all shadow-xl shadow-slate-900/10 active:scale-95 flex items-center gap-3",
+                      (resumeChoice === 'upload' && !uploadFile) ? "opacity-30 cursor-not-allowed" : "hover:bg-slate-800"
+                    )}
                   >
                     {resumeChoice === 'upload' ? (
                       <>
-                        <FileText className="w-4 h-4" /> Upload Resume
+                        <UploadIcon className="w-4 h-4" /> Start Comparison
                       </>
                     ) : (
                       <>
-                        <Activity className="w-4 h-4" /> Proceed
+                        <Zap className="w-4 h-4" /> Analyze Now
                       </>
                     )}
                   </button>
                 )}
 
+                {applyStep === 'result' && (
+                  <button
+                    onClick={handleFinalApply}
+                    disabled={isApplying}
+                    className="px-10 py-4 rounded-2xl bg-blue-600 text-white font-bold text-xs uppercase tracking-widest hover:bg-blue-700 transition-all shadow-xl shadow-blue-600/20 active:scale-95 flex items-center gap-3 disabled:opacity-50"
+                  >
+                    {isApplying ? 'Processing...' : (
+                      <>
+                        Apply for This Job <ArrowRight className="w-4 h-4" />
+                      </>
+                    )}
+                  </button>
+                )}
+
+                {applyStep === 'success' && (
+                  <button
+                    onClick={() => { closeModals(); navigate('/dashboard'); }}
+                    className="px-10 py-4 rounded-2xl bg-slate-900 text-white font-bold text-xs uppercase tracking-widest hover:bg-slate-800 transition-all active:scale-95"
+                  >
+                    Go to Dashboard
+                  </button>
+                )}
+
                 {applyStep === 'error' && (
                   <button
-                    onClick={() => runApply(selectedJob)}
-                    className="px-7 py-3 rounded-xl bg-slate-900 text-white font-semibold text-sm hover:bg-slate-800"
+                    onClick={() => setApplyStep('choose')}
+                    className="px-10 py-4 rounded-2xl bg-slate-900 text-white font-bold text-xs uppercase tracking-widest hover:bg-slate-800 transition-all active:scale-95"
                   >
-                    Retry
+                    Try Again
                   </button>
                 )}
               </div>
@@ -505,6 +850,47 @@ const JobMatches = () => {
           </div>
         </>
       )}
+
+      {/* Styles for progress loop */}
+      <style>{`
+        @keyframes progress-loop {
+          0% { left: -100%; width: 30%; }
+          50% { width: 50%; }
+          100% { left: 100%; width: 30%; }
+        }
+        .animate-progress-loop {
+          animation: progress-loop 2s infinite ease-in-out;
+          position: absolute;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: #f1f5f9;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: #cbd5e1;
+          border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: #94a3b8;
+        }
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          25% { transform: translateX(-4px); }
+          75% { transform: translateX(4px); }
+        }
+        .animate-shake {
+          animation: shake 0.4s ease-in-out;
+        }
+        @keyframes fade-in {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+          animation: fade-in 0.6s ease-out forwards;
+        }
+      `}</style>
     </div>
   );
 };

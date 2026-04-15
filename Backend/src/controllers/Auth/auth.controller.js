@@ -36,6 +36,7 @@ const sendTokens = async (res, user, message = "Login successful", status = 200)
         email: user.email,
         role: user.role,
         phone: user.phone || "",
+        profilePic: user.profilePic || "",
       },
     });
 };
@@ -67,7 +68,7 @@ const register = async (req, res) => {
     });
 
     await newUser.save();
-    
+
     // Automatically log in the user after registration
     await sendTokens(res, newUser, "User registered and logged in successfully", 201);
 
@@ -179,6 +180,7 @@ const logout = async (req, res) => {
             email: user.email,
             role: user.role,
             phone: user.phone || "",
+            profilePic: user.profilePic || "",
           }
           : null,
       });
@@ -193,7 +195,7 @@ const getMe = async (req, res) => {
   }
 
   try {
-    const user = await User.findById(req.user.id).select("name email role phone");
+    const user = await User.findById(req.user.id).select("name email role phone profilePic");
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
@@ -206,6 +208,7 @@ const getMe = async (req, res) => {
         email: user.email,
         role: user.role,
         phone: user.phone || "",
+        profilePic: user.profilePic || "",
       },
     });
   } catch (err) {

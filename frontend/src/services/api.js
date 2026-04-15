@@ -1,4 +1,4 @@
-  import axios from 'axios';
+import axios from 'axios';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
@@ -17,9 +17,10 @@ apiClient.interceptors.request.use((config) => {
 });
 
 // Resume APIs
-export const uploadResume = async (formData) => {
+export const uploadResume = async (formData, onUploadProgress) => {
   const response = await apiClient.post('/resume/upload', formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
+    onUploadProgress
   });
   return response.data;
 };
@@ -157,6 +158,11 @@ export const deleteAllData = async () => {
 
 export const exportData = async () => {
   const response = await apiClient.get('/settings/export');
+  return response.data;
+};
+
+export const applyToJob = async (jobId, resumeId) => {
+  const response = await apiClient.post('/applications/apply', { jobId, resumeId });
   return response.data;
 };
 

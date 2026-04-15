@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Lightbulb,
   Search,
@@ -8,7 +8,8 @@ import {
   ClipboardList,
   Star,
   RefreshCw,
-  AlertCircle
+  AlertCircle,
+  Upload
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
 import { getFeedback, getMyResumes } from '../../services/api';
@@ -16,10 +17,18 @@ import { useNavigate } from 'react-router-dom';
 
 const Recommendations = () => {
   const navigate = useNavigate();
+  const fileInputRef = useRef(null);
   const [activeTab, setActiveTab] = useState('Improvement Tips');
   const [recommendations, setRecommendations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [resumes, setResumes] = useState([]);
+
+  const handleFileSelect = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      navigate('/history', { state: { fileToUpload: file } });
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -110,11 +119,18 @@ const Recommendations = () => {
           Once you upload your resume, our AI will provide personalized tips, keywords, and courses to help you land your dream job.
         </p>
         <button
-          onClick={() => navigate('/upload')}
-          className="bg-blue-600 text-white px-10 py-4 rounded-2xl font-bold text-sm shadow-xl shadow-blue-500/20 hover:bg-blue-700 transition-all active:scale-95"
+          onClick={() => fileInputRef.current?.click()}
+          className="bg-blue-600 text-white px-10 py-4 rounded-2xl font-bold text-sm shadow-xl shadow-blue-500/20 hover:bg-blue-700 transition-all active:scale-95 flex items-center gap-3 mx-auto"
         >
-          Initialize Analysis
+          <Upload className="w-5 h-5" /> Initialize Analysis
         </button>
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleFileSelect}
+          className="hidden"
+          accept=".pdf,.docx"
+        />
       </div>
     );
   }
@@ -180,10 +196,10 @@ const Recommendations = () => {
               </div>
 
               <button
-                onClick={() => navigate('/upload')}
-                className="w-full py-4 bg-slate-50 border border-slate-100 rounded-xl font-medium text-slate-500 text-sm hover:bg-slate-100 hover:text-blue-600 transition-all"
+                onClick={() => fileInputRef.current?.click()}
+                className="w-full py-4 bg-slate-50 border border-slate-100 rounded-xl font-medium text-slate-500 text-sm hover:bg-slate-100 hover:text-blue-600 transition-all flex items-center justify-center gap-2"
               >
-                Optimize Now
+                <Upload className="w-4 h-4" /> Optimize Now
               </button>
             </div>
           </div>

@@ -86,12 +86,12 @@ const uploadResume = async (req, res) => {
     const isDocx = file.originalname.toLowerCase().endsWith(".docx");
     let extractedText = "";
     console.log(`[Upload] Starting extraction for ${file.originalname} (${file.size} bytes). Type: ${isDocx ? 'DOCX' : 'PDF'}`);
-    
+
     try {
       extractedText = isDocx
         ? await extractTextFromDocx(file.buffer)
         : await extractTextFromPdf(file.buffer);
-      
+
       console.log(`[Upload] Extraction complete. Text length: ${extractedText?.length || 0}`);
       if (extractedText) {
         console.log(`[Upload] Sample text: "${extractedText.substring(0, 50)}..."`);
@@ -125,7 +125,7 @@ const uploadResume = async (req, res) => {
     try {
       if (extractedText) {
         analysisData = await analyzeResumeText(extractedText);
-        
+
         // Step 4.5: Generate Career Roadmap
         console.log("[Upload] Generating Career Roadmap...");
         try {
@@ -238,8 +238,8 @@ const reanalyzeResume = async (req, res) => {
 
     let analysisData;
     try {
-      analysisData = await analyzeResumeText(`${extractedText}\n\nJob Description:\n${jobDescription}`);
-      
+      analysisData = await analyzeResumeText(extractedText, jobDescription);
+
       // Generate Roadmap for the combined context if needed, or just standard roadmap
       console.log("[Reanalyze] Generating Career Roadmap...");
       try {
@@ -260,6 +260,7 @@ const reanalyzeResume = async (req, res) => {
         experienceLevel: "Unknown",
         topStrengths: [],
         weaknesses: [],
+        roadmap: null,
       };
     }
 
@@ -301,19 +302,19 @@ const deleteResume = async (req, res) => {
   try {
     const { id } = req.params;
     const userId = req.userId || req.user?.id || req.user?._id;
-    
+
     console.log(`[Delete Operation] Initiated for Resume ID: ${id} by User ID: ${userId}`);
-    
+
     if (!id) {
       return res.status(400).json({ error: "Missing resume ID" });
     }
 
     // 1. Find the resume first to verify ownership
-    const resume = await prisma.resume.findFirst({ 
-      where: { 
-        id: id, 
-        userId: userId 
-      } 
+    const resume = await prisma.resume.findFirst({
+      where: {
+        id: id,
+        userId: userId
+      }
     });
 
     if (!resume) {
@@ -322,23 +323,23 @@ const deleteResume = async (req, res) => {
     }
 
     // 2. Delete associated analysis records first
-    const deletedAnalysis = await prisma.analysis.deleteMany({ 
-      where: { resumeId: id } 
+    const deletedAnalysis = await prisma.analysis.deleteMany({
+      where: { resumeId: id }
     });
     console.log(`[Delete Info] Cleaned up ${deletedAnalysis.count} associated analysis records.`);
 
     // 3. Delete the resume
-    await prisma.resume.delete({ 
-      where: { id: id } 
+    await prisma.resume.delete({
+      where: { id: id }
     });
-    
+
     console.log(`[Delete SUCCESS] Successfully removed resume ${id} and all related data.`);
     res.json({ success: true, message: "Resume and analysis deleted successfully" });
 
   } catch (err) {
     console.error(`[Delete CRITICAL ERROR] Failed to delete resume ${req.params.id}:`, err);
-    res.status(500).json({ 
-      error: "Failed to delete resume", 
+    res.status(500).json({
+      error: "Failed to delete resume",
       details: err.message,
       code: "DELETE_FAILED"
     });

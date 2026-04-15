@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  TrendingUp, 
-  Target, 
-  Map, 
-  Zap, 
-  CheckCircle2, 
-  AlertCircle, 
-  ChevronRight, 
+import React, { useState, useEffect, useRef } from 'react';
+import {
+  TrendingUp,
+  Target,
+  Map,
+  Zap,
+  CheckCircle2,
+  AlertCircle,
+  ChevronRight,
   ArrowUpRight,
   TrendingDown,
   Activity,
@@ -17,7 +17,8 @@ import {
   Clock,
   Layers,
   Search,
-  Key
+  Key,
+  Upload
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
 import { getAnalytics, getMyResumes } from '../../services/api';
@@ -25,9 +26,17 @@ import { useNavigate } from 'react-router-dom';
 
 const SkillInsights = () => {
   const navigate = useNavigate();
+  const fileInputRef = useRef(null);
   const [analytics, setAnalytics] = useState(null);
   const [loading, setLoading] = useState(true);
   const [resumes, setResumes] = useState([]);
+
+  const handleFileSelect = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      navigate('/history', { state: { fileToUpload: file } });
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -35,7 +44,7 @@ const SkillInsights = () => {
         setLoading(true);
         const resumeData = await getMyResumes();
         setResumes(resumeData.resumes || []);
-        
+
         const analyticsData = await getAnalytics();
         setAnalytics(analyticsData || null);
       } catch (error) {
@@ -81,12 +90,19 @@ const SkillInsights = () => {
         <p className="text-slate-600 max-w-md mx-auto mb-8 font-normal">
           Upload and analyze your resume to unlock detailed maps of your skill strengths, market demand, and personalized learning pathways.
         </p>
-        <button 
-          onClick={() => navigate('/upload')}
-          className="bg-blue-600 text-white px-10 py-4 rounded-xl font-bold uppercase tracking-widest text-sm shadow-md hover:bg-blue-700 transition-all active:scale-95"
+        <button
+          onClick={() => fileInputRef.current?.click()}
+          className="bg-blue-600 text-white px-10 py-4 rounded-xl font-bold uppercase tracking-widest text-sm shadow-md hover:bg-blue-700 transition-all active:scale-95 flex items-center gap-3 mx-auto"
         >
-          Initialize Analysis
+          <Upload className="w-5 h-5" /> Initialize Analysis
         </button>
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleFileSelect}
+          className="hidden"
+          accept=".pdf,.docx"
+        />
       </div>
     );
   }
@@ -101,10 +117,10 @@ const SkillInsights = () => {
             <CheckCircle2 className="w-24 h-24 text-emerald-500" />
           </div>
           <div className="flex items-center gap-3 mb-6 relative z-10">
-             <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center border border-emerald-100">
-               <Zap className="w-5 h-5 text-emerald-600" />
-             </div>
-             <h3 className="text-xl font-bold text-slate-800 tracking-tight">Performance Strengths</h3>
+            <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center border border-emerald-100">
+              <Zap className="w-5 h-5 text-emerald-600" />
+            </div>
+            <h3 className="text-xl font-bold text-slate-800 tracking-tight">Performance Strengths</h3>
           </div>
           <div className="space-y-4 relative z-10">
             {analytics?.analytics?.topStrengths && analytics.analytics.topStrengths.length > 0 ? (
@@ -126,10 +142,10 @@ const SkillInsights = () => {
             <AlertCircle className="w-24 h-24 text-rose-500" />
           </div>
           <div className="flex items-center gap-3 mb-6 relative z-10">
-             <div className="w-10 h-10 bg-rose-50 rounded-xl flex items-center justify-center border border-rose-100">
-               <Activity className="w-5 h-5 text-rose-600" />
-             </div>
-             <h3 className="text-xl font-bold text-slate-800 tracking-tight">Optimization Gaps</h3>
+            <div className="w-10 h-10 bg-rose-50 rounded-xl flex items-center justify-center border border-rose-100">
+              <Activity className="w-5 h-5 text-rose-600" />
+            </div>
+            <h3 className="text-xl font-bold text-slate-800 tracking-tight">Optimization Gaps</h3>
           </div>
           <div className="space-y-4 relative z-10">
             {analytics?.analytics?.weaknesses && analytics.analytics.weaknesses.length > 0 ? (
@@ -153,7 +169,7 @@ const SkillInsights = () => {
             </div>
             <h3 className="text-xl font-bold text-slate-800 tracking-tight">Strategic Goals</h3>
           </div>
-          
+
           <div className="space-y-4">
             {missingSkills.slice(0, 3).map((skill, i) => (
               <div key={i} className="flex flex-col p-4 bg-slate-50 border border-slate-100 rounded-2xl group transition-all hover:bg-white hover:shadow-md">
@@ -187,7 +203,7 @@ const SkillInsights = () => {
 
 
 
-      
+
 
 
       <div className="mt-12">
@@ -224,27 +240,27 @@ const SkillInsights = () => {
                       {phase.status || 'Recommended'}
                     </span>
                   </div>
-                  
+
                   <div className="bg-slate-50/50 border border-slate-100 rounded-2xl p-6 hover:bg-white hover:shadow-md transition-all duration-300">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                       <div>
                         <div className="flex items-center gap-3 mb-3">
-                           <span className={cn(
-                             "text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-widest",
-                             phase.difficulty === 'Advanced' ? "bg-purple-50 text-purple-600 border border-purple-100" : 
-                             (phase.difficulty === 'Intermediate' ? "bg-blue-50 text-blue-600 border border-blue-100" : "bg-emerald-50 text-emerald-600 border border-emerald-100")
-                           )}>
-                             {phase.difficulty || 'Intermediate'}
-                           </span>
-                           <span className="flex items-center gap-1 text-[9px] font-bold text-slate-400 uppercase tracking-widest">
-                             <Clock className="w-3 h-3" /> {phase.estimatedDays || (idx + 1) * 14} Days
-                           </span>
+                          <span className={cn(
+                            "text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-widest",
+                            phase.difficulty === 'Advanced' ? "bg-purple-50 text-purple-600 border border-purple-100" :
+                              (phase.difficulty === 'Intermediate' ? "bg-blue-50 text-blue-600 border border-blue-100" : "bg-emerald-50 text-emerald-600 border border-emerald-100")
+                          )}>
+                            {phase.difficulty || 'Intermediate'}
+                          </span>
+                          <span className="flex items-center gap-1 text-[9px] font-bold text-slate-400 uppercase tracking-widest">
+                            <Clock className="w-3 h-3" /> {phase.estimatedDays || (idx + 1) * 14} Days
+                          </span>
                         </div>
                         <h5 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Focus Objective</h5>
                         <p className="text-slate-600 text-sm font-normal leading-relaxed">
                           {phase.objective}
                         </p>
-                        
+
                         {phase.steps && (
                           <ul className="mt-4 space-y-2">
                             {phase.steps.map((step, sIdx) => (
@@ -256,7 +272,7 @@ const SkillInsights = () => {
                           </ul>
                         )}
                       </div>
-                      
+
                       <div className="bg-blue-50/30 border border-blue-100/50 rounded-xl p-5 flex flex-col justify-between relative overflow-hidden">
                         <div className="absolute top-0 right-0 p-3 opacity-5">
                           <Layers className="w-12 h-12 text-blue-600" />
@@ -308,7 +324,7 @@ const SkillInsights = () => {
                     <h4 className="text-xl font-bold text-slate-900 tracking-tight">Master {skill.name}</h4>
                     <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-md uppercase tracking-wider">High Priority</span>
                   </div>
-                  
+
                   <div className="bg-slate-50/50 border border-slate-100 rounded-2xl p-6 hover:bg-white hover:shadow-md transition-all duration-300">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div>

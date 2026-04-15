@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   BarChart3,
   ShieldCheck,
   AlertTriangle,
   Briefcase,
   Upload,
+  Zap,
+  Target,
   ArrowUp,
   MoreHorizontal,
   CheckCircle2,
@@ -16,7 +18,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import dashboardBanner from '../../assets/dashboard-banner-seamless.png';
 import { useAuth } from '../../context/AuthContext';
-import { getDashboardStats } from '../../services/api';
+import { getDashboardStats, getMyResumes } from '../../services/api';
 
 const cn = (...classes) => classes.filter(Boolean).join(' ');
 
@@ -66,17 +68,30 @@ const toneStyles = {
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const fileInputRef = useRef(null);
   const { user } = useAuth();
   const [stats, setStats] = useState(null);
+  const [resumes, setResumes] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const handleFileSelect = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      navigate('/history', { state: { fileToUpload: file } });
+    }
+  };
 
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const data = await getDashboardStats();
-        setStats(data || null);
+        const [statsData, resumeData] = await Promise.all([
+          getDashboardStats(),
+          getMyResumes()
+        ]);
+        setStats(statsData || null);
+        setResumes(resumeData.resumes || []);
       } catch (error) {
-        console.error('Failed to fetch dashboard stats:', error);
+        console.error('Failed to fetch dashboard data:', error);
       } finally {
         setLoading(false);
       }
@@ -114,12 +129,12 @@ const Dashboard = () => {
   let chartOffset = 0;
   const chartSegments = chartTotalPoints > 0
     ? breakdownItems.map((i) => {
-        const seg = (i.points / chartTotalPoints) * chartCircumference;
-        const dasharray = `${seg.toFixed(1)} ${(chartCircumference - seg).toFixed(1)}`;
-        const dashoffset = (-chartOffset).toFixed(1);
-        chartOffset += seg;
-        return { stroke: i.stroke, dasharray, dashoffset };
-      })
+      const seg = (i.points / chartTotalPoints) * chartCircumference;
+      const dasharray = `${seg.toFixed(1)} ${(chartCircumference - seg).toFixed(1)}`;
+      const dashoffset = (-chartOffset).toFixed(1);
+      chartOffset += seg;
+      return { stroke: i.stroke, dasharray, dashoffset };
+    })
     : [];
 
   const summaryCards = [
@@ -144,7 +159,7 @@ const Dashboard = () => {
       value: Array.isArray(stats?.keywordsMissing) ? String(stats.keywordsMissing.length).padStart(2, '0') : '00',
       tone: 'orange',
       icon: AlertTriangle,
-      detail: (Array.isArray(stats?.keywordsMissing) && stats.keywordsMissing.length > 0) 
+      detail: (Array.isArray(stats?.keywordsMissing) && stats.keywordsMissing.length > 0)
         ? `Missing: ${stats.keywordsMissing.slice(0, 2).join(', ')}...`
         : 'Optimize your impact keywords.',
       action: 'View Analysis'
@@ -188,7 +203,7 @@ const Dashboard = () => {
           </div>
           <div className="pt-0">
             <button
-              onClick={() => navigate('/upload')}
+              onClick={() => fileInputRef.current?.click()}
               className="inline-flex items-center gap-3 bg-blue-600 text-white px-8 py-4 rounded-xl text-sm font-medium uppercase tracking-wider hover:bg-blue-700 transition-all shadow-md active:scale-95"
             >
               <Upload className="w-5 h-5" />
@@ -198,40 +213,79 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {summaryCards.map((card) => {
-          const Icon = card.icon;
-          const tone = toneStyles[card.tone] || toneStyles.blue;
-          const dynamicValue = card.value;
-          return (
-            <div key={card.label} className="bg-white rounded-2xl p-6 border border-slate-200 relative overflow-hidden group shadow-[0_8px_30px_rgba(0,0,0,0.06)] hover:shadow-[0_20px_50px_rgba(0,0,0,0.1)] transition-all duration-300">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <div className={cn("w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center", tone.icon)}>
-                    <Icon className="w-5 h-5" />
-                  </div>
-                  <span className="font-medium text-slate-500 text-[13px] uppercase tracking-wide">{card.label}</span>
-                </div>
-                <ChevronRight className="w-4 h-4 text-slate-300 group-hover:text-blue-500 transition-colors" />
-              </div>
-              <h2 className="text-4xl font-bold text-slate-800 tracking-tight mb-2">{dynamicValue}</h2>
-              <div className="flex flex-col gap-1">
-                {card.note && (
-                  <span className={(card.noteTone || '') + " text-xs font-medium inline-flex items-center gap-1"}>
-                    {card.noteIcon && <card.noteIcon className="w-3.5 h-3.5" />} {card.note}
-                  </span>
-                )}
-                {card.detail && <span className="text-slate-500 text-xs font-normal leading-relaxed max-w-[90%]">{card.detail}</span>}
-                {card.action && (
-                  <button className="text-blue-600 text-xs font-medium uppercase tracking-wider hover:underline flex items-center gap-1">
-                    {card.action} <ChevronRight className="w-3 h-3" />
-                  </button>
-                )}
-              </div>
+      {/* Metrics Section */}
+      {resumes.length === 0 ? (
+        <div className="bg-white rounded-[2rem] p-12 border border-slate-200 shadow-[0_20px_50px_rgba(0,0,0,0.06)] text-center relative overflow-hidden group mb-8">
+          <div className="absolute top-0 right-0 p-8 opacity-[0.03] rotate-12 group-hover:rotate-0 transition-transform duration-700">
+            <Target className="w-64 h-64 text-blue-600" />
+          </div>
+          <div className="relative z-10 max-w-2xl mx-auto">
+            <div className="w-20 h-20 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-8 border border-blue-100 shadow-sm">
+              <Zap className="w-10 h-10 text-blue-600" />
             </div>
-          );
-        })}
-      </div>
+            <h2 className="text-4xl font-black text-slate-800 tracking-tight mb-4 lowercase first-letter:uppercase">Strategic Analysis Required</h2>
+            <p className="text-slate-500 font-medium text-lg leading-relaxed mb-10">
+              Upload your first resume to generate executive career metrics, identify critical skill gaps, and unlock personalized job matches.
+            </p>
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              className="bg-slate-900 text-white px-12 py-5 rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-2xl shadow-slate-900/20 hover:bg-black transition-all active:scale-95 flex items-center gap-3 mx-auto"
+            >
+              <Upload className="w-5 h-5" /> Initialize Analysis
+            </button>
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileSelect}
+              className="hidden"
+              accept=".pdf,.docx"
+            />
+          </div>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          {summaryCards.map((card) => {
+            const Icon = card.icon;
+            const tone = toneStyles[card.tone] || toneStyles.blue;
+
+            return (
+              <div key={card.label} className="bg-white rounded-2xl p-5 border border-slate-200 relative overflow-hidden group shadow-[0_8px_30px_rgba(0,0,0,0.06)] hover:shadow-[0_20px_50px_rgba(0,0,0,0.1)] transition-all duration-300">
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2.5">
+                      <div className={cn("w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center", tone.icon)}>
+                        <Icon className="w-4.5 h-4.5" />
+                      </div>
+                      <span className="font-bold text-slate-500 text-[10px] uppercase tracking-widest leading-none">{card.label}</span>
+                    </div>
+                    <ChevronRight className="w-3.5 h-3.5 text-slate-300 group-hover:text-blue-500 transition-colors" />
+                  </div>
+
+                  <h2 className="text-4xl font-black text-slate-900 tracking-tighter mb-2">{card.value}</h2>
+
+                  {card.detail && (
+                    <p className="text-slate-500 text-[10px] font-bold leading-relaxed mb-4 uppercase tracking-wider opacity-60 line-clamp-1">
+                      {card.detail}
+                    </p>
+                  )}
+
+                  {card.note && (
+                    <div className={cn(
+                      "px-2.5 py-1.5 rounded-lg inline-flex items-center gap-1.5",
+                      card.noteTone === 'text-emerald-600' ? 'bg-emerald-50' : 'bg-slate-50'
+                    )}>
+                      {card.noteIcon && <card.noteIcon className={cn("w-3 h-3", card.noteTone)} />}
+                      <span className={cn("text-[8px] font-black uppercase tracking-widest", card.noteTone || 'text-slate-500')}>
+                        {card.note}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
 
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
@@ -284,8 +338,8 @@ const Dashboard = () => {
           <div className="flex items-center justify-between relative z-10 shrink-0 mb-6">
             <h3 className="font-semibold text-slate-800 text-xl tracking-tight">Mastery Insights</h3>
             <div className="flex gap-2">
-               <span className="px-2.5 py-1 bg-emerald-50 text-emerald-600 text-[10px] font-bold rounded-md border border-emerald-100 uppercase tracking-widest">Good Points</span>
-               <span className="px-2.5 py-1 bg-rose-50 text-rose-600 text-[10px] font-bold rounded-md border border-rose-100 uppercase tracking-widest">Gaps</span>
+              <span className="px-2.5 py-1 bg-emerald-50 text-emerald-600 text-[10px] font-bold rounded-md border border-emerald-100 uppercase tracking-widest">Good Points</span>
+              <span className="px-2.5 py-1 bg-rose-50 text-rose-600 text-[10px] font-bold rounded-md border border-rose-100 uppercase tracking-widest">Gaps</span>
             </div>
           </div>
           <div className="flex flex-col gap-6 relative z-10">

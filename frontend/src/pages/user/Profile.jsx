@@ -35,7 +35,7 @@ const LinkedinIcon = ({ className }) => (
 const Profile = () => {
   const { user, checkAuth } = useAuth();
   const [loading, setLoading] = useState(false);
-  
+
   // Split user.name into firstName and lastName
   const getNameParts = (fullName) => {
     if (!fullName) return { first: '', last: '' };
@@ -71,9 +71,9 @@ const Profile = () => {
     try {
       setLoading(true);
       const fullName = `${formData.firstName} ${formData.lastName}`.trim();
-      await updateProfile(user._id || user.id, { 
-        name: fullName, 
-        phone: formData.phone 
+      await updateProfile(user._id || user.id, {
+        name: fullName,
+        phone: formData.phone
       });
       await checkAuth(); // Refresh user context
       alert('Profile updated successfully!');
@@ -84,94 +84,125 @@ const Profile = () => {
       setLoading(false);
     }
   };
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    try {
+      setLoading(true);
+      const formData = new FormData();
+      formData.append('profilePic', file);
+
+      await updateProfile(user._id || user.id, formData);
+      await checkAuth(); // Refresh user context to show new image
+      alert('Profile picture updated!');
+    } catch (error) {
+      console.error('Image upload failed:', error);
+      alert('Failed to upload image.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="flex-1 p-6 lg:p-1 overflow-y-auto custom-scrollbar">
       <div className="max-w-[1400px] mx-auto py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
-        
-        <div className="lg:col-span-1 bg-white rounded-2xl p-8 shadow-[0_8px_30px_rgba(0,0,0,0.06)] border border-slate-200 relative overflow-hidden flex flex-col items-center h-full">
-          
-          <div className="relative z-10 flex flex-col items-center w-full">
-            <div className="relative mb-6">
-              <div className="w-32 h-32 rounded-2xl overflow-hidden ring-4 ring-slate-50 shadow-md bg-slate-50 flex items-center justify-center">
-                {user?.profilePic ? (
-                  <img src={user.profilePic} alt={user?.name} className="w-full h-full object-cover" />
-                ) : (
-                  <span className="text-4xl font-medium text-blue-600">
-                    {user?.name?.charAt(0) || 'U'}
-                  </span>
-                )}
+
+          <div className="lg:col-span-1 bg-white rounded-2xl p-8 shadow-[0_8px_30px_rgba(0,0,0,0.06)] border border-slate-200 relative overflow-hidden flex flex-col items-center h-full">
+
+            <div className="relative z-10 flex flex-col items-center w-full">
+              <div className="relative mb-6">
+                <input
+                  type="file"
+                  id="profile-pic-input"
+                  className="hidden"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                />
+                <div className="w-32 h-32 rounded-2xl overflow-hidden ring-4 ring-slate-50 shadow-md bg-slate-50 flex items-center justify-center">
+                  {user?.profilePic ? (
+                    <img src={user.profilePic} alt={user?.name} className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="text-4xl font-medium text-blue-600">
+                      {user?.name?.charAt(0) || 'U'}
+                    </span>
+                  )}
+                </div>
+                <button
+                  onClick={() => document.getElementById('profile-pic-input').click()}
+                  disabled={loading}
+                  className="absolute -bottom-2 -right-2 w-10 h-10 bg-blue-600 text-white rounded-xl flex items-center justify-center shadow-lg hover:scale-105 transition-transform border-4 border-white disabled:opacity-50"
+                >
+                  <Camera className="w-4 h-4" />
+                </button>
               </div>
-              <button className="absolute -bottom-2 -right-2 w-10 h-10 bg-blue-600 text-white rounded-xl flex items-center justify-center shadow-lg hover:scale-105 transition-transform border-4 border-white">
-                <Camera className="w-4 h-4" />
+
+              <h2 className="text-2xl font-bold text-slate-800 tracking-tight mb-1">{user?.name}</h2>
+              <p className="text-slate-500 font-normal text-[10px] uppercase tracking-widest mb-6">{user?.role || 'Student'}</p>
+
+              <div className="flex gap-3 mb-8">
+                {[GithubIcon, TwitterIcon, LinkedinIcon].map((Icon, i) => (
+                  <button key={i} className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center border border-slate-100 hover:bg-blue-600 hover:text-white transition-all shadow-sm">
+                    <Icon className="w-4 h-4" />
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="lg:col-span-2 bg-white rounded-2xl p-8 shadow-[0_8px_30px_rgba(0,0,0,0.06)] border border-slate-200 relative flex flex-col h-full">
+            <h3 className="text-2xl font-bold text-slate-800 mb-8 tracking-tight">Account Settings</h3>
+
+            <div className="grid sm:grid-cols-2 gap-6 flex-1">
+              <div className="space-y-2">
+                <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest px-1">First Name</label>
+                <input
+                  type="text"
+                  value={formData.firstName}
+                  onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-5 py-4 text-sm font-medium text-slate-700 focus:outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-400 focus:bg-white transition-all shadow-sm"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest px-1">Last Name</label>
+                <input
+                  type="text"
+                  value={formData.lastName}
+                  onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-5 py-4 text-sm font-medium text-slate-700 focus:outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-400 focus:bg-white transition-all shadow-sm"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest px-1">Phone Number</label>
+                <input
+                  type="text"
+                  value={formData.phone}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-5 py-4 text-sm font-medium text-slate-700 focus:outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-400 focus:bg-white transition-all shadow-sm"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest px-1">Email Address</label>
+                <input
+                  type="email"
+                  value={formData.email}
+                  disabled
+                  className="w-full bg-slate-100 border border-slate-200 rounded-xl px-5 py-4 text-sm font-medium text-slate-400 cursor-not-allowed outline-none shadow-sm"
+                />
+              </div>
+            </div>
+
+            <div className="mt-8 flex justify-end pt-6 border-t border-slate-50">
+              <button
+                onClick={handleUpdate}
+                disabled={loading}
+                className="px-8 py-4 bg-blue-600 text-white rounded-xl font-medium text-sm uppercase tracking-widest shadow-md hover:bg-blue-700 hover:shadow-lg transition-all disabled:opacity-50"
+              >
+                {loading ? 'Saving...' : 'Update Settings'}
               </button>
             </div>
-
-            <h2 className="text-2xl font-bold text-slate-800 tracking-tight mb-1">{user?.name}</h2>
-            <p className="text-slate-500 font-normal text-[10px] uppercase tracking-widest mb-6">{user?.role || 'Student'}</p>
-
-            <div className="flex gap-3 mb-8">
-              {[GithubIcon, TwitterIcon, LinkedinIcon].map((Icon, i) => (
-                <button key={i} className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center border border-slate-100 hover:bg-blue-600 hover:text-white transition-all shadow-sm">
-                  <Icon className="w-4 h-4" />
-                </button>
-              ))}
-            </div>
           </div>
-        </div>
-
-         <div className="lg:col-span-2 bg-white rounded-2xl p-8 shadow-[0_8px_30px_rgba(0,0,0,0.06)] border border-slate-200 relative flex flex-col h-full">
-          <h3 className="text-2xl font-bold text-slate-800 mb-8 tracking-tight">Account Settings</h3>
-            
-          <div className="grid sm:grid-cols-2 gap-6 flex-1">
-             <div className="space-y-2">
-              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest px-1">First Name</label>
-              <input 
-                type="text" 
-                value={formData.firstName}
-                onChange={(e) => setFormData({...formData, firstName: e.target.value})}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-5 py-4 text-sm font-medium text-slate-700 focus:outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-400 focus:bg-white transition-all shadow-sm"
-              />
-            </div>
-             <div className="space-y-2">
-              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest px-1">Last Name</label>
-              <input 
-                type="text" 
-                value={formData.lastName}
-                onChange={(e) => setFormData({...formData, lastName: e.target.value})}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-5 py-4 text-sm font-medium text-slate-700 focus:outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-400 focus:bg-white transition-all shadow-sm"
-              />
-            </div>
-             <div className="space-y-2">
-              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest px-1">Phone Number</label>
-              <input 
-                type="text" 
-                value={formData.phone}
-                onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-5 py-4 text-sm font-medium text-slate-700 focus:outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-400 focus:bg-white transition-all shadow-sm"
-              />
-            </div>
-             <div className="space-y-2">
-              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest px-1">Email Address</label>
-              <input 
-                type="email" 
-                value={formData.email}
-                disabled
-                className="w-full bg-slate-100 border border-slate-200 rounded-xl px-5 py-4 text-sm font-medium text-slate-400 cursor-not-allowed outline-none shadow-sm"
-              />
-            </div>
-          </div>
-
-           <div className="mt-8 flex justify-end pt-6 border-t border-slate-50">
-            <button 
-              onClick={handleUpdate}
-              disabled={loading}
-              className="px-8 py-4 bg-blue-600 text-white rounded-xl font-medium text-sm uppercase tracking-widest shadow-md hover:bg-blue-700 hover:shadow-lg transition-all disabled:opacity-50"
-            >
-              {loading ? 'Saving...' : 'Update Settings'}
-            </button>
-          </div>
-        </div>
         </div>
       </div>
     </div>
