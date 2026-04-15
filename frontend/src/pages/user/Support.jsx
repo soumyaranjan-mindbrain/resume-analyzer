@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
 import { 
   HelpCircle, 
-  MessageCircle, 
-  Mail, 
-  FileText, 
   Search, 
   ChevronRight, 
   Plus, 
@@ -11,37 +8,12 @@ import {
   LifeBuoy,
   BookOpen,
   MessageSquare,
-  Globe,
-  ArrowRight
+  Globe
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
 
 const Support = () => {
   const [activeFaq, setActiveFaq] = useState(null);
-
-  const contactMethods = [
-    { 
-      title: 'Live Chat', 
-      desc: 'Typical response under 5 mins', 
-      icon: <MessageCircle className="w-6 h-6" />, 
-      color: 'text-emerald-500', 
-      bg: 'bg-emerald-500/10' 
-    },
-    { 
-      title: 'Email Support', 
-      desc: 'Send us a detailed request', 
-      icon: <Mail className="w-6 h-6" />, 
-      color: 'text-blue-500', 
-      bg: 'bg-blue-500/10' 
-    },
-    { 
-      title: 'Documentation', 
-      desc: 'Detailed guides & API docs', 
-      icon: <FileText className="w-6 h-6" />, 
-      color: 'text-purple-500', 
-      bg: 'bg-purple-500/10' 
-    }
-  ];
 
   const faqs = [
     { q: 'How does the AI analysis work?', a: 'Our engine uses advanced NLP to compare your resume against millions of job descriptions, highlighting keyword gaps and semantic alignment.' },
@@ -73,22 +45,6 @@ const Support = () => {
               className="w-full pl-14 pr-6 py-5 bg-white border border-slate-200 rounded-2xl shadow-sm outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-400 font-medium text-slate-600 transition-all text-lg placeholder:text-slate-400"
            />
         </div>
-      </div>
-
-      
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
-         {contactMethods.map((method, i) => (
-           <div key={i} className="bg-white rounded-[2rem] p-8 border border-slate-100 shadow-sm hover:shadow-md transition-all cursor-pointer group relative overflow-hidden">
-              <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center mb-6 border border-slate-100 shadow-sm", method.bg.replace('/10', ''), method.color)}>
-                 {method.icon}
-              </div>
-              <h3 className="text-2xl font-bold text-slate-800 mb-2">{method.title}</h3>
-              <p className="text-slate-600 font-normal text-sm mb-6 leading-relaxed">{method.desc}</p>
-              <div className="flex items-center gap-2 text-blue-600 font-medium text-sm group-hover:translate-x-1 transition-transform">
-                 Contact Us <ArrowRight className="w-4 h-4" />
-              </div>
-           </div>
-         ))}
       </div>
 
       

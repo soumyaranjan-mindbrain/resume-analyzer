@@ -4,14 +4,20 @@ const prisma = new PrismaClient();
 //   Create Job
 exports.createJob = async (req, res) => {
   try {
+    const { title, company, location, description, type, experience, requirements, responsibilities, tags, salary } = req.body;
+    
     const job = await prisma.job.create({
       data: {
-        title: req.body.title,
-        company: req.body.company,
-        location: req.body.location,
-        description: req.body.description,
-        skillsRequired: req.body.skillsRequired,
-        salary: req.body.salary,
+        title,
+        company,
+        location,
+        description,
+        type: type || "Full-time",
+        experience,
+        requirements,
+        responsibilities,
+        skillsRequired: tags || [], // frontend sends 'tags'
+        salary,
         userId: req.user.id
       }
     });
@@ -48,7 +54,7 @@ exports.getJobs = async (req, res) => {
       orderBy: { createdAt: "desc" }
     });
 
-    res.json({ success: true, jobs });
+    res.json(jobs); // Return array directly for consistency with frontend expectations if needed
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -77,9 +83,13 @@ exports.getJobById = async (req, res) => {
 //   Update Job
 exports.updateJob = async (req, res) => {
   try {
+    const { tags, ...rest } = req.body;
+    const data = { ...rest };
+    if (tags) data.skillsRequired = tags;
+
     const job = await prisma.job.update({
       where: { id: req.params.id },
-      data: req.body
+      data: data
     });
 
     res.json(job);

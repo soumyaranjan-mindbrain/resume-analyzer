@@ -31,7 +31,7 @@ const AppLayout = ({ children }) => {
   const userNavItems = [
     { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { path: '/history', label: 'My Resumes', icon: FileText },
-    { path: '/matches', label: 'Job Matches', icon: Briefcase },
+    { path: '/matches', label: 'Jobs', icon: Briefcase },
     { path: '/recommendations', label: 'Recommendations', icon: ShieldCheck },
     { path: '/insights', label: 'Skill Insights', icon: CloudLightning },
     { path: '/profile', label: 'Profile', icon: User },
@@ -42,7 +42,6 @@ const AppLayout = ({ children }) => {
     { path: '/admin/students', label: 'Students', icon: User },
     { path: '/admin/reports', label: 'Reports', icon: FileText },
     { path: '/admin/jobs', label: 'Job Descriptions', icon: Briefcase },
-    { path: '/admin/readiness', label: 'Job Readiness', icon: ShieldCheck },
     { path: '/admin/insights', label: 'Market Insights', icon: CloudLightning },
     { path: '/admin/settings', label: 'Settings', icon: Settings },
   ];
@@ -55,7 +54,7 @@ const AppLayout = ({ children }) => {
       subtitle: 'Welcome back to your personalized career intelligence suite.' 
     },
     '/history': { title: 'My Resumes', subtitle: 'Manage and track all your analyzed documents.' },
-    '/matches': { title: 'Job Matches', subtitle: 'High-probability career opportunities for you.' },
+    '/matches': { title: 'Jobs', subtitle: 'High-probability career opportunities for you.' },
     '/recommendations': { title: 'Recommendations', subtitle: 'AI-driven suggestions for your next career move.' },
     '/insights': { title: 'Skill Insights', subtitle: 'Detailed breakdown of your professional expertise.' },
     '/profile': { title: 'My Profile', subtitle: 'Manage your personal information and settings.' },
@@ -65,7 +64,6 @@ const AppLayout = ({ children }) => {
     '/admin/reports': { title: 'Global Reports', subtitle: 'Analyze student resume performance data.' },
     '/admin/jobs': { title: 'Job Descriptions', subtitle: 'Manage available job roles and requirements.' },
     '/admin/jobs/new': { title: 'Create New Job Role', subtitle: 'Add a new position to the recruitment catalog.' },
-    '/admin/readiness': { title: 'Job Readiness', subtitle: 'Monitor students ready for the industry.' },
     '/admin/insights': { title: 'Market Insights', subtitle: 'Global skill gaps and demand trends.' },
     '/admin/settings': { title: 'Admin Settings', subtitle: 'Configure platform parameters and users.' },
   };

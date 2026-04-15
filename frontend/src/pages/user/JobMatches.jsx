@@ -11,7 +11,7 @@ import {
   Search
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
-import { getMatchedJobs, getResumes } from '../../services/api';
+import { getAllJobs } from '../../services/api';
 import { useNavigate } from 'react-router-dom';
 
 const JobMatches = () => {
@@ -19,21 +19,21 @@ const JobMatches = () => {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState('All');
-  const [resumes, setResumes] = useState([]);
+  const [searchText, setSearchText] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        // We might need a resumeId for matching, 
-        // but the current API might return matches for the latest resume
-        const resumeData = await getResumes();
-        setResumes(resumeData.resumes || []);
-        
-        const jobData = await getMatchedJobs();
-        setJobs(jobData.jobs || []);
+        const jobData = await getAllJobs();
+        const list = Array.isArray(jobData) ? jobData : (jobData?.jobs || []);
+        const normalized = list.map((job) => ({
+          ...job,
+          skills: Array.isArray(job.skillsRequired) ? job.skillsRequired : (Array.isArray(job.skills) ? job.skills : []),
+        }));
+        setJobs(normalized);
       } catch (error) {
-        console.error('Failed to fetch job matches:', error);
+        console.error('Failed to fetch jobs:', error);
       } finally {
         setLoading(false);
       }
@@ -41,37 +41,29 @@ const JobMatches = () => {
     fetchData();
   }, []);
 
-  const filterTags = ['All', 'Software Engineer', 'Analyst', 'Open Now'];
+  const filterTags = ['All', 'Open Now'];
 
   const filteredJobs = jobs.filter(job => {
-    if (activeFilter === 'All') return true;
-    return job.title.toLowerCase().includes(activeFilter.toLowerCase());
+    const title = String(job.title || '').toLowerCase();
+    const company = String(job.company || '').toLowerCase();
+
+    if (activeFilter !== 'All') {
+      // Placeholder for future filters (e.g., only active postings)
+      if (activeFilter === 'Open Now') {
+        // If backend later adds a status field, we can filter here.
+        // For now, treat all jobs as open.
+      }
+    }
+
+    if (!searchText.trim()) return true;
+    const q = searchText.trim().toLowerCase();
+    return title.includes(q) || company.includes(q);
   });
 
   if (loading) {
     return (
       <div className="min-h-[400px] flex items-center justify-center">
         <div className="w-12 h-12 border-4 border-[#4b7bff]/20 border-t-[#4b7bff] rounded-full animate-spin" />
-      </div>
-    );
-  }
-
-  if (resumes.length === 0) {
-    return (
-      <div className="max-w-[1200px] mx-auto py-20 text-center">
-        <div className="w-24 h-24 bg-slate-50 rounded-2xl flex items-center justify-center mx-auto mb-6 text-blue-600 shadow-sm border border-slate-100">
-          <Briefcase className="w-10 h-10" />
-        </div>
-        <h2 className="text-3xl font-bold text-slate-900 tracking-tight mb-4">No Resume Detected</h2>
-        <p className="text-slate-600 max-w-md mx-auto mb-8 font-normal">
-          Upload your resume first so our AI can find high-probability job matches tailored to your unique skills.
-        </p>
-        <button 
-          onClick={() => navigate('/upload')}
-          className="bg-blue-600 text-white px-10 py-4 rounded-xl font-semibold uppercase tracking-widest text-sm shadow-md hover:bg-blue-700 transition-all active:scale-95"
-        >
-          Upload Now
-        </button>
       </div>
     );
   }
@@ -98,12 +90,15 @@ const JobMatches = () => {
         </div>
 
         <div className="flex items-center gap-4 w-full md:w-auto">
-          <span className="text-[11px] font-normal text-slate-400 uppercase tracking-wider hidden md:block">Sort By</span>
-          <select className="px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-medium text-slate-700 outline-none cursor-pointer hover:border-blue-400 transition-all shadow-sm">
-            <option>Best Matches</option>
-            <option>Recent</option>
-            <option>Salary (High to Low)</option>
-          </select>
+          <div className="relative w-full md:w-[340px]">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <input
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+              placeholder="Search jobs by title or company..."
+              className="w-full pl-11 pr-4 py-3 bg-white border border-slate-200 rounded-xl text-sm font-medium text-slate-700 outline-none hover:border-blue-400 focus:border-blue-500 transition-all shadow-sm"
+            />
+          </div>
         </div>
       </div>
 
@@ -165,22 +160,6 @@ const JobMatches = () => {
                   </div>
 
                   <div className="flex items-center gap-6 shrink-0">
-                       <div className="flex items-center gap-5 py-3 px-6 bg-white border border-slate-100 rounded-3xl shadow-[0_4px_15px_rgba(0,0,0,0.02)] group/score transition-all hover:border-emerald-100">
-                           <div className="text-right">
-                             <div className="text-4xl font-bold text-slate-800 tracking-tighter leading-none mb-0.5">
-                               {job.matchScore || 85}
-                               <span className="text-base text-emerald-500 font-medium ml-1">%</span>
-                             </div>
-                             <div className="text-[9px] font-normal text-slate-400 uppercase tracking-[0.2em] leading-none">
-                               Match Index
-                             </div>
-                           </div>
-                          <div className="relative w-12 h-12 flex items-center justify-center shrink-0">
-                            <div className="absolute inset-0 bg-slate-50 rounded-xl shadow-inner border border-slate-100" />
-                            <Activity className="relative z-10 w-6 h-6 text-emerald-500" />
-                          </div>
-                      </div>
-
                       <button className="flex items-center gap-2.5 px-8 py-3.5 bg-slate-900 text-white rounded-xl font-semibold text-[11px] uppercase tracking-widest shadow-md hover:bg-slate-800 active:scale-95 transition-all">
                           Apply Now
                           <ChevronRight className="w-4 h-4" />

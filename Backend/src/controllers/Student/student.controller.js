@@ -1,10 +1,24 @@
 const prisma = require("../../prisma/client");
 
-// Add Student
+// Add Student (Creates a User with role 'student')
 exports.createStudent = async (req, res) => {
   try {
-    const student = await prisma.student.create({
-      data: req.body,
+    const { name, email, phone, course, password } = req.body;
+
+    // Check if user already exists
+    const existing = await prisma.user.findUnique({ where: { email } });
+    if (existing) return res.status(400).json({ message: "Email already in use" });
+
+    const student = await prisma.user.create({
+      data: {
+        name,
+        email,
+        phone,
+        course,
+        password: password || "student123", // Default password if not provided
+        role: "student",
+        status: "Active"
+      },
     });
 
     res.status(201).json(student);
@@ -13,11 +27,56 @@ exports.createStudent = async (req, res) => {
   }
 };
 
-// Get All Students
+// Get All Students with their average ATS scores
 exports.getStudents = async (req, res) => {
   try {
-    const students = await prisma.student.findMany();
-    res.json(students);
+    const students = await prisma.user.findMany({
+      where: { role: "student" },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        course: true,
+        status: true,
+        lastActive: true,
+        updatedAt: true,
+        resumes: {
+          select: {
+            analysis: {
+              select: {
+                atsScore: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    // Calculate average score for each student
+    const formattedStudents = students.map(student => {
+      const analyses = student.resumes
+        .map(r => r.analysis)
+        .filter(a => a != null);
+
+      const avgScore = analyses.length > 0
+        ? Math.round(analyses.reduce((sum, a) => sum + a.atsScore, 0) / analyses.length)
+        : 0;
+
+      return {
+        id: student.id,
+        name: student.name,
+        email: student.email,
+        phone: student.phone,
+        course: student.course,
+        status: student.status,
+        score: avgScore,
+        lastActive: student.lastActive || null,
+        updatedAt: student.updatedAt || null,
+      };
+    });
+
+    res.json(formattedStudents);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -26,8 +85,27 @@ exports.getStudents = async (req, res) => {
 // Get Student by ID
 exports.getStudentById = async (req, res) => {
   try {
-    const student = await prisma.student.findUnique({
-      where: { id: req.params.id },
+    const student = await prisma.user.findFirst({
+      where: { id: req.params.id, role: "student" },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        course: true,
+        status: true,
+        lastActive: true,
+        updatedAt: true,
+        resumes: {
+          select: {
+            id: true,
+            fileUrl: true,
+            fileName: true,
+            createdAt: true,
+            analysis: true,
+          },
+        },
+      },
     });
 
     if (!student) {
@@ -43,7 +121,7 @@ exports.getStudentById = async (req, res) => {
 // Update Student
 exports.updateStudent = async (req, res) => {
   try {
-    const student = await prisma.student.update({
+    const student = await prisma.user.update({
       where: { id: req.params.id },
       data: req.body,
     });
@@ -53,24 +131,51 @@ exports.updateStudent = async (req, res) => {
     if (error.code === "P2025") {
       return res.status(404).json({ message: "Student not found" });
     }
-
     res.status(500).json({ error: error.message });
   }
 };
 
 // Delete Student
 exports.deleteStudent = async (req, res) => {
+  const { id } = req.params;
   try {
-    await prisma.student.delete({
-      where: { id: req.params.id },
+    // Check if student exists
+    const student = await prisma.user.findUnique({
+      where: { id },
+      include: { resumes: true }
     });
 
-    res.json({ message: "Student deleted" });
-  } catch (error) {
-    if (error.code === "P2025") {
+    if (!student) {
       return res.status(404).json({ message: "Student not found" });
     }
 
+    // Step-by-step cleanup of related records
+    const resumeIds = student.resumes.map(r => r.id);
+    if (resumeIds.length > 0) {
+      await prisma.analysis.deleteMany({
+        where: { resumeId: { in: resumeIds } }
+      });
+    }
+
+    await prisma.resume.deleteMany({
+      where: { userId: id }
+    });
+
+    await prisma.job.deleteMany({
+      where: { userId: id }
+    });
+
+    await prisma.helpTicket.deleteMany({
+      where: { userId: id }
+    });
+
+    await prisma.user.delete({
+      where: { id },
+    });
+
+    res.json({ message: "Student and all related data deleted successfully" });
+  } catch (error) {
+    console.error("Delete Error:", error);
     res.status(500).json({ error: error.message });
   }
 };

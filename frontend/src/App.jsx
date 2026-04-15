@@ -15,7 +15,6 @@ import Upload from './pages/user/Upload.jsx';
 import AdminDashboard from './pages/admin/AdminDashboard.jsx';
 import Students from './pages/admin/Students.jsx';
 import Reports from './pages/admin/Reports.jsx';
-import JobReadiness from './pages/admin/JobReadiness.jsx';
 import SettingsAdmin from './pages/admin/Settings.jsx';
 import JobDescriptions from './pages/admin/JobDescriptions.jsx';
 import AddJobRole from './pages/admin/AddJobRole.jsx';
@@ -48,7 +47,6 @@ function App() {
         <Route path="/admin/reports" element={<ProtectedRoute allowedRoles={['admin']}><AppLayout><Reports /></AppLayout></ProtectedRoute>} />
         <Route path="/admin/jobs" element={<ProtectedRoute allowedRoles={['admin']}><AppLayout><JobDescriptions /></AppLayout></ProtectedRoute>} />
         <Route path="/admin/jobs/new" element={<ProtectedRoute allowedRoles={['admin']}><AppLayout><AddJobRole /></AppLayout></ProtectedRoute>} />
-        <Route path="/admin/readiness" element={<ProtectedRoute allowedRoles={['admin']}><AppLayout><JobReadiness /></AppLayout></ProtectedRoute>} />
         <Route path="/admin/insights" element={<ProtectedRoute allowedRoles={['admin']}><AppLayout><SkillInsightsAdmin /></AppLayout></ProtectedRoute>} />
         <Route path="/admin/settings" element={<ProtectedRoute allowedRoles={['admin']}><AppLayout><SettingsAdmin /></AppLayout></ProtectedRoute>} />
       </Routes>

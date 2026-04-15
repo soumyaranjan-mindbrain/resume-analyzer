@@ -12,14 +12,18 @@ model User {
   name      String?    
   email     String   @unique
   password  String
-  role      String    // 'admin' or 'student'
+  role      String    @default("student") // 'admin' or 'student'
   phone     String?   
   bio       String?    
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  course    String?   // For students
+  status    String    @default("Active") // 'Active', 'Hired', 'Needs Review'
+  lastActive DateTime? @default(now())
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
 
   resumes Resume[] 
-   jobs    Job[] 
+  jobs    Job[] 
+  helpTickets HelpTicket[]
 
   @@map("users")
 }
@@ -38,20 +42,11 @@ model Resume {
   @@map("resumes")
 }
 
-
-model Student {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  name      String
-  email     String   @unique
-  phone     String?
-  course    String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
 model Analysis {
   id              String   @id @default(auto()) @map("_id") @db.ObjectId
   resumeId        String   @unique @db.ObjectId
   atsScore        Int
+  scoreBreakdown  Json?
   keywordsMissing Json
   jobsMatched     Int
   suggestions     Json
@@ -70,15 +65,46 @@ model Analysis {
 }
 
 model Job {
-  id              String   @id @default(auto()) @map("_id") @db.ObjectId
-  title           String
-  company         String
-  location        String
-  description     String
-  skillsRequired  String[]
-  salary          String?
-  userId          String   @db.ObjectId
-  createdAt       DateTime @default(now())
+  id               String   @id @default(auto()) @map("_id") @db.ObjectId
+  title            String
+  company          String
+  location         String
+  description      String
+  type             String   @default("Full-time") // 'Full-time', 'Part-time', etc.
+  experience       String?
+  requirements     String?
+  responsibilities String?
+  skillsRequired   String[] // Maps to 'tags' in frontend
+  salary           String?
+  userId           String   @db.ObjectId
+  createdAt        DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id])  
+
+  @@map("jobs")
 }
+
+model Faq {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  question  String
+  answer    String
+  category  String   @default("GENERAL")
+  createdAt DateTime @default(now())
+
+  @@map("faqs")
+}
+
+model HelpTicket {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  subject   String
+  message   String
+  status    String   @default("OPEN") // OPEN, RESOLVED
+  reply     String?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("help_tickets")
+}
+

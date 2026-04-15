@@ -37,9 +37,9 @@ const JobReadiness = () => {
           const mappedPool = reportsData.recentReports.map(report => ({
             id: report.resumeId,
             name: report.studentName,
-            role: 'Jobs Matched: ' + report.jobsMatched,
-            match: Math.min(100, Math.round(report.atsScore * 1.1)), // Mocked match based on ATS
-            readiness: report.atsScore >= 80 ? 'Ready' : 'Developing',
+            role: 'Matched: ' + (report.jobsMatched || 0) + ' Roles',
+            match: report.atsScore, // Use authentic ATS score as the primary match metric
+            readiness: report.atsScore >= 75 ? 'Ready' : (report.atsScore >= 50 ? 'Developing' : 'Needs Review'),
             score: report.atsScore
           }));
           setPool(mappedPool);

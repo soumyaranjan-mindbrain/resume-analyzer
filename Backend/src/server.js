@@ -7,6 +7,12 @@ dotenv.config();
 // Bulletproof environment check
     process.env.JWT_SECRET = "jobMatcherDevSecret2026";
     console.log(`[Auth Fix] JWT_SECRET force-set to internal dev string.`);
+    // Prisma (used by /api/students and other routes) expects DATABASE_URL.
+    // In this repo we primarily configure Mongo via MONGO_URI, so default DATABASE_URL to it.
+    if (!process.env.DATABASE_URL && process.env.MONGO_URI) {
+      process.env.DATABASE_URL = process.env.MONGO_URI;
+      console.log(`[DB Fix] DATABASE_URL not set; defaulting to MONGO_URI for Prisma.`);
+    }
     const connectDB = require("./config/db");
     connectDB();
 
@@ -63,6 +69,7 @@ const profileRoutes = require("./routes/Profile/profile.routes");
 const settingsRoutes = require("./routes/Settings/settings.routes");
 const jobsRoutes = require("./routes/Job/job.routes");
 const studentRoutes = require("./routes/Students/student.routes");
+const helpRoutes = require("./routes/Help/help.routes");
 
 app.use("/api/auth", authRoutes);
 // app.use("/api/analyzer", analyzerRoutes);
@@ -73,6 +80,7 @@ app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/settings", settingsRoutes);
 app.use("/api/jobs", jobsRoutes);
 app.use("/api/students", studentRoutes);
+app.use("/api/help", helpRoutes);
 
 // Health check endpoint
 app.get("/api/health", (req, res) => {

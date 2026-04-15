@@ -213,6 +213,7 @@ const importData = async (req, res) => {
           data: {
             resumeId: savedResume.id,
             atsScore: resume.analysis.atsScore || 0,
+            scoreBreakdown: resume.analysis.scoreBreakdown || {},
             keywordsMissing: resume.analysis.keywordsMissing || [],
             jobsMatched: resume.analysis.jobsMatched || 0,
             suggestions: resume.analysis.suggestions || [],

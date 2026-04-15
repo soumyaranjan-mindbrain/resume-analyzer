@@ -111,24 +111,50 @@ exports.getAnalytics = async (req, res) => {
 
     //   ADMIN ANALYTICS
     if (role === "admin") {
-      const totalUsers = await prisma.user.count();
+      const totalUsers = await prisma.user.count({ where: { role: "student" } });
       const totalResumes = await prisma.resume.count();
       const totalAnalyses = await prisma.analysis.count();
+
+      // Growth Calculation (Last 30 days vs previous 30 days)
+      const now = new Date();
+      const thirtyDaysAgo = new Date(now.getTime() - (30 * 24 * 60 * 60 * 1000));
+      const sixtyDaysAgo = new Date(now.getTime() - (60 * 24 * 60 * 60 * 1000));
+
+      const [newUsers, prevUsers, newResumes, prevResumes] = await Promise.all([
+        prisma.user.count({ where: { role: "student", createdAt: { gte: thirtyDaysAgo } } }),
+        prisma.user.count({ where: { role: "student", createdAt: { gte: sixtyDaysAgo, lt: thirtyDaysAgo } } }),
+        prisma.resume.count({ where: { createdAt: { gte: thirtyDaysAgo } } }),
+        prisma.resume.count({ where: { createdAt: { gte: sixtyDaysAgo, lt: thirtyDaysAgo } } })
+      ]);
+
+      const calculateGrowth = (current, previous) => {
+        if (previous === 0) return current > 0 ? "+100%" : "0%";
+        const growth = ((current - previous) / previous) * 100;
+        return (growth >= 0 ? "+" : "") + growth.toFixed(1) + "%";
+      };
+
+      const userGrowth = calculateGrowth(newUsers, prevUsers);
+      const resumeGrowth = calculateGrowth(newResumes, prevResumes);
 
       const avgResult = await prisma.analysis.aggregate({
         _avg: { atsScore: true },
       });
 
-      const averageAtsScore = Math.round(
-        avgResult._avg.atsScore || 0
-      );
+      const averageAtsScore = Math.round(avgResult._avg.atsScore || 0);
 
-      // Readiness Breakdown
-      const marketReady = await prisma.analysis.count({ where: { atsScore: { gte: 80 } } });
-      const developing = await prisma.analysis.count({ where: { atsScore: { gte: 50, lt: 80 } } });
-      const critical = await prisma.analysis.count({ where: { atsScore: { lt: 50 } } });
+      // Readiness Breakdown (Percentages)
+      const totalAnalysesCount = totalAnalyses || 1;
+      const marketReadyCount = await prisma.analysis.count({ where: { atsScore: { gte: 80 } } });
+      const developingCount = await prisma.analysis.count({ where: { atsScore: { gte: 50, lt: 80 } } });
+      const criticalCount = await prisma.analysis.count({ where: { atsScore: { lt: 50 } } });
 
-      // Growth Chart Data (Last 6 Months)
+      const readinessBreakdown = {
+        marketReady: Math.round((marketReadyCount / totalAnalysesCount) * 100),
+        developing: Math.round((developingCount / totalAnalysesCount) * 100),
+        criticalGap: Math.round((criticalCount / totalAnalysesCount) * 100)
+      };
+
+      // ... existing chart logic ...
       const sixMonthsAgo = new Date();
       sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
 
@@ -146,7 +172,6 @@ exports.getAnalytics = async (req, res) => {
       const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
       const chartMap = {};
 
-      // Initialize last 6 months
       for (let i = 5; i >= 0; i--) {
         const d = new Date();
         d.setMonth(d.getMonth() - i);
@@ -173,12 +198,10 @@ exports.getAnalytics = async (req, res) => {
         totalResumes,
         totalAnalyses,
         averageAtsScore,
+        userGrowth,
+        resumeGrowth,
         chartData: Object.values(chartMap),
-        readinessBreakdown: {
-          marketReady: Math.round((marketReady / (totalAnalyses || 1)) * 100),
-          developing: Math.round((developing / (totalAnalyses || 1)) * 100),
-          criticalGap: Math.round((critical / (totalAnalyses || 1)) * 100)
-        }
+        readinessBreakdown
       });
     }
 

@@ -3,7 +3,6 @@ import {
   Users, 
   FileCheck, 
   Target, 
-  Trophy, 
   ArrowUpRight,
   Loader2
 } from 'lucide-react';
@@ -26,10 +25,9 @@ const AdminDashboard = () => {
         setAnalytics(analyticsData);
         
         setStats([
-          { label: 'Total Students', value: statsData.totalUsers?.toLocaleString() || '0', trend: '+12.5%', icon: Users, color: 'text-blue-600', bg: 'bg-blue-50' },
-          { label: 'Resumes Analyzed', value: statsData.totalAnalyses?.toLocaleString() || '0', trend: '+18.2%', icon: FileCheck, color: 'text-purple-600', bg: 'bg-purple-50' },
+          { label: 'Total Students', value: statsData.totalUsers?.toLocaleString() || '0', trend: analyticsData.userGrowth || '0%', icon: Users, color: 'text-blue-600', bg: 'bg-blue-50' },
+          { label: 'Resumes Analyzed', value: statsData.totalAnalyses?.toLocaleString() || '0', trend: analyticsData.resumeGrowth || '0%', icon: FileCheck, color: 'text-purple-600', bg: 'bg-purple-50' },
           { label: 'Average Score', value: `${analyticsData.averageAtsScore || 0}%`, trend: '+4.5%', icon: Target, color: 'text-emerald-600', bg: 'bg-emerald-50' },
-          { label: 'Job Readiness', value: `${analyticsData.readinessBreakdown?.marketReady || 0}%`, trend: '+2.1%', icon: Trophy, color: 'text-amber-600', bg: 'bg-amber-50' },
         ]);
       } catch (error) {
         console.error('Error fetching admin dashboard data:', error);
@@ -57,8 +55,8 @@ const AdminDashboard = () => {
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       
-      {/* Stats Row */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+       {/* Stats Row */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {stats.map((stat, i) => (
           <div key={i} className="admin-card p-5">
             <div className="flex items-center justify-between mb-4">

@@ -8,7 +8,10 @@ import {
   Eye,
   Download,
   Calendar,
-  Loader2
+  Loader2,
+  TrendingUp,
+  Zap,
+  ShieldCheck
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
 import { getReports } from '../../services/api';

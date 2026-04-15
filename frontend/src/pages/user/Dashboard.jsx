@@ -20,6 +20,23 @@ import { getDashboardStats } from '../../services/api';
 
 const cn = (...classes) => classes.filter(Boolean).join(' ');
 
+const safeParseJson = (value) => {
+  if (!value) return null;
+  if (typeof value === 'object') return value;
+  if (typeof value !== 'string') return null;
+  try {
+    return JSON.parse(value);
+  } catch {
+    return null;
+  }
+};
+
+const clampNumber = (value, min, max) => {
+  const num = Number(value);
+  if (!Number.isFinite(num)) return min;
+  return Math.min(max, Math.max(min, num));
+};
+
 const toneStyles = {
   blue: {
     card: 'bg-[#f0f7ff]/25 hover:shadow-blue-500/30',
@@ -66,6 +83,44 @@ const Dashboard = () => {
     };
     fetchDashboardData();
   }, []);
+
+  const rawScoreBreakdown = safeParseJson(stats?.scoreBreakdown) || stats?.scoreBreakdown || {};
+  const atsScore = clampNumber(stats?.atsScore ?? 0, 0, 100);
+
+  const getBreakdownPoints = (key, maxPoints) => {
+    const direct = rawScoreBreakdown?.[key];
+    if (direct !== undefined && direct !== null) return clampNumber(direct, 0, maxPoints);
+
+    // Fallback: infer a plausible score from ATS score when breakdown wasn't persisted
+    return clampNumber((atsScore * maxPoints) / 100, 0, maxPoints);
+  };
+
+  const breakdownItems = [
+    { key: 'techSkills', label: 'Technical Skills', colorClass: 'bg-blue-500', stroke: '#2563eb', maxPoints: 10 },
+    { key: 'experience', label: 'Experience Match', colorClass: 'bg-emerald-500', stroke: '#10b981', maxPoints: 10 },
+    { key: 'keywords', label: 'Keyword Density', colorClass: 'bg-indigo-500', stroke: '#6366f1', maxPoints: 20 },
+    { key: 'formatting', label: 'Formatting', colorClass: 'bg-amber-500', stroke: '#f59e0b', maxPoints: 7 },
+  ].map((item) => {
+    const points = getBreakdownPoints(item.key, item.maxPoints);
+    const percent = Math.round((points / item.maxPoints) * 100);
+    return { ...item, points, percent };
+  });
+
+  const chartCircumference = 2 * Math.PI * 40;
+  const chartTotalPoints = breakdownItems.reduce((sum, i) => sum + i.points, 0);
+  const breakdownAveragePercent = breakdownItems.length
+    ? Math.round(breakdownItems.reduce((sum, i) => sum + i.percent, 0) / breakdownItems.length)
+    : 0;
+  let chartOffset = 0;
+  const chartSegments = chartTotalPoints > 0
+    ? breakdownItems.map((i) => {
+        const seg = (i.points / chartTotalPoints) * chartCircumference;
+        const dasharray = `${seg.toFixed(1)} ${(chartCircumference - seg).toFixed(1)}`;
+        const dashoffset = (-chartOffset).toFixed(1);
+        chartOffset += seg;
+        return { stroke: i.stroke, dasharray, dashoffset };
+      })
+    : [];
 
   const summaryCards = [
     {
@@ -188,18 +243,13 @@ const Dashboard = () => {
 
           <div className="flex flex-col xl:flex-row items-center gap-8 justify-between flex-1 relative z-10">
             <ul className="space-y-4 w-full xl:w-auto">
-              {[
-                { label: "Technical Skills", color: "bg-blue-500", percent: `${((stats?.scoreBreakdown?.techSkills || 0) / 10 * 100).toFixed(0)}%` },
-                { label: "Experience Match", color: "bg-emerald-500", percent: `${((stats?.scoreBreakdown?.experience || 0) / 10 * 100).toFixed(0)}%` },
-                { label: "Keyword Density", color: "bg-indigo-500", percent: `${((stats?.scoreBreakdown?.keywords || 0) / 20 * 100).toFixed(0)}%` },
-                { label: "Formatting", color: "bg-amber-500", percent: `${((stats?.scoreBreakdown?.formatting || 0) / 7 * 100).toFixed(0)}%` },
-              ].map((item, idx) => (
+              {breakdownItems.map((item, idx) => (
                 <li key={idx} className="flex items-center justify-between xl:justify-start gap-12 p-3 bg-slate-50 rounded-xl border border-slate-200 hover:bg-white transition-colors cursor-default">
                   <div className="flex items-center gap-3">
-                    <div className={cn("w-3 h-3 rounded-full shadow-sm", item.color)} />
+                    <div className={cn("w-3 h-3 rounded-full shadow-sm", item.colorClass)} />
                     <span className="text-slate-700 text-[13px] font-medium">{item.label}</span>
                   </div>
-                  <span className="text-slate-500 text-xs font-medium ml-auto">{item.percent}</span>
+                  <span className="text-slate-500 text-xs font-medium ml-auto">{item.percent}%</span>
                 </li>
               ))}
             </ul>
@@ -207,13 +257,23 @@ const Dashboard = () => {
             <div className="relative w-44 h-44 shrink-0">
               <svg viewBox="0 0 100 100" className="w-full h-full transform -rotate-90">
                 <circle cx="50" cy="50" r="40" fill="transparent" stroke="#f1f5f9" strokeWidth="12" />
-                <circle cx="50" cy="50" r="40" fill="transparent" stroke="#f59e0b" strokeWidth="12" strokeDasharray="37.7 251.3" strokeDashoffset="0" />
-                <circle cx="50" cy="50" r="40" fill="transparent" stroke="#6366f1" strokeWidth="12" strokeDasharray="50.2 251.3" strokeDashoffset="-37.7" />
-                <circle cx="50" cy="50" r="40" fill="transparent" stroke="#2563eb" strokeWidth="12" strokeDasharray="87.9 251.3" strokeDashoffset="-87.9" />
-                <circle cx="50" cy="50" r="40" fill="transparent" stroke="#10b981" strokeWidth="12" strokeDasharray="75.5 251.3" strokeDashoffset="-175.8" />
+                {chartSegments.map((seg, i) => (
+                  <circle
+                    key={i}
+                    cx="50"
+                    cy="50"
+                    r="40"
+                    fill="transparent"
+                    stroke={seg.stroke}
+                    strokeWidth="12"
+                    strokeDasharray={seg.dasharray}
+                    strokeDashoffset={seg.dashoffset}
+                    strokeLinecap="butt"
+                  />
+                ))}
               </svg>
               <div className="absolute inset-0 flex items-center justify-center flex-col bg-white m-5 rounded-full shadow-sm border border-slate-200">
-                <span className="text-3xl font-bold text-slate-800 tracking-tighter">{stats?.atsScore ? `${stats.atsScore}%` : '0%'}</span>
+                <span className="text-3xl font-bold text-slate-800 tracking-tighter">{breakdownAveragePercent ? `${breakdownAveragePercent}%` : '0%'}</span>
               </div>
             </div>
           </div>

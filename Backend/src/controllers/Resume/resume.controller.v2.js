@@ -27,6 +27,7 @@ const BASE_SKILLS = [
 async function saveAnalysis(resumeId, analysisData) {
   const data = {
     atsScore: analysisData.atsScore,
+    scoreBreakdown: analysisData.scoreBreakdown || {},
     keywordsMissing: analysisData.keywordsMissing,
     jobsMatched: analysisData.jobsMatched,
     suggestions: analysisData.suggestions,
