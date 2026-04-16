@@ -15,33 +15,84 @@ import {
   Loader2
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
-import { getAdminStudents, deleteAdminStudent, createAdminStudent } from '../../services/api';
+import { deleteAdminStudent } from '../../services/api';
 import toast from 'react-hot-toast';
+import { useAdmin } from '../../context/AdminContext';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
 const Students = () => {
   const [pageSize, setPageSize] = useState(5);
-  const [loading, setLoading] = useState(true);
-  const [students, setStudents] = useState([]);
+  const { students, loading, fetchStudents } = useAdmin();
   const [searchQuery, setSearchQuery] = useState('');
+  const [scoreFilter, setScoreFilter] = useState('all');
   const [selectedStudent, setSelectedStudent] = useState(null);
-
-  const fetchStudents = async () => {
-    try {
-      setLoading(true);
-      const data = await getAdminStudents();
-      setStudents(data);
-    } catch (error) {
-      console.error('Error fetching students:', error);
-      toast.error(error.response?.data?.error || error.response?.data?.message || 'Failed to load students');
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [exportOpen, setExportOpen] = useState(false);
+  const [filterOpen, setFilterOpen] = useState(false);
 
   useEffect(() => {
     fetchStudents();
-  }, []);
+  }, [fetchStudents]);
 
+  const exportCSV = () => {
+    const headers = ["Name", "Email", "ATS Score", "Status"];
+    const rows = filteredStudents.map(s => [
+      s.name,
+      s.email,
+      `${s.score || 0}%`,
+      s.status || 'Active'
+    ]);
+
+    let csvContent = "data:text/csv;charset=utf-8,"
+      + headers.join(",") + "\n"
+      + rows.map(e => e.join(",")).join("\n");
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `students_report_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    setExportOpen(false);
+  };
+
+  const exportPDF = () => {
+    const doc = new jsPDF();
+    doc.text("Student Performance Report", 14, 15);
+    doc.setFontSize(10);
+    doc.text(`Generated on: ${new Date().toLocaleString()}`, 14, 22);
+
+    const tableColumn = ["Name", "Email", "ATS Score", "Status"];
+    const tableRows = filteredStudents.map(s => [
+      s.name,
+      s.email,
+      `${s.score || 0}%`,
+      s.status || 'Active'
+    ]);
+
+    doc.autoTable({
+      head: [tableColumn],
+      body: tableRows,
+      startY: 30,
+      theme: 'grid',
+      headStyles: { fillBox: [37, 99, 235], fillColor: [37, 99, 235] }
+    });
+
+    doc.save(`students_report_${new Date().toISOString().split('T')[0]}.pdf`);
+    setExportOpen(false);
+  };
+
+  const scoreOptions = [
+    { label: 'All Scores', value: 'all' },
+    { label: 'Less than 30%', value: 'lt30' },
+    { label: 'Less than 50%', value: 'lt50' },
+    { label: 'Higher than 50%', value: 'gt50' },
+    { label: 'Higher than 60%', value: 'gt60' },
+    { label: 'Higher than 70%', value: 'gt70' },
+    { label: 'Higher than 80%', value: 'gt80' },
+    { label: 'Higher than 90%', value: 'gt90' },
+  ];
 
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this student?')) {
@@ -60,7 +111,17 @@ const Students = () => {
       student.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       student.email?.toLowerCase().includes(searchQuery.toLowerCase());
 
-    return matchesSearch;
+    const score = student.score || 0;
+    let matchesScore = true;
+    if (scoreFilter === 'lt30') matchesScore = score < 30;
+    else if (scoreFilter === 'lt50') matchesScore = score < 50;
+    else if (scoreFilter === 'gt50') matchesScore = score >= 50;
+    else if (scoreFilter === 'gt60') matchesScore = score >= 60;
+    else if (scoreFilter === 'gt70') matchesScore = score >= 70;
+    else if (scoreFilter === 'gt80') matchesScore = score >= 80;
+    else if (scoreFilter === 'gt90') matchesScore = score >= 90;
+
+    return matchesSearch && matchesScore;
   });
 
   return (
@@ -87,12 +148,64 @@ const Students = () => {
               />
             </div>
 
-            <button className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-lg font-medium text-sm text-slate-700 hover:bg-slate-50 transition-colors shadow-sm whitespace-nowrap">
-              <Download className="w-4 h-4" /> Export
-            </button>
-            <button className="p-2 bg-white border border-slate-200 rounded-lg text-slate-500 hover:text-slate-700 hover:bg-slate-50 transition-colors shadow-sm">
-              <Filter className="w-5 h-5" />
-            </button>
+            <div className="relative">
+              <button
+                onClick={() => setExportOpen(!exportOpen)}
+                className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-lg font-medium text-sm text-slate-700 hover:bg-slate-50 transition-colors shadow-sm whitespace-nowrap"
+              >
+                <Download className="w-4 h-4" /> Export
+              </button>
+
+              {exportOpen && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setExportOpen(false)} />
+                  <div className="absolute right-0 mt-2 w-24 bg-white border border-slate-100 rounded-xl shadow-xl z-50 py-1 animate-in fade-in slide-in-from-top-2 duration-200">
+                    <button onClick={exportCSV} className="w-full flex items-center justify-center px-4 py-2.5 text-sm font-bold text-slate-600 hover:bg-blue-50 hover:text-blue-600 transition-all uppercase tracking-tight">
+                      .csv
+                    </button>
+                    <button onClick={exportPDF} className="w-full flex items-center justify-center px-4 py-2.5 text-sm font-bold text-slate-600 hover:bg-blue-50 hover:text-blue-600 transition-all uppercase tracking-tight">
+                      .pdf
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+
+            <div className="relative">
+              <button
+                onClick={() => setFilterOpen(!filterOpen)}
+                className={cn(
+                  "p-2 border rounded-lg transition-all shadow-sm",
+                  scoreFilter !== 'all' ? "bg-blue-600 border-transparent text-white ring-2 ring-blue-500/20" : "bg-white border-slate-200 text-slate-500 hover:text-slate-700 hover:bg-slate-50"
+                )}
+              >
+                <Filter className="w-5 h-5" />
+              </button>
+
+              {filterOpen && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setFilterOpen(false)} />
+                  <div className="absolute right-0 mt-2 w-56 bg-white border border-slate-100 rounded-xl shadow-xl z-50 py-2 animate-in fade-in slide-in-from-top-2 duration-200">
+                    <div className="px-4 py-2 border-b border-slate-50 mb-1">
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Filter by Score</span>
+                    </div>
+                    {scoreOptions.map(opt => (
+                      <button
+                        key={opt.value}
+                        onClick={() => { setScoreFilter(opt.value); setFilterOpen(false); }}
+                        className={cn(
+                          "w-full flex items-center justify-between px-4 py-2 text-sm font-bold transition-all",
+                          scoreFilter === opt.value ? "text-blue-600 bg-blue-50" : "text-slate-600 hover:bg-slate-50"
+                        )}
+                      >
+                        {opt.label}
+                        {scoreFilter === opt.value && <div className="w-1.5 h-1.5 rounded-full bg-blue-600" />}
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </div>
 
@@ -108,7 +221,7 @@ const Students = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {loading ? (
+              {loading.students ? (
                 <tr>
                   <td colSpan="4" className="py-10 text-center">
                     <div className="flex flex-col items-center gap-2">

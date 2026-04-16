@@ -1,4 +1,4 @@
-const prisma  = require("../../prisma/client");
+const prisma = require("../../prisma/client");
 
 //  GET ANALYTICS
 exports.getAnalytics = async (req, res) => {
@@ -18,9 +18,9 @@ exports.getAnalytics = async (req, res) => {
 
       const averageAtsScore = analyzed.length
         ? Math.round(
-            analyzed.reduce((sum, r) => sum + (r.analysis?.atsScore || 0), 0) /
-              analyzed.length
-          )
+          analyzed.reduce((sum, r) => sum + (r.analysis?.atsScore || 0), 0) /
+          analyzed.length
+        )
         : 0;
 
       const allAiFeedback = analyzed.flatMap(
@@ -43,7 +43,7 @@ exports.getAnalytics = async (req, res) => {
       );
 
       // Real Skill Gap Analysis
-      const latestAnalysis = analyzed.sort((a, b) => 
+      const latestAnalysis = analyzed.sort((a, b) =>
         new Date(b.analysis.updatedAt) - new Date(a.analysis.updatedAt)
       )[0]?.analysis;
 
@@ -62,7 +62,7 @@ exports.getAnalytics = async (req, res) => {
       const flatSkills = jobSkills.flatMap(j => j.skillsRequired);
       const skillCounts = {};
       flatSkills.forEach(s => skillCounts[s] = (skillCounts[s] || 0) + 1);
-      
+
       let inDemandSkills = Object.entries(skillCounts)
         .sort((a, b) => b[1] - a[1])
         .slice(0, 4)
@@ -111,6 +111,9 @@ exports.getAnalytics = async (req, res) => {
 
     //   ADMIN ANALYTICS
     if (role === "admin") {
+      const { range } = req.query;
+      const isWeek = range === "week";
+
       const totalUsers = await prisma.user.count({ where: { role: "student" } });
       const totalResumes = await prisma.resume.count();
       const totalAnalyses = await prisma.analysis.count();
@@ -120,21 +123,30 @@ exports.getAnalytics = async (req, res) => {
       const thirtyDaysAgo = new Date(now.getTime() - (30 * 24 * 60 * 60 * 1000));
       const sixtyDaysAgo = new Date(now.getTime() - (60 * 24 * 60 * 60 * 1000));
 
-      const [newUsers, prevUsers, newResumes, prevResumes] = await Promise.all([
+      const [newUsers, prevUsers, newResumes, prevResumes, newAvg, prevAvg] = await Promise.all([
         prisma.user.count({ where: { role: "student", createdAt: { gte: thirtyDaysAgo } } }),
         prisma.user.count({ where: { role: "student", createdAt: { gte: sixtyDaysAgo, lt: thirtyDaysAgo } } }),
         prisma.resume.count({ where: { createdAt: { gte: thirtyDaysAgo } } }),
-        prisma.resume.count({ where: { createdAt: { gte: sixtyDaysAgo, lt: thirtyDaysAgo } } })
+        prisma.resume.count({ where: { createdAt: { gte: sixtyDaysAgo, lt: thirtyDaysAgo } } }),
+        prisma.analysis.aggregate({
+          where: { createdAt: { gte: thirtyDaysAgo } },
+          _avg: { atsScore: true }
+        }),
+        prisma.analysis.aggregate({
+          where: { createdAt: { gte: sixtyDaysAgo, lt: thirtyDaysAgo } },
+          _avg: { atsScore: true }
+        })
       ]);
 
       const calculateGrowth = (current, previous) => {
-        if (previous === 0) return current > 0 ? "+100%" : "0%";
+        if (previous === 0 || !previous) return current > 0 ? "+100%" : "0%";
         const growth = ((current - previous) / previous) * 100;
         return (growth >= 0 ? "+" : "") + growth.toFixed(1) + "%";
       };
 
       const userGrowth = calculateGrowth(newUsers, prevUsers);
       const resumeGrowth = calculateGrowth(newResumes, prevResumes);
+      const scoreGrowth = calculateGrowth(Math.round(newAvg._avg.atsScore || 0), Math.round(prevAvg._avg.atsScore || 0));
 
       const avgResult = await prisma.analysis.aggregate({
         _avg: { atsScore: true },
@@ -154,41 +166,50 @@ exports.getAnalytics = async (req, res) => {
         criticalGap: Math.round((criticalCount / totalAnalysesCount) * 100)
       };
 
-      // ... existing chart logic ...
-      const sixMonthsAgo = new Date();
-      sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+      // Chart aggregation
+      const rangeLimit = isWeek ? 7 : 6;
+      const startDate = new Date();
+      if (isWeek) startDate.setDate(startDate.getDate() - 7);
+      else startDate.setMonth(startDate.getMonth() - 6);
 
       const [monthlyResumes, monthlyAnalyses] = await Promise.all([
         prisma.resume.findMany({
-          where: { createdAt: { gte: sixMonthsAgo } },
+          where: { createdAt: { gte: startDate } },
           select: { createdAt: true }
         }),
         prisma.analysis.findMany({
-          where: { createdAt: { gte: sixMonthsAgo } },
+          where: { createdAt: { gte: startDate } },
           select: { createdAt: true, jobsMatched: true }
         })
       ]);
 
       const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
       const chartMap = {};
+      const chartDataArr = [];
 
-      for (let i = 5; i >= 0; i--) {
+      for (let i = rangeLimit - 1; i >= 0; i--) {
         const d = new Date();
-        d.setMonth(d.getMonth() - i);
-        const monthName = months[d.getMonth()];
-        chartMap[monthName] = { month: monthName, resumes: 0, analyzed: 0, matched: 0 };
+        if (isWeek) d.setDate(d.getDate() - i);
+        else d.setMonth(d.getMonth() - i);
+
+        const label = isWeek ? days[d.getDay()] : months[d.getMonth()];
+        const key = isWeek ? d.toISOString().split("T")[0] : label;
+
+        chartMap[key] = { month: label, resumes: 0, analyzed: 0, matched: 0 };
+        chartDataArr.push(key);
       }
 
       monthlyResumes.forEach(r => {
-        const m = months[r.createdAt.getMonth()];
-        if (chartMap[m]) chartMap[m].resumes++;
+        const key = isWeek ? r.createdAt.toISOString().split("T")[0] : months[r.createdAt.getMonth()];
+        if (chartMap[key]) chartMap[key].resumes++;
       });
 
       monthlyAnalyses.forEach(a => {
-        const m = months[a.createdAt.getMonth()];
-        if (chartMap[m]) {
-          chartMap[m].analyzed++;
-          chartMap[m].matched += (a.jobsMatched || 0);
+        const key = isWeek ? a.createdAt.toISOString().split("T")[0] : months[a.createdAt.getMonth()];
+        if (chartMap[key]) {
+          chartMap[key].analyzed++;
+          if (a.jobsMatched > 0) chartMap[key].matched++;
         }
       });
 
@@ -200,7 +221,8 @@ exports.getAnalytics = async (req, res) => {
         averageAtsScore,
         userGrowth,
         resumeGrowth,
-        chartData: Object.values(chartMap),
+        scoreGrowth,
+        chartData: chartDataArr.map(k => chartMap[k]),
         readinessBreakdown
       });
     }
@@ -252,12 +274,12 @@ exports.getReports = async (req, res) => {
       const recentAnalyses = await prisma.analysis.findMany({
         take: 50, // Increased for pool visibility
         orderBy: { createdAt: "desc" },
-        include: { 
+        include: {
           resume: {
             include: {
               user: true
             }
-          } 
+          }
         },
       });
 
@@ -318,7 +340,7 @@ exports.getSkillInsights = async (req, res) => {
     const insights = allSkills.map(skill => {
       const demandScore = Math.round(((demandMap[skill] || 0) / totalJobs) * 100);
       const supplyScore = Math.round(((supplyMap[skill] || 0) / totalAnalyses) * 100);
-      
+
       let trend = "Medium";
       if (demandScore > 80) trend = "High";
       if (demandScore > 60 && supplyScore < 20) trend = "Critical";
@@ -375,7 +397,7 @@ exports.getDashboard = async (req, res) => {
 
     //  ADMIN DASHBOARD
     if (role === "admin") {
-      const totalUsers = await prisma.user.count();
+      const totalUsers = await prisma.user.count({ where: { role: "student" } });
       const totalResumes = await prisma.resume.count();
       const totalAnalyses = await prisma.analysis.count();
 

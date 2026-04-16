@@ -68,8 +68,13 @@ export const getDashboardStats = async () => {
   return response.data;
 };
 
-export const getAnalytics = async () => {
-  const response = await apiClient.get('/dashboard/analytics');
+export const getAnalytics = async (range = '') => {
+  const response = await apiClient.get('/dashboard/analytics', { params: { range } });
+  return response.data;
+};
+
+export const getAdminReports = async () => {
+  const response = await apiClient.get('/reports/all');
   return response.data;
 };
 

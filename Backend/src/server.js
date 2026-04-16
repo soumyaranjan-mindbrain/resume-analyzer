@@ -22,6 +22,7 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
 app.use(cookieParser());
+app.use("/uploads", express.static("uploads"));
 
 // Debug Middleware: Log Origin and Cookies for every request
 app.use((req, res, next) => {
@@ -62,6 +63,7 @@ const settingsRoutes = require("./routes/Settings/settings.routes");
 const jobsRoutes = require("./routes/Job/job.routes");
 const studentRoutes = require("./routes/Students/student.routes");
 const helpRoutes = require("./routes/Help/help.routes");
+const reportsRoutes = require("./routes/Reports/reports.routes");
 const applicationRoutes = require("./routes/Application/application.routes");
 
 app.use("/api/auth", authRoutes);
@@ -72,6 +74,7 @@ app.use("/api/settings", settingsRoutes);
 app.use("/api/jobs", jobsRoutes);
 app.use("/api/students", studentRoutes);
 app.use("/api/help", helpRoutes);
+app.use("/api/reports", reportsRoutes);
 app.use("/api/applications", applicationRoutes);
 
 // Health check endpoint

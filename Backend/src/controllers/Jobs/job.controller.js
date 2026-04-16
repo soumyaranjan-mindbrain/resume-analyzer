@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 exports.createJob = async (req, res) => {
   try {
     const { title, company, location, description, type, experience, requirements, responsibilities, tags, salary } = req.body;
-    
+
     const job = await prisma.job.create({
       data: {
         title,
@@ -38,23 +38,28 @@ exports.getJobs = async (req, res) => {
         AND: [
           search
             ? {
-                OR: [
-                  { title: { contains: search, mode: "insensitive" } },
-                  { company: { contains: search, mode: "insensitive" } }
-                ]
-              }
+              OR: [
+                { title: { contains: search, mode: "insensitive" } },
+                { company: { contains: search, mode: "insensitive" } }
+              ]
+            }
             : {},
           skill
             ? {
-                skillsRequired: { has: skill }
-              }
+              skillsRequired: { has: skill }
+            }
             : {}
         ]
+      },
+      include: {
+        _count: {
+          select: { applications: true }
+        }
       },
       orderBy: { createdAt: "desc" }
     });
 
-    res.json(jobs); // Return array directly for consistency with frontend expectations if needed
+    res.json(jobs);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -68,6 +73,9 @@ exports.getJobById = async (req, res) => {
       include: {
         user: {
           select: { name: true, email: true }
+        },
+        _count: {
+          select: { applications: true }
         }
       }
     });
@@ -115,7 +123,12 @@ exports.deleteJob = async (req, res) => {
 exports.getMyJobs = async (req, res) => {
   try {
     const jobs = await prisma.job.findMany({
-      where: { userId: req.user.id }
+      where: { userId: req.user.id },
+      include: {
+        _count: {
+          select: { applications: true }
+        }
+      }
     });
 
     res.json({ success: true, jobs });
