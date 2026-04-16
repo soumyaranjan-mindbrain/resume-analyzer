@@ -48,12 +48,15 @@ exports.updateProfile = async (req, res) => {
   console.log(`[Profile Update Body]:`, req.body);
 
   try {
-    const { name, bio, phone } = req.body;
+    const { name, bio, phone, github, twitter, linkedin } = req.body;
 
     const updateData = {};
     if (name !== undefined) updateData.name = name;
     if (bio !== undefined) updateData.bio = bio;
     if (phone !== undefined) updateData.phone = phone;
+    if (github !== undefined) updateData.github = github;
+    if (twitter !== undefined) updateData.twitter = twitter;
+    if (linkedin !== undefined) updateData.linkedin = linkedin;
 
     // Handle profile picture upload
     if (req.file) {
@@ -70,7 +73,7 @@ exports.updateProfile = async (req, res) => {
 
     if (Object.keys(updateData).length === 0) {
       console.warn(`[Profile Update Warn] No fields provided to update for user ID: ${id}`);
-      return res.status(400).json({ error: "At least one field (name, bio, or phone) is required to update" });
+      return res.status(400).json({ error: "At least one field to update is required" });
     }
 
     console.log(`[Profile Update Execution] Updating user ${id} with:`, updateData);

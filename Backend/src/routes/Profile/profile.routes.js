@@ -2,7 +2,7 @@
 const express = require("express");
 const router = express.Router();
 const { createProfile, updateProfile } = require("../../controllers/Profile/profile.controller");
-const { authMiddleware } = require("../../middleware/authmiddleware");
+const { authMiddleware } = require("../../middleware/authMiddleware");
 const multer = require("multer");
 const storage = multer.memoryStorage();
 const upload = multer({ storage });

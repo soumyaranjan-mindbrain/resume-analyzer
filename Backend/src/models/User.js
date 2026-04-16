@@ -12,6 +12,9 @@ const userSchema = new mongoose.Schema({
   phone: { type: String, default: "" },
   refreshToken: { type: String, default: "" },
   profilePic: { type: String, default: "" },
+  github: { type: String, default: "" },
+  twitter: { type: String, default: "" },
+  linkedin: { type: String, default: "" },
 });
 
 module.exports = mongoose.model("User", userSchema);

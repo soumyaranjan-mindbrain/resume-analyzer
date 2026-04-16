@@ -92,7 +92,7 @@ const SkillInsights = () => {
         </p>
         <button
           onClick={() => fileInputRef.current?.click()}
-          className="bg-blue-600 text-white px-10 py-4 rounded-xl font-bold uppercase tracking-widest text-sm shadow-md hover:bg-blue-700 transition-all active:scale-95 flex items-center gap-3 mx-auto"
+          className="bg-blue-600 text-white px-10 py-5 rounded-3xl font-black uppercase tracking-widest text-xs shadow-2xl shadow-blue-600/20 hover:bg-blue-700 active:scale-95 flex items-center gap-3 mx-auto transition-all"
         >
           <Upload className="w-5 h-5" /> Initialize Analysis
         </button>

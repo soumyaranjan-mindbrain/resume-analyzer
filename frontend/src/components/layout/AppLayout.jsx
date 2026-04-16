@@ -42,6 +42,7 @@ const AppLayout = ({ children }) => {
     { path: '/admin/students', label: 'Students', icon: User },
     { path: '/admin/reports', label: 'Reports', icon: FileText },
     { path: '/admin/jobs', label: 'Job Descriptions', icon: Briefcase },
+    { path: '/admin/support', label: 'Support Management', icon: HelpCircle },
     { path: '/admin/settings', label: 'Settings', icon: Settings },
   ];
 
@@ -63,7 +64,8 @@ const AppLayout = ({ children }) => {
     '/admin/reports': { title: 'Global Reports', subtitle: 'Analyze student resume performance data.' },
     '/admin/jobs': { title: 'Job Descriptions', subtitle: 'Manage available job roles and requirements.' },
     '/admin/jobs/new': { title: 'Create New Job Role', subtitle: 'Add a new position to the recruitment catalog.' },
-    '/admin/settings': { title: 'Admin Settings', subtitle: 'Configure platform parameters and users.' },
+    '/admin/support': { title: 'Support Management', subtitle: 'Manage student support queries and FAQs.' },
+    '/admin/settings': { title: 'Settings', subtitle: 'Configure platform parameters and users.' },
   };
 
   const currentPage = pageInfo[location.pathname];
@@ -142,7 +144,7 @@ const AppLayout = ({ children }) => {
           )}
 
           <button
-            onClick={() => { logout(); navigate('/auth', { replace: true }); }}
+            onClick={() => { logout(); navigate('/', { replace: true }); }}
             className="flex items-center gap-3 w-full px-4 py-3 border border-red-50 bg-red-50/20 rounded-2xl font-bold text-xs text-red-600 hover:bg-red-600 hover:text-white transition-all group shadow-sm"
           >
             <LogOut className="w-5 h-5 transition-transform group-hover:-translate-x-1" />
@@ -214,7 +216,7 @@ const AppLayout = ({ children }) => {
                       </button>
                       <div className="h-[1px] bg-slate-100/50 mx-4 my-1" />
                       <button
-                        onClick={() => { logout(); navigate('/auth', { replace: true }); setProfileOpen(false); }}
+                        onClick={() => { logout(); navigate('/', { replace: true }); setProfileOpen(false); }}
                         className="w-full flex items-center gap-3 px-6 py-3.5 text-sm font-bold text-red-500 hover:bg-white transition-all"
                       >
                         <LogOut className="w-4 h-4" />

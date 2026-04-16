@@ -35,6 +35,47 @@ export const reanalyzeResume = async (resumeId, jobDescription) => {
   return response.data;
 };
 
+export const getAnalysisHistory = async () => {
+  const response = await apiClient.get('/resume/history');
+  return response.data;
+};
+
+// Help & Support APIs
+export const getFaqs = async () => {
+  const response = await apiClient.get('/help/faqs');
+  return response.data;
+};
+
+export const createTicket = async (ticketData) => {
+  const response = await apiClient.post('/help/ticket', ticketData);
+  return response.data;
+};
+
+export const getUserTickets = async (userId) => {
+  const response = await apiClient.get(`/help/ticket/${userId}`);
+  return response.data;
+};
+
+export const adminGetAllTickets = async () => {
+  const response = await apiClient.get('/help/admin/tickets');
+  return response.data;
+};
+
+export const adminUpdateTicket = async (id, updateData) => {
+  const response = await apiClient.put(`/help/admin/ticket/${id}`, updateData);
+  return response.data;
+};
+
+export const createFaq = async (faqData) => {
+  const response = await apiClient.post('/help/admin/faq', faqData);
+  return response.data;
+};
+
+export const deleteFaq = async (id) => {
+  const response = await apiClient.delete(`/help/admin/faq/${id}`);
+  return response.data;
+};
+
 export const getMyResumes = async () => {
   const response = await apiClient.get('/resume/my-resumes');
   return response.data;
@@ -168,6 +209,17 @@ export const exportData = async () => {
 
 export const applyToJob = async (jobId, resumeId) => {
   const response = await apiClient.post('/applications/apply', { jobId, resumeId });
+  return response.data;
+};
+
+// System Config APIs
+export const getConfig = async () => {
+  const response = await apiClient.get('/config');
+  return response.data;
+};
+
+export const updateConfig = async (data) => {
+  const response = await apiClient.put('/config', data);
   return response.data;
 };
 

@@ -263,14 +263,17 @@ const deleteAllData = async (req, res) => {
     const role = req.user?.role;
 
     if (role === 'admin') {
-      // 🚨 ADMIN PURGE: Delete EVERYTHING
+      // 🚨 ADMIN PURGE: Delete EVERYTHING related to students
       await prisma.analysis.deleteMany({});
+      await prisma.application.deleteMany({});
+      await prisma.helpTicket.deleteMany({});
       await prisma.resume.deleteMany({});
+
       // Keep admins, delete students
       await prisma.user.deleteMany({
         where: { role: 'student' }
       });
-      
+
       return res.json({
         success: true,
         message: "Platform has been purged. All students, resumes, and reports deleted."
@@ -278,6 +281,10 @@ const deleteAllData = async (req, res) => {
     }
 
     // STUDENT: Delete only their own data
+    if (!userId) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
     const resumes = await prisma.resume.findMany({
       where: { userId },
       select: { id: true },
@@ -285,21 +292,37 @@ const deleteAllData = async (req, res) => {
 
     const resumeIds = resumes.map((r) => r.id);
 
+    // Delete related analysis
     await prisma.analysis.deleteMany({
       where: {
         resumeId: { in: resumeIds },
       },
     });
 
+    // Delete related applications
+    await prisma.application.deleteMany({
+      where: { userId }
+    });
+
+    // Delete related help tickets
+    await prisma.helpTicket.deleteMany({
+      where: { userId }
+    });
+
+    // Delete resumes
     await prisma.resume.deleteMany({
       where: { userId },
     });
 
+    // Reset user profile fields
     await prisma.user.update({
       where: { id: userId },
       data: {
         bio: null,
         phone: null,
+        github: null,
+        twitter: null,
+        linkedin: null
       },
     });
 
@@ -309,6 +332,7 @@ const deleteAllData = async (req, res) => {
     });
 
   } catch (err) {
+    console.error(`[Delete All Data Error]:`, err);
     res.status(500).json({ error: err.message });
   }
 };

@@ -37,7 +37,7 @@ const authMiddleware = (req, res, next) => {
     try {
       // DEBUG: Temporarily ignore expiration to rule out clock drift
       const decoded = jwt.verify(token, process.env.JWT_SECRET, { ignoreExpiration: true });
-      
+
       req.userId = decoded.id || decoded._id;
       req.user = decoded;
 
@@ -45,8 +45,8 @@ const authMiddleware = (req, res, next) => {
       next();
     } catch (err) {
       console.error("[Auth FAIL] JWT Verification failed:", err.message);
-      return res.status(401).json({ 
-        error: "Token is not valid", 
+      return res.status(401).json({
+        error: "Token is not valid",
         details: err.message,
         hint: "Clear cookies and log in again."
       });
@@ -57,4 +57,15 @@ const authMiddleware = (req, res, next) => {
   }
 };
 
-module.exports = { authMiddleware };
+const protect = authMiddleware;
+
+const admin = (req, res, next) => {
+  if (req.user && (req.user.role === "admin" || req.user.role === "ADMIN")) {
+    next();
+  } else {
+    console.warn(`[Admin FAIL] User ${req.user?.id} has role: ${req.user?.role}`);
+    res.status(403).json({ error: "Not authorized as an admin" });
+  }
+};
+
+module.exports = { authMiddleware, protect, admin };

@@ -6,10 +6,15 @@ import {
   Camera,
   ChevronRight,
   Phone,
-  Briefcase
+  Briefcase,
+  Check,
+  X,
+  ExternalLink,
+  Edit2
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { updateProfile } from '../../services/api';
+import { cn } from '../../utils/cn';
 
 const TwitterIcon = ({ className }) => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
@@ -35,6 +40,8 @@ const LinkedinIcon = ({ className }) => (
 const Profile = () => {
   const { user, checkAuth } = useAuth();
   const [loading, setLoading] = useState(false);
+  const [editingSocial, setEditingSocial] = useState(null); // 'github' | 'twitter' | 'linkedin' | null
+  const [socialValue, setSocialValue] = useState('');
 
   // Split user.name into firstName and lastName
   const getNameParts = (fullName) => {
@@ -51,7 +58,10 @@ const Profile = () => {
     firstName: '',
     lastName: '',
     email: '',
-    phone: ''
+    phone: '',
+    github: '',
+    twitter: '',
+    linkedin: ''
   });
 
   // Sync formData when user context changes
@@ -62,27 +72,53 @@ const Profile = () => {
         firstName: nameParts.first,
         lastName: nameParts.last,
         email: user.email || '',
-        phone: user.phone || ''
+        phone: user.phone || '',
+        github: user.github || '',
+        twitter: user.twitter || '',
+        linkedin: user.linkedin || ''
       });
     }
   }, [user]);
 
-  const handleUpdate = async () => {
+  const handleUpdate = async (manualData = null) => {
     try {
       setLoading(true);
       const fullName = `${formData.firstName} ${formData.lastName}`.trim();
-      await updateProfile(user._id || user.id, {
+      const payload = manualData || {
         name: fullName,
-        phone: formData.phone
-      });
+        phone: formData.phone,
+        github: formData.github,
+        twitter: formData.twitter,
+        linkedin: formData.linkedin
+      };
+      await updateProfile(user._id || user.id, payload);
       await checkAuth(); // Refresh user context
-      alert('Profile updated successfully!');
+      if (manualData) setEditingSocial(null);
+      else alert('Profile updated successfully!');
     } catch (error) {
       console.error('Update failed:', error);
       alert('Failed to update profile.');
     } finally {
       setLoading(false);
     }
+  };
+
+  const startEditingSocial = (type, currentVal) => {
+    setEditingSocial(type);
+    setSocialValue(currentVal || '');
+  };
+
+  const ensureAbsoluteUrl = (url) => {
+    if (!url) return '';
+    if (url.startsWith('http://') || url.startsWith('https://')) return url;
+    if (url.startsWith('www.')) return `https://${url}`;
+    // If it's just a username or domain without protocol
+    return `https://${url}`;
+  };
+
+  const saveSocial = async () => {
+    const formattedUrl = ensureAbsoluteUrl(socialValue);
+    await handleUpdate({ [editingSocial]: formattedUrl });
   };
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
@@ -141,11 +177,56 @@ const Profile = () => {
               <h2 className="text-2xl font-bold text-slate-800 tracking-tight mb-1">{user?.name}</h2>
               <p className="text-slate-500 font-normal text-[10px] uppercase tracking-widest mb-6">{user?.role || 'Student'}</p>
 
-              <div className="flex gap-3 mb-8">
-                {[GithubIcon, TwitterIcon, LinkedinIcon].map((Icon, i) => (
-                  <button key={i} className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center border border-slate-100 hover:bg-blue-600 hover:text-white transition-all shadow-sm">
-                    <Icon className="w-4 h-4" />
-                  </button>
+              <div className="w-full space-y-3">
+                {[
+                  { id: 'github', icon: GithubIcon, color: 'hover:bg-slate-900', label: 'GitHub' },
+                  { id: 'twitter', icon: TwitterIcon, color: 'hover:bg-[#1DA1F2]', label: 'Twitter' },
+                  { id: 'linkedin', icon: LinkedinIcon, color: 'hover:bg-[#0077B5]', label: 'LinkedIn' }
+                ].map((social) => (
+                  <div key={social.id} className="w-full">
+                    {editingSocial === social.id ? (
+                      <div className="flex items-center gap-2 animate-in fade-in slide-in-from-left-2 duration-300">
+                        <input
+                          type="text"
+                          autoFocus
+                          value={socialValue}
+                          onChange={(e) => setSocialValue(e.target.value)}
+                          placeholder={`Enter your ${social.label} link...`}
+                          className="flex-1 bg-slate-50 border border-blue-400 rounded-xl px-4 py-2 text-xs font-medium text-slate-700 focus:outline-none ring-2 ring-blue-500/10"
+                        />
+                        <button onClick={saveSocial} className="p-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-colors shadow-sm">
+                          <Check className="w-3.5 h-3.5" />
+                        </button>
+                        <button onClick={() => setEditingSocial(null)} className="p-2 bg-slate-100 text-slate-500 rounded-lg hover:bg-slate-200 transition-colors">
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    ) : (
+                      <div
+                        onClick={() => !user?.[social.id] && startEditingSocial(social.id, user?.[social.id])}
+                        className={cn("flex items-center justify-between gap-3 p-2 rounded-xl group hover:bg-slate-50 transition-all border border-transparent hover:border-slate-100", !user?.[social.id] && "cursor-pointer")}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className={cn("w-9 h-9 bg-slate-50 rounded-lg flex items-center justify-center border border-slate-100 text-slate-400 group-hover:text-white transition-all", user?.[social.id] && social.color && social.color.replace('hover:', ''))}>
+                            <social.icon className="w-4 h-4" />
+                          </div>
+                          <span className="text-xs font-bold text-slate-600 truncate max-w-[120px]">
+                            {user?.[social.id] ? social.label : `Add ${social.label}`}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                          {user?.[social.id] && (
+                            <a href={user[social.id]} target="_blank" rel="noopener noreferrer" className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all" title="Open Link">
+                              <ExternalLink className="w-3.5 h-3.5" />
+                            </a>
+                          )}
+                          <button onClick={() => startEditingSocial(social.id, user?.[social.id])} className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all" title="Edit Link">
+                            <Edit2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 ))}
               </div>
             </div>

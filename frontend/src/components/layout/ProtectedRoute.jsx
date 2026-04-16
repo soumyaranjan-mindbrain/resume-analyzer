@@ -1,10 +1,14 @@
 import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useConfig } from '../../context/ConfigContext';
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
-  const { user, loading } = useAuth();
+  const { user, loading: authLoading } = useAuth();
+  const { maintenanceMode, loading: configLoading } = useConfig();
   const location = useLocation();
+
+  const loading = authLoading || configLoading;
 
   if (loading) {
     return (
@@ -15,14 +19,18 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
   }
 
   if (!user) {
-    
+
     return <Navigate to="/auth" state={{ from: location }} replace />;
   }
 
   if (allowedRoles && !allowedRoles.includes(user.role)) {
-    
+
     const redirectPath = user.role === 'admin' ? '/admin' : '/dashboard';
     return <Navigate to={redirectPath} replace />;
+  }
+
+  if (maintenanceMode && user?.role !== 'admin') {
+    return <Navigate to="/maintenance" replace />;
   }
 
   return children;

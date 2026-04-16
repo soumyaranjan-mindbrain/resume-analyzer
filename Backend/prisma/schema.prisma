@@ -20,6 +20,9 @@ model User {
   status    String    @default("Active") // 'Active', 'Hired', 'Needs Review'
   lastActive DateTime? @default(now())
   createdAt DateTime? @default(now())
+  github    String?
+  twitter   String?
+  linkedin  String?
   updatedAt DateTime? @updatedAt
 
   resumes      Resume[] 
@@ -126,4 +129,12 @@ model HelpTicket {
   user User @relation(fields: [userId], references: [id])
 
   @@map("help_tickets")
+}
+
+model SystemConfig {
+  id               String   @id @default(auto()) @map("_id") @db.ObjectId
+  maintenanceMode  Boolean  @default(false)
+  updatedAt        DateTime @updatedAt
+
+  @@map("system_configs")
 }

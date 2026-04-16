@@ -1,90 +1,59 @@
-import React, { useState } from 'react';
-import { 
-  Shield, 
-  Globe, 
-  Cpu, 
-  Zap,
+import React, { useState, useEffect } from 'react';
+import {
+  Globe,
   Power,
-  Download,
-  Upload,
-  RefreshCw,
   Loader2,
-  AlertTriangle
+  AlertTriangle,
+  RefreshCw
 } from 'lucide-react';
-import { exportData, importData, resetSettings, deleteAllData } from '../../services/api';
+import { deleteAllData, getConfig, updateConfig } from '../../services/api';
+import { useConfig } from '../../context/ConfigContext';
 import toast from 'react-hot-toast';
 
 const Settings = () => {
+  const { refreshConfig } = useConfig();
+  const [isMaintenance, setIsMaintenance] = useState(false);
+  const [showPurgeModal, setShowPurgeModal] = useState(false);
+  const [purgeConfirmText, setPurgeConfirmText] = useState('');
   const [loading, setLoading] = useState({
-    export: false,
-    import: false,
-    reset: false,
-    delete: false
+    delete: false,
+    config: true,
+    toggle: false
   });
 
-  const handleExport = async () => {
-    setLoading(prev => ({ ...prev, export: true }));
+  useEffect(() => {
+    const fetchConfig = async () => {
+      try {
+        const data = await getConfig();
+        setIsMaintenance(data.config?.maintenanceMode || false);
+      } catch (error) {
+        console.error('Failed to fetch config:', error);
+      } finally {
+        setLoading(prev => ({ ...prev, config: false }));
+      }
+    };
+    fetchConfig();
+  }, []);
+
+  const handleToggleMaintenance = async () => {
+    setLoading(prev => ({ ...prev, toggle: true }));
     try {
-      const data = await exportData();
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `platform-backup-${new Date().toISOString().split('T')[0]}.json`);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      toast.success('Platform data exported successfully');
+      const newStatus = !isMaintenance;
+      await updateConfig({ maintenanceMode: newStatus });
+      setIsMaintenance(newStatus);
+      await refreshConfig(); // Immediate sync
+      toast.success(`Maintenance mode ${newStatus ? 'enabled' : 'disabled'}`);
     } catch (error) {
-      toast.error('Failed to export data');
+      toast.error('Failed to update maintenance mode');
     } finally {
-      setLoading(prev => ({ ...prev, export: false }));
+      setLoading(prev => ({ ...prev, toggle: false }));
     }
   };
 
-  const handleImport = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    setLoading(prev => ({ ...prev, import: true }));
-    try {
-      const reader = new FileReader();
-      reader.onload = async (event) => {
-        try {
-          const content = JSON.parse(event.target.result);
-          await importData(content);
-          toast.success('Platform data imported successfully');
-        } catch (err) {
-          toast.error('Invalid backup file format');
-        }
-      };
-      reader.readAsText(file);
-    } catch (error) {
-      toast.error('Failed to import data');
-    } finally {
-      setLoading(prev => ({ ...prev, import: false }));
-    }
-  };
-
-  const handleReset = async () => {
-    if (!window.confirm('Are you sure you want to reset all platform configurations to default?')) return;
-    
-    setLoading(prev => ({ ...prev, reset: true }));
-    try {
-      await resetSettings();
-      toast.success('Platform settings reset successfully');
-    } catch (error) {
-      toast.error('Failed to reset settings');
-    } finally {
-      setLoading(prev => ({ ...prev, reset: false }));
-    }
-  };
 
   const handleDeleteAll = async () => {
-    const userInput = window.prompt('DANGER: This will permanently delete ALL platform data (Users, Resumes, Reports). This cannot be undone. Type "DELETE ALL" to confirm:');
-    
-    if (userInput !== 'DELETE ALL') {
-      if (userInput !== null) toast.error('Confirmation text mismatch. Deletion cancelled.');
+    if (purgeConfirmText !== 'DELETE ALL') {
+      toast.error('Confirmation text mismatch');
       return;
     }
 
@@ -92,61 +61,17 @@ const Settings = () => {
     try {
       await deleteAllData();
       toast.success('All platform data has been purged');
+      setShowPurgeModal(false);
+      setPurgeConfirmText('');
     } catch (error) {
       toast.error('Failed to delete platform data');
     } finally {
       setLoading(prev => ({ ...prev, delete: false }));
     }
   };
+
   return (
     <div className="max-w-4xl mx-auto space-y-12 animate-in fade-in duration-500 pb-12">
-      
-      {/* API Configuration Section */}
-      <section className="space-y-4">
-        <div className="flex items-center gap-3 px-1">
-          <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center border border-blue-100">
-            <Cpu className="w-5 h-5 text-blue-600" />
-          </div>
-          <div>
-            <h3 className="text-lg font-semibold text-slate-900">API Configuration</h3>
-            <p className="text-sm text-slate-500 font-medium">Manage external service integrations and security keys.</p>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-          <div className="p-6 border-b border-slate-100 bg-slate-50/50">
-            <div className="flex gap-3">
-              <Zap className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
-              <div>
-                <p className="text-sm font-bold text-blue-900">Security Note</p>
-                <p className="text-xs text-blue-700/70">API keys provide administrative access to AI services. Ensure they are kept confidential and rotated regularly if compromised.</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="p-6 space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-white border border-slate-200 rounded-lg hover:border-blue-300 transition-colors group">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-slate-50 rounded-md border border-slate-100 group-hover:bg-blue-50 group-hover:border-blue-100 transition-colors">
-                  <Shield className="w-4 h-4 text-slate-400 group-hover:text-blue-600" />
-                </div>
-                <div>
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Groq API Key</p>
-                  <p className="text-sm font-medium text-slate-600 font-mono mt-0.5">••••••••••••••••••••••••</p>
-                </div>
-              </div>
-              <div className="flex gap-2">
-                <button className="px-4 py-1.5 bg-white border border-slate-200 text-slate-600 rounded-md font-bold text-xs hover:bg-slate-50 transition-all">
-                  Change Key
-                </button>
-                <button className="px-4 py-1.5 bg-white border border-slate-200 text-red-600 rounded-md font-bold text-xs hover:bg-red-50 hover:text-red-200 transition-all">
-                  Revoke
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* Platform Controls Section */}
       <section className="space-y-4">
@@ -160,53 +85,27 @@ const Settings = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6 space-y-4">
-            <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg border border-slate-100">
-              <div>
-                <p className="text-sm font-bold text-slate-700">Maintenance Mode</p>
-                <p className="text-xs text-slate-500">Disable platform access for non-admin users during updates.</p>
-              </div>
-              <button className="w-10 h-5 bg-slate-200 rounded-full relative transition-all">
-                <div className="absolute left-0.5 top-0.5 w-4 h-4 bg-white rounded-full shadow-sm" />
-              </button>
+        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6 space-y-4">
+          <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg border border-slate-100">
+            <div>
+              <p className="text-sm font-bold text-slate-700">Maintenance Mode</p>
+              <p className="text-xs text-slate-500">Disable platform access for non-admin users during updates.</p>
             </div>
-          </div>
-
-          <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6 space-y-4">
-            <div className="flex items-center justify-between gap-4">
-              <div>
-                <p className="text-sm font-bold text-slate-700">Data Management</p>
-                <p className="text-xs text-slate-500">Backup or restore entire platform database state.</p>
-              </div>
-              <div className="flex gap-2">
-                <button 
-                  onClick={handleExport}
-                  disabled={loading.export}
-                  className="p-2 bg-white border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50 transition-colors disabled:opacity-50"
-                  title="Export Data"
-                >
-                  {loading.export ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
-                </button>
-                <label className="p-2 bg-white border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50 cursor-pointer transition-colors">
-                  {loading.import ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
-                  <input type="file" className="hidden" onChange={handleImport} accept=".json" />
-                </label>
-              </div>
-            </div>
+            <button
+              onClick={handleToggleMaintenance}
+              disabled={loading.toggle || loading.config}
+              className={`w-12 h-6 rounded-full relative transition-all duration-300 ${isMaintenance ? 'bg-blue-600 shadow-inner' : 'bg-slate-300'}`}
+            >
+              <div className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow-lg transition-all duration-300 ${isMaintenance ? 'left-7' : 'left-1'}`} />
+              {loading.toggle && (
+                <div className="absolute inset-0 flex items-center justify-center bg-white/20 rounded-full">
+                  <Loader2 className="w-3 h-3 text-white animate-spin" />
+                </div>
+              )}
+            </button>
           </div>
         </div>
       </section>
-
-      {/* Action Buttons */}
-      <div className="flex items-center justify-end gap-3 px-1">
-        <button className="px-6 py-2.5 bg-white border border-slate-200 rounded-lg font-bold text-sm text-slate-600 hover:bg-slate-50 transition-colors shadow-sm">
-          Discard Changes
-        </button>
-        <button className="px-8 py-2.5 bg-blue-600 text-white rounded-lg font-bold text-sm hover:bg-blue-700 transition-colors shadow-sm">
-          Save Settings
-        </button>
-      </div>
 
       <div className="border-t border-slate-200 pt-8">
         {/* Danger Zone Section */}
@@ -224,38 +123,61 @@ const Settings = () => {
           <div className="bg-red-50/30 rounded-xl border border-red-100 p-6 space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
               <div>
-                <p className="text-sm font-bold text-red-900">Reset Platform Configurations</p>
-                <p className="text-xs text-red-700/70 mt-1 max-w-md">Restore all system settings, API configurations, and platform defaults. Student data will remain intact.</p>
-              </div>
-              <button 
-                onClick={handleReset}
-                disabled={loading.reset}
-                className="px-6 py-2.5 bg-white border border-red-200 text-red-600 rounded-lg font-bold text-xs uppercase tracking-wider hover:bg-red-50 transition-colors shadow-sm whitespace-nowrap flex items-center gap-2"
-              >
-                {loading.reset && <Loader2 className="w-3 h-3 animate-spin" />}
-                Reset Defaults
-              </button>
-            </div>
-
-            <div className="pt-6 border-t border-red-100 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-              <div>
                 <p className="text-sm font-bold text-red-900">Purge All Data</p>
                 <p className="text-xs text-red-700/70 mt-1 max-w-md">This will permanently delete all student resumes, analysis history, and generated reports. This action cannot be undone.</p>
               </div>
-              <button 
-                onClick={handleDeleteAll}
-                disabled={loading.delete}
-                className="px-6 py-2.5 bg-red-600 text-white rounded-lg font-bold text-xs uppercase tracking-wider hover:bg-red-700 transition-colors shadow-sm whitespace-nowrap flex items-center gap-2"
-              >
-                {loading.delete && <Loader2 className="w-3 h-3 animate-spin" />}
-                Clear All Data
-              </button>
+              {!showPurgeModal ? (
+                <button
+                  onClick={() => setShowPurgeModal(true)}
+                  className="px-6 py-2.5 bg-red-600 text-white rounded-lg font-bold text-xs uppercase tracking-wider hover:bg-red-700 transition-colors shadow-sm whitespace-nowrap flex items-center gap-2"
+                >
+                  Clear All Data
+                </button>
+              ) : (
+                <button
+                  onClick={() => { setShowPurgeModal(false); setPurgeConfirmText(''); }}
+                  className="px-6 py-2.5 bg-white border border-slate-200 text-slate-500 rounded-lg font-bold text-xs uppercase tracking-wider hover:bg-slate-50 transition-colors shadow-sm"
+                >
+                  Cancel
+                </button>
+              )}
             </div>
+
+            {showPurgeModal && (
+              <div className="mt-4 p-6 bg-white border-2 border-red-100 rounded-2xl space-y-4 animate-in slide-in-from-top-2 duration-300">
+                <div className="flex items-start gap-4">
+                  <div className="p-2 bg-red-50 rounded-lg shrink-0">
+                    <AlertTriangle className="w-5 h-5 text-red-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-slate-900">Are you absolutely sure?</p>
+                    <p className="text-xs text-slate-500 mt-1">This action is irreversible. Please type <span className="font-mono font-bold text-red-600 bg-red-50 px-1 rounded">DELETE ALL</span> to confirm and proceed with the platform purge.</p>
+                  </div>
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <input
+                    type="text"
+                    placeholder='Type "DELETE ALL" here'
+                    value={purgeConfirmText}
+                    onChange={(e) => setPurgeConfirmText(e.target.value)}
+                    className="flex-1 h-11 bg-slate-50 border border-slate-200 rounded-xl px-4 text-sm font-bold text-slate-800 placeholder:text-slate-300 focus:border-red-500 focus:ring-2 focus:ring-red-500/10 transition-all outline-none"
+                  />
+                  <button
+                    onClick={handleDeleteAll}
+                    disabled={loading.delete || purgeConfirmText !== 'DELETE ALL'}
+                    className="h-11 px-8 bg-red-600 text-white rounded-xl font-bold uppercase tracking-wider text-[10px] hover:bg-red-700 disabled:opacity-30 disabled:grayscale transition-all shadow-md shadow-red-600/10 flex items-center justify-center gap-2"
+                  >
+                    {loading.delete ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Execute Purge'}
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </section>
       </div>
 
-    </div>
+    </div >
   );
 };
 

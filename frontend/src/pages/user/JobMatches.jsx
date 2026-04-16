@@ -34,8 +34,6 @@ const JobMatches = () => {
 
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeFilter, setActiveFilter] = useState('All');
-  const [searchText, setSearchText] = useState('');
 
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [selectedJob, setSelectedJob] = useState(null);
@@ -91,22 +89,7 @@ const JobMatches = () => {
     }
   }, [loading, jobs]);
 
-  const filterTags = ['All', 'Open Now'];
-
-  const filteredJobs = jobs.filter(job => {
-    const title = String(job.title || '').toLowerCase();
-    const company = String(job.company || '').toLowerCase();
-
-    if (activeFilter !== 'All') {
-      if (activeFilter === 'Open Now') {
-        // Future filter
-      }
-    }
-
-    if (!searchText.trim()) return true;
-    const q = searchText.trim().toLowerCase();
-    return title.includes(q) || company.includes(q);
-  });
+  const filteredJobs = jobs; // Default to all jobs since filters are removed
 
   const closeModals = () => {
     setDetailsOpen(false);
@@ -271,38 +254,6 @@ const JobMatches = () => {
 
   return (
     <div className="max-w-[1400px] mx-auto py-8">
-
-      {/* Header / Filter Section */}
-      <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-8">
-        <div className="flex flex-wrap items-center gap-3">
-          {filterTags.map((tag) => (
-            <button
-              key={tag}
-              onClick={() => setActiveFilter(tag)}
-              className={cn(
-                "px-5 py-2.5 rounded-xl font-medium text-sm transition-all duration-300 border",
-                activeFilter === tag
-                  ? "bg-blue-600 text-white border-blue-600 shadow-sm"
-                  : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50 hover:text-slate-900"
-              )}
-            >
-              {tag}
-            </button>
-          ))}
-        </div>
-
-        <div className="flex items-center gap-4 w-full md:w-auto">
-          <div className="relative w-full md:w-[340px]">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-            <input
-              value={searchText}
-              onChange={(e) => setSearchText(e.target.value)}
-              placeholder="Search jobs by title or company..."
-              className="w-full pl-11 pr-4 py-3 bg-white border border-slate-200 rounded-xl text-sm font-medium text-slate-700 outline-none hover:border-blue-400 focus:border-blue-500 transition-all shadow-sm"
-            />
-          </div>
-        </div>
-      </div>
 
       {/* Main Jobs List */}
       <div className="space-y-6">

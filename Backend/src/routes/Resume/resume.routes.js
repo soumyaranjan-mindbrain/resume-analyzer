@@ -12,7 +12,7 @@ const {
 } = require("../../controllers/Resume/resume.controller.v2");
 
 const { analyzeResume } = require("../../controllers/Analysis/analysis.controller.v2");
-const { authMiddleware } = require("../../middleware/authmiddleware");
+const { authMiddleware } = require("../../middleware/authMiddleware");
 
 const router = express.Router();
 

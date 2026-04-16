@@ -396,29 +396,7 @@ const History = () => {
 
   return (
     <div className="max-w-[1400px] mx-auto py-10 px-4 sm:px-0">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
-        <div>
-          <h1 className="text-4xl font-black text-slate-800 tracking-tight leading-none uppercase">Executive <span className="text-blue-600">Archive</span></h1>
-          <p className="text-slate-500 font-medium text-xs mt-2 uppercase tracking-[0.2em] opacity-70">Strategic management of your professional intelligence</p>
-        </div>
-        <div className="flex items-center gap-4">
-          <button
-            onClick={() => {
-              const input = document.createElement('input');
-              input.type = 'file';
-              input.accept = '.pdf,.docx';
-              input.onchange = (e) => handleDirectUpload(e.target.files[0]);
-              input.click();
-            }}
-            className="flex items-center gap-3 px-8 py-4 bg-slate-900 text-white rounded-[1.5rem] font-black text-[11px] uppercase tracking-[0.2em] shadow-2xl shadow-slate-900/10 hover:bg-black active:scale-[0.98] transition-all group"
-          >
-            <div className="w-5 h-5 bg-white/10 rounded-lg flex items-center justify-center group-hover:rotate-90 transition-transform">
-              <Plus className="w-3.5 h-3.5" />
-            </div>
-            Analyze New Resume
-          </button>
-        </div>
-      </div>
+      {/* Header removed as requested */}
 
       {resumes.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-10">
