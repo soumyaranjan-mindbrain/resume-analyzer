@@ -23,15 +23,25 @@ async function extractTextFromPdf(input) {
       throw new Error("Empty buffer received for PDF extraction");
     }
 
-    // Correct usage for pdf-parse v2: Pass data directly to constructor
-    const { PDFParse } = require("pdf-parse");
-    const parser = new PDFParse({ data: buffer });
+    const pdf = require("pdf-parse");
+    let extractedData = null;
 
-    // getText() returns the result directly in v2
-    const result = await parser.getText();
-    await parser.destroy();
+    if (typeof pdf === "function") {
+      // Standard pdf-parse functional usage
+      console.log("[PDF] Using functional extraction engine");
+      extractedData = await pdf(buffer);
+    } else if (pdf.PDFParse) {
+      // pdf-parse fork with class-based usage
+      console.log("[PDF] Using class-based extraction engine");
+      const parser = new pdf.PDFParse({ data: buffer });
+      const result = await parser.getText();
+      await parser.destroy();
+      extractedData = { text: result.text };
+    } else {
+      throw new Error("Unable to locate valid pdf-parse extraction patterns.");
+    }
 
-    const text = (result.text || "").trim();
+    const text = (extractedData.text || "").trim();
     console.log(`[PDF] Extracted ${text.length} characters.`);
 
     if (text.length < 20) {
@@ -78,8 +88,15 @@ async function extractTextFromDocx(input) {
 //  GROQ AI — RESUME ANALYSIS
 // ─────────────────────────────────────────────
 function buildAnalysisPrompt(resumeText) {
-  return `You are a Tier-1 Technical Recruiter with experience at Google and NVIDIA. 
-Analyze the resume below and provide a BRUTALLY HONEST score based on a 100-point rubric.
+  return `You are a Tier-1 Technical Recruiter and ATS Specialist.
+  
+STEP 1: DOCUMENT VALIDATION
+First, determine if the provided text is a professional Resume or Curriculum Vitae (CV). 
+If it is NOT a resume (e.g., it is a project report, a book excerpt, an invoice, or non-career related text), you MUST return only this JSON and stop:
+{ "isResume": false, "error": "This document does not appear to be a professional resume or CV. Please upload a valid resume payload." }
+
+STEP 2: NEURAL ANALYSIS
+If it IS a resume, analyze it and provide a BRUTALLY HONEST score based on a 100-point rubric.
 
 SCORING RUBRIC (Max 100 pts):
 1.  Keyword Density (20 pts): Match against standard industry tech stacks. 
@@ -102,6 +119,7 @@ BE EXTREMELY CRITICAL.
 
 Return ONLY valid JSON:
 {
+  "isResume": true,
   "breakdown": {
     "keywords": 0-20,
     "achievements": 0-15,
@@ -124,7 +142,7 @@ Return ONLY valid JSON:
   "summaryAnalysis": "Deep executive critique of the candidate's professional standing and resume quality (minimum 6-8 lines). Focus on specific areas for improvement, technical gaps, and strategic market positioning."
 }
 
-RESUME:
+RESUME PAYLOAD:
 ---
 ${resumeText.slice(0, 8000)}
 ---`;
@@ -133,11 +151,13 @@ ${resumeText.slice(0, 8000)}
 function buildMatchPrompt(resumeText, jobDescription) {
   return `You are a Tier-1 Technical Recruiter. Your task is to perform a pin-pointed comparison between a Candidate's Resume and a specific Job Description (JD).
 
-ATS MATCH SCORING RUBRIC (Max 100):
-1. Skill Alignment (40 pts): Direct match of required technical skills, languages, and tools mentioned in the JD.
-2. Experience Relevance (30 pts): How well the work history matches the specific responsibilities and seniority requested.
-3. Keyword Optimization (20 pts): Specific industry terms and tools found in the JD.
-4. Quantifiable Impact (10 pts): Evidence of results (%, $, #) that are relevant to this specific role.
+STEP 1: DOCUMENT VALIDATION
+First, verify that the 'RESUME' payload provided is a professional Resume or CV. 
+If it is NOT a resume (e.g., project report, random text), you MUST return:
+{ "isResume": false, "error": "The uploaded document is not a professional resume. Job matching requires a valid resume payload." }
+
+STEP 2: ATS MATCH ANALYSIS
+If it IS a resume, score its alignment with the JD.
 
 CRITICAL INSTRUCTIONS:
 - If the JD is random text, jibberish, placeholder text, or completely irrelevant to the candidates career (e.g., candidate is a Coder but JD is for a Chef), the total score MUST be very low (below 30).
@@ -202,6 +222,13 @@ async function analyzeResumeText(resumeText, jobDescription = null) {
     }
 
     const parsed = JSON.parse(jsonMatch[0]);
+
+    // Handle Document Validation Failure
+    if (parsed.isResume === false) {
+      console.warn("[Groq] Validation Failed:", parsed.error);
+      throw new Error(parsed.error || "Invalid Document: This system only processes professional resumes.");
+    }
+
     // Handle both { breakdown: {...} } and top-level keys
     const b = parsed.breakdown || parsed.scoreBreakdown || parsed;
 

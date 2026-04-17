@@ -77,7 +77,7 @@ const Auth = () => {
           <div className="space-y-6">
             <h1 className="text-5xl md:text-6xl font-bold tracking-tight text-[var(--neutral-900)] leading-[1.1]">
               Elevate your <br />
-              <span className="kredo-text">Professional</span> <br />
+              <span className="mindvista-text">Professional</span> <br />
               frequency.
             </h1>
             <p className="text-xl text-[var(--neutral-600)] font-bold max-w-md leading-relaxed">
@@ -101,7 +101,7 @@ const Auth = () => {
                 {isLogin ? 'Sign In' : 'Create Account'}
               </h2>
               <p className="text-slate-600 font-bold text-sm">
-                {isLogin ? 'Welcome back. Please enter your details.' : 'Join Kredo to optimize your career.'}
+                {isLogin ? 'Welcome back. Please enter your details.' : 'Join MindVista to optimize your career.'}
               </p>
             </div>
 
@@ -178,7 +178,7 @@ const Auth = () => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="btn-kredo w-full !py-4 flex items-center justify-center gap-3 relative overflow-hidden group"
+                  className="btn-mindvista w-full !py-4 flex items-center justify-center gap-3 relative overflow-hidden group"
                 >
                   <span className={cn("transition-all duration-300", loading ? "opacity-0 scale-90" : "opacity-100 scale-100")}>
                     {isLogin ? 'Sign In' : 'Sign Up'}

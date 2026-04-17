@@ -29,8 +29,37 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
     return <Navigate to={redirectPath} replace />;
   }
 
-  if (maintenanceMode && user?.role !== 'admin') {
-    return <Navigate to="/maintenance" replace />;
+  const { logout } = useAuth();
+
+  // Maintenance redirection logic - Only applies to standard users on dashboard/user routes
+  const isUserRoute = location.pathname.startsWith('/dashboard') ||
+    location.pathname.startsWith('/history') ||
+    location.pathname.startsWith('/resume-maker') ||
+    location.pathname.startsWith('/matches') ||
+    location.pathname.startsWith('/recommendations') ||
+    location.pathname.startsWith('/insights') ||
+    location.pathname.startsWith('/support');
+
+  const shouldMaintenanceRedirect = maintenanceMode && user?.role === 'user' && isUserRoute;
+
+  React.useEffect(() => {
+    if (shouldMaintenanceRedirect) {
+      logout().then(() => {
+        // Redirect to landing page after logout
+        window.location.href = '/?maintenance=true';
+      });
+    }
+  }, [shouldMaintenanceRedirect, logout]);
+
+  if (shouldMaintenanceRedirect) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-blue-600/10 border-t-blue-600 rounded-full animate-spin" />
+          <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">System Calibration - Synchronizing Session</p>
+        </div>
+      </div>
+    );
   }
 
   return children;

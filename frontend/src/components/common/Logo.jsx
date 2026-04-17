@@ -3,24 +3,29 @@ import { cn } from '../../utils/cn';
 
 const Logo = ({ className = '', size = 'md', onClick }) => {
   const sizeClasses = {
-    sm: 'h-10',
-    md: 'h-12',
-    lg: 'h-14',
-    xl: 'h-18'
+    sm: 'h-12',
+    md: 'h-16',
+    lg: 'h-20',
+    xl: 'h-32'
   };
 
   return (
-    <div 
-      className={cn("flex items-center cursor-pointer group", className)}
+    <div
+      className={cn("flex items-center justify-center cursor-pointer group overflow-hidden relative", sizeClasses[size], className)}
       onClick={onClick}
     >
-      <img 
-        src="/Kredo_logo_with_educational_theme-removebg-preview.png" 
-        alt="Kredo Logo" 
-        style={{ imageRendering: '-webkit-optimize-contrast' }}
+      <img
+        src="/mindvista_logo_wide.png"
+        alt="MindVista Logo"
+        style={{
+          imageRendering: '-webkit-optimize-contrast',
+          mixBlendMode: 'multiply',
+          objectFit: 'cover',
+          objectPosition: 'center',
+          height: '250%' // Super-fill crop
+        }}
         className={cn(
-          "w-auto transition-transform duration-500 group-hover:scale-105 filter contrast-[1.08] saturate-[1.02] brightness-[1.01] drop-shadow-sm", 
-          sizeClasses[size]
+          "w-auto transition-transform duration-500 group-hover:scale-[1.1] filter contrast-[1.1] saturate-[1.05] brightness-[1.1] drop-shadow-sm"
         )}
       />
     </div>

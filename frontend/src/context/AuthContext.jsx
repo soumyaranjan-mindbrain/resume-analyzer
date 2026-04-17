@@ -11,28 +11,39 @@ export const AuthProvider = ({ children }) => {
     try {
       const data = await authService.getMe();
       const userData = data.user;
-      
+
       // Map student to user role for frontend consistency
       if (userData.role === 'student') userData.role = 'user';
       setUser(userData);
-      localStorage.setItem('kredo_user', JSON.stringify(userData));
+      localStorage.setItem('mindvista_user', JSON.stringify(userData));
     } catch (error) {
       setUser(null);
-      localStorage.removeItem('kredo_user');
+      localStorage.removeItem('mindvista_user');
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    const savedUser = localStorage.getItem('kredo_user');
+    let savedUser = localStorage.getItem('mindvista_user');
+
+    // Migration: Check for old kredo_user key if new one is missing
+    if (!savedUser) {
+      const oldUser = localStorage.getItem('kredo_user');
+      if (oldUser) {
+        localStorage.setItem('mindvista_user', oldUser);
+        localStorage.removeItem('kredo_user');
+        savedUser = oldUser;
+      }
+    }
+
     if (savedUser) {
       try {
         const parsed = JSON.parse(savedUser);
         if (parsed.role === 'student') parsed.role = 'user';
         setUser(parsed);
       } catch (e) {
-        localStorage.removeItem('kredo_user');
+        localStorage.removeItem('mindvista_user');
       }
     }
     // Verify session with backend
@@ -45,7 +56,7 @@ export const AuthProvider = ({ children }) => {
       const userData = data.user;
       if (userData.role === 'student') userData.role = 'user';
       setUser(userData);
-      localStorage.setItem('kredo_user', JSON.stringify(userData));
+      localStorage.setItem('mindvista_user', JSON.stringify(userData));
       return userData;
     } catch (error) {
       throw error;
@@ -58,7 +69,7 @@ export const AuthProvider = ({ children }) => {
       const userResData = data.user;
       if (userResData.role === 'student') userResData.role = 'user';
       setUser(userResData);
-      localStorage.setItem('kredo_user', JSON.stringify(userResData));
+      localStorage.setItem('mindvista_user', JSON.stringify(userResData));
       return userResData;
     } catch (error) {
       throw error;
@@ -72,7 +83,7 @@ export const AuthProvider = ({ children }) => {
       console.error('Logout error:', error);
     } finally {
       setUser(null);
-      localStorage.removeItem('kredo_user');
+      localStorage.removeItem('mindvista_user');
     }
   };
 

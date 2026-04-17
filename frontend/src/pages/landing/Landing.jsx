@@ -1,5 +1,6 @@
-import React, { useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useRef, useEffect, useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import {
@@ -51,7 +52,7 @@ const Navbar = () => {
         <Logo onClick={() => navigate('/')} />
 
         <div className="hidden md:flex items-center gap-10">
-          
+
         </div>
 
         <div className="flex items-center gap-6">
@@ -60,7 +61,7 @@ const Navbar = () => {
           </button>
           <button
             onClick={() => navigate('/auth')}
-            className="btn-kredo !py-3 !px-8 shadow-purple-500/20"
+            className="btn-mindvista !py-3 !px-8 shadow-purple-500/20"
           >
             Get Started
           </button>
@@ -108,7 +109,7 @@ const Hero = () => {
 
   return (
     <section ref={heroRef} className="relative min-h-[100vh] pt-40 pb-20 overflow-hidden px-6">
-      
+
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div className="absolute -top-20 -left-20 w-[600px] h-[600px] bg-purple-200/40 blur-[120px] rounded-full" />
         <div className="absolute top-1/2 -right-20 w-[500px] h-[500px] bg-cyan-200/30 blur-[100px] rounded-full" />
@@ -119,15 +120,15 @@ const Hero = () => {
         <div ref={textGroupRef} className="space-y-8">
           <h1 className="hero-animate text-5xl md:text-7xl font-bold leading-[1.1] tracking-tight text-slate-800">
             Land more <br />
-            <span className="kredo-text inline-block py-1">Interview Calls</span> <br />
-            with Kredo.
+            <span className="mindvista-text inline-block py-1">Interview Calls</span> <br />
+            with MindVista.
           </h1>
 
           <p className="hero-animate text-xl text-slate-600 max-w-xl leading-relaxed font-medium">
             Optimize your professional identity against 240+ market variables. Our neural engine ensures your resume is visible to both Humans and ATS algorithms.
           </p>
 
-          
+
           <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none -z-10">
             <div className="absolute top-[10%] left-[5%] w-64 h-64 bg-primary-100 rounded-full blur-[80px] opacity-40 animate-float" />
             <div className="absolute bottom-[20%] right-[10%] w-96 h-96 bg-white rounded-full blur-[100px] opacity-60 animate-float" style={{ animationDelay: '-3s' }} />
@@ -136,16 +137,16 @@ const Hero = () => {
 
 
 
-          
+
         </div>
 
-        
+
         <div ref={mockupRef} className="relative flex items-center justify-center p-10">
           <div className="relative w-full max-w-[450px]">
-            
+
             <div className="hero-float relative z-20 clay-card !p-10 rotate-[-4deg] border-white/60 shadow-2xl">
               <div className="space-y-8">
-                
+
                 <div className="flex justify-between items-start">
                   <div>
                     <h4 className="text-xl font-semibold text-slate-800 tracking-tight mb-1">Alex Rivera</h4>
@@ -156,7 +157,7 @@ const Hero = () => {
                   </div>
                 </div>
 
-                
+
                 <div className="space-y-2">
                   <div className="text-[8px] font-bold uppercase tracking-widest text-slate-400">Professional Matrix</div>
                   <p className="text-[11px] font-medium text-slate-600 leading-relaxed italic">
@@ -164,7 +165,7 @@ const Hero = () => {
                   </p>
                 </div>
 
-                
+
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
                     <div className="h-[1px] flex-grow bg-[var(--neutral-100)]" />
@@ -184,7 +185,7 @@ const Hero = () => {
                   </div>
                 </div>
 
-                
+
                 <div className="flex flex-wrap gap-2 pt-4">
                   {['React', 'Node.js', 'PyTorch', 'AWS'].map(skill => (
                     <span key={skill} className="px-3 py-1.5 rounded-lg bg-white border border-slate-100 text-[8px] font-bold text-slate-600 shadow-sm uppercase tracking-tighter">
@@ -194,7 +195,7 @@ const Hero = () => {
                 </div>
               </div>
 
-              
+
               <div className="absolute -top-10 -right-10 w-32 h-32 rounded-[2.5rem] bg-white shadow-2xl flex flex-col items-center justify-center border-4 border-white z-30 group hover:scale-110 transition-all duration-700">
                 <div className="text-4xl font-bold text-purple-600">78<span className="text-lg">%</span></div>
                 <div className="text-[8px] font-bold text-[var(--neutral-400)] uppercase tracking-widest">ATS Match</div>
@@ -204,7 +205,7 @@ const Hero = () => {
 
 
 
-            
+
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[110%] h-[110%] bg-white/20 backdrop-blur-3xl rounded-[4rem] -z-10 rotate-6 border border-white/10" />
           </div>
         </div>
@@ -279,7 +280,7 @@ const Features = () => {
               <span className="px-5 py-2 rounded-full bg-blue-50 text-[10px] font-bold uppercase tracking-[0.3em] text-blue-600">The Neural Methodology</span>
               <h3 className="text-3xl font-semibold text-slate-800 tracking-tight">Engineered for the Elite Tier.</h3>
               <p className="text-slate-500 font-medium max-w-2xl leading-relaxed">
-                Kredo processes your document through 240+ validation nodes. We don't just check for keywords; we analyze semantic resonance, layout heatmaps, and role-specific density to ensure your resume dominates the recruitment funnel.
+                MindVista processes your document through 240+ validation nodes. We don't just check for keywords; we analyze semantic resonance, layout heatmaps, and role-specific density to ensure your resume dominates the recruitment funnel.
               </p>
             </div>
           </div>
@@ -324,7 +325,7 @@ const CTA = () => {
     <section className="py-32 px-6 mb-20">
       <div className="container mx-auto max-w-7xl">
         <div className="relative clay-card !p-20 overflow-hidden text-center border-white/60 bg-white/40 backdrop-blur-md">
-          
+
           <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary-200/40 blur-[100px] rounded-full -translate-y-1/2 translate-x-1/2" />
 
           <div className="relative z-10 max-w-4xl mx-auto">
@@ -335,7 +336,7 @@ const CTA = () => {
               Join 10,000+ candidates who have optimized their resumes to land roles at the world's most innovative firms.
             </p>
             <div className="flex flex-wrap justify-center items-center gap-6">
-              <button onClick={() => navigate('/auth')} className="btn-kredo !px-14 !py-7 text-sm">
+              <button onClick={() => navigate('/auth')} className="btn-mindvista !px-14 !py-7 text-sm">
                 Analyze My Resume Today {'->'}
               </button>
               <button className="px-10 py-7 rounded-2xl border-2 border-slate-100 bg-white/10 backdrop-blur-md text-sm font-bold text-slate-800 uppercase tracking-widest hover:bg-white/30 transition-all">
@@ -351,13 +352,26 @@ const CTA = () => {
 
 
 const Landing = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get('maintenance') === 'true') {
+      toast.error('The platform is currently undergoing scheduled maintenance. Please check back shortly.', {
+        id: 'maintenance-notice',
+        duration: 5000,
+        icon: '🛠️'
+      });
+      // Clean up the URL
+      window.history.replaceState({}, document.title, "/");
+    }
+  }, [location]);
+
   return (
     <div className="relative min-h-screen">
       <Hero />
       <Features />
       <CTA />
-
-      
       <div className="fixed inset-0 pointer-events-none z-50 border-[24px] border-white/10" />
     </div>
   );

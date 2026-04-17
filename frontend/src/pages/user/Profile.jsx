@@ -10,8 +10,10 @@ import {
   Check,
   X,
   ExternalLink,
-  Edit2
+  Edit2,
+  Save
 } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 import { useAuth } from '../../context/AuthContext';
 import { updateProfile } from '../../services/api';
 import { cn } from '../../utils/cn';
@@ -81,6 +83,12 @@ const Profile = () => {
   }, [user]);
 
   const handleUpdate = async (manualData = null) => {
+    if (!user || (!user._id && !user.id)) {
+      console.error('[Profile] No user ID available for update');
+      toast.error('Unable to identify user. Please try logging in again.');
+      return;
+    }
+
     try {
       setLoading(true);
       const fullName = `${formData.firstName} ${formData.lastName}`.trim();
@@ -91,13 +99,23 @@ const Profile = () => {
         twitter: formData.twitter,
         linkedin: formData.linkedin
       };
-      await updateProfile(user._id || user.id, payload);
-      await checkAuth(); // Refresh user context
-      if (manualData) setEditingSocial(null);
-      else alert('Profile updated successfully!');
+
+      const userId = user._id || user.id;
+      console.log('[Profile] Sending update for ID:', userId, 'Payload:', payload);
+
+      await updateProfile(userId, payload);
+      await checkAuth();
+
+      if (manualData) {
+        setEditingSocial(null);
+        toast.success('Social link updated!');
+      } else {
+        toast.success('Profile updated successfully!');
+      }
     } catch (error) {
-      console.error('Update failed:', error);
-      alert('Failed to update profile.');
+      console.error('[Profile Update] Error:', error);
+      const errorMsg = error.response?.data?.error || error.message || 'Failed to update profile';
+      toast.error(errorMsg);
     } finally {
       setLoading(false);
     }
@@ -124,17 +142,23 @@ const Profile = () => {
     const file = e.target.files[0];
     if (!file) return;
 
+    if (!user || (!user._id && !user.id)) {
+      toast.error('User session lost. Please log in again.');
+      return;
+    }
+
     try {
       setLoading(true);
-      const formData = new FormData();
-      formData.append('profilePic', file);
+      const formDataUpload = new FormData();
+      formDataUpload.append('profilePic', file);
 
-      await updateProfile(user._id || user.id, formData);
-      await checkAuth(); // Refresh user context to show new image
-      alert('Profile picture updated!');
+      const userId = user._id || user.id;
+      await updateProfile(userId, formDataUpload);
+      await checkAuth();
+      toast.success('Profile picture updated!');
     } catch (error) {
-      console.error('Image upload failed:', error);
-      alert('Failed to upload image.');
+      console.error('[Profile Image] Upload failed:', error);
+      toast.error('Failed to upload image.');
     } finally {
       setLoading(false);
     }
@@ -276,7 +300,7 @@ const Profile = () => {
 
             <div className="mt-8 flex justify-end pt-6 border-t border-slate-50">
               <button
-                onClick={handleUpdate}
+                onClick={() => handleUpdate()}
                 disabled={loading}
                 className="px-8 py-4 bg-blue-600 text-white rounded-xl font-medium text-sm uppercase tracking-widest shadow-md hover:bg-blue-700 hover:shadow-lg transition-all disabled:opacity-50"
               >

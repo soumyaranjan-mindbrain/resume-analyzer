@@ -40,7 +40,7 @@
 
     
     --brand-gradient: linear-gradient(135deg, #7b61ff 0%, #4da3ff 100%);
-    --kredo-gradient: linear-gradient(135deg, #fbcfe8 0%, #c4b5fd 50%, #67e8f9 100%);
+    --mindvista-gradient: linear-gradient(135deg, #fbcfe8 0%, #c4b5fd 50%, #67e8f9 100%);
     --surface-gradient: linear-gradient(145deg, #f0f3f8, #e6eaf0);
     
     
@@ -148,7 +148,7 @@
     box-shadow: var(--clay-shadow-2);
   }
 
-  .btn-kredo {
+  .btn-mindvista {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -185,7 +185,7 @@
     box-shadow: var(--clay-shadow-3);
   }
 
-  .kredo-text {
+  .mindvista-text {
     background-clip: text;
     -webkit-background-clip: text;
     color: transparent;

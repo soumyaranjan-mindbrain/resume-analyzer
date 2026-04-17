@@ -13,7 +13,7 @@ const analyzeResume = async (req, res) => {
     const resume = await prisma.resume.findFirst({
       where: { id: resumeId, userId: userId },
     });
-    
+
     if (!resume) {
       console.warn(`[Analysis] Resume not found or unauthorized: ${resumeId}`);
       return res.status(404).json({ error: "Resume not found" });
@@ -32,7 +32,7 @@ const analyzeResume = async (req, res) => {
 
     // Force fresh AI analysis
     const analysisData = await analyzeResumeText(extractedText);
-    
+
     console.log(`[Analysis] AI returned score: ${analysisData.atsScore}`);
 
     const analysis = await prisma.analysis.upsert({
@@ -71,7 +71,7 @@ const analyzeResume = async (req, res) => {
     });
   } catch (err) {
     console.error("[Analysis Error]", err.message);
-    res.status(500).json({ error: "Analysis failed: " + err.message });
+    res.status(500).json({ error: err.message });
   }
 };
 

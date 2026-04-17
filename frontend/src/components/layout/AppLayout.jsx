@@ -96,8 +96,8 @@ const AppLayout = ({ children }) => {
         {/* sidebar gradient */}
         <div className="absolute inset-0 bg-gradient-to-b from-slate-50/50 to-transparent pointer-events-none" />
 
-        <div className="relative z-10 flex items-center gap-3 px-6 mb-10 shrink-0">
-          <Logo size="sm" onClick={() => navigate('/')} />
+        <div className="relative z-10 flex items-center px-6 mb-12 shrink-0 w-full overflow-hidden">
+          <Logo size="md" className="w-full" onClick={() => navigate('/')} />
           <button
             className="ml-auto lg:hidden text-slate-400 hover:text-slate-600"
             onClick={() => setSidebarOpen(false)}

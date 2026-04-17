@@ -36,16 +36,16 @@ const Footer = () => {
 
   return (
     <footer className="bg-[var(--neutral-100)] border-t border-white pt-20 pb-10 overflow-hidden relative">
-      
+
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-gradient-to-b from-white/10 to-transparent pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         <div className="grid grid-cols-2 md:grid-cols-5 gap-12 md:gap-8 mb-20">
-          
+
           <div className="col-span-2 md:col-span-1 space-y-6">
-            <Logo 
+            <Logo
               size="md"
-              onClick={() => navigate('/')} 
+              onClick={() => navigate('/')}
             />
             <p className="text-sm text-[var(--neutral-500)] font-medium leading-relaxed max-w-xs">
               AI-driven career acceleration for the modern professional. Built for depth, clarity, and results.
@@ -57,8 +57,8 @@ const Footer = () => {
                 { icon: LinkedinIcon, label: 'Linkedin' },
                 { icon: Mail, label: 'Mail' }
               ].map(({ icon: Icon, label }, i) => (
-                <button 
-                  key={i} 
+                <button
+                  key={i}
                   aria-label={label}
                   className="w-10 h-10 rounded-xl bg-white border border-white flex items-center justify-center text-[var(--neutral-400)] hover:text-[var(--primary-600)] shadow-[4px_4px_10px_rgba(0,0,0,0.04)] transition-all duration-300 hover:scale-110"
                 >
@@ -68,30 +68,30 @@ const Footer = () => {
             </div>
           </div>
 
-          
+
           {Object.entries(footerLinks).map(([title, links]) => (
             <div key={title} className="space-y-6">
-                <h4 className="text-xs font-bold text-[var(--neutral-900)] uppercase tracking-widest">{title}</h4>
-                <ul className="space-y-4">
-                  {links.map((link) => (
-                    <li key={link}>
-                      <a 
-                        href="#" 
-                        className="text-sm text-[var(--neutral-500)] font-bold hover:text-[var(--primary-600)] transition-colors duration-300"
-                      >
-                        {link}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
+              <h4 className="text-xs font-bold text-[var(--neutral-900)] uppercase tracking-widest">{title}</h4>
+              <ul className="space-y-4">
+                {links.map((link) => (
+                  <li key={link}>
+                    <a
+                      href="#"
+                      className="text-sm text-[var(--neutral-500)] font-bold hover:text-[var(--primary-600)] transition-colors duration-300"
+                    >
+                      {link}
+                    </a>
+                  </li>
+                ))}
+              </ul>
             </div>
           ))}
         </div>
 
-        
+
         <div className="pt-10 border-t border-white/40 flex flex-col md:flex-row items-center justify-between gap-6">
           <p className="text-[11px] text-[var(--neutral-400)] font-bold uppercase tracking-widest">
-            © {currentYear} Kredo AI Technologies.
+            © {currentYear} MindVista AI Technologies.
           </p>
           <div className="flex items-center gap-3 px-4 py-2 rounded-full bg-white/50 border border-white shadow-[inset_2px_2px_6px_rgba(0,0,0,0.02)]">
             <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]" />

@@ -25,16 +25,16 @@ const Navbar = () => {
     <nav
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-500",
-        scrolled 
-          ? "bg-[var(--neutral-50)]/80 backdrop-blur-xl py-3 shadow-md border-b border-white/40" 
+        scrolled
+          ? "bg-[var(--neutral-50)]/80 backdrop-blur-xl py-3 shadow-md border-b border-white/40"
           : "bg-transparent py-5"
       )}
     >
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
-        
+
         <Logo size="lg" onClick={() => navigate('/')} />
 
-        
+
         {isLandingPage && (
           <div className="hidden md:flex items-center gap-8">
             {navLinks.map((link) => (
@@ -50,7 +50,7 @@ const Navbar = () => {
           </div>
         )}
 
-        
+
         <div className="hidden md:flex items-center gap-6">
           <button
             onClick={() => navigate('/auth')}
@@ -60,16 +60,16 @@ const Navbar = () => {
           </button>
           <button
             onClick={() => navigate('/auth')}
-            className="btn-kredo !py-2.5 !px-6 !text-xs !rounded-xl"
+            className="btn-mindvista !py-2.5 !px-6 !text-xs !rounded-xl"
           >
             Get Started
             <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </div>
 
-        
-        <button 
-          className="md:hidden p-2 text-[var(--neutral-500)] hover:text-[var(--primary-500)] transition-colors" 
+
+        <button
+          className="md:hidden p-2 text-[var(--neutral-500)] hover:text-[var(--primary-500)] transition-colors"
           onClick={() => setMobileOpen(!mobileOpen)}
         >
           {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -77,7 +77,7 @@ const Navbar = () => {
       </div>
 
 
-      
+
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
@@ -107,7 +107,7 @@ const Navbar = () => {
                 </button>
                 <button
                   onClick={() => { navigate('/auth'); setMobileOpen(false); }}
-                  className="btn-kredo w-full"
+                  className="btn-mindvista w-full"
                 >
                   Get Started
                 </button>

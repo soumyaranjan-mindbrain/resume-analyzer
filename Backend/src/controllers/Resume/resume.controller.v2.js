@@ -139,19 +139,22 @@ const uploadResume = async (req, res) => {
         throw new Error("No text extracted from resume");
       }
     } catch (analysisError) {
-      console.error("[Upload] Analysis failed:", analysisError.message);
-      // Transparent error reporting
+      console.error("[Upload] Analysis Validation Failed:", analysisError.message);
+
+      // If it's a validation failure from our service, block the upload entirely
+      if (analysisError.message?.includes("does not appear to be a professional resume") ||
+        analysisError.message?.includes("valid resume payload")) {
+        throw analysisError;
+      }
+
+      // For other technical errors, keep a fallback (though blocking is safer)
       analysisData = {
         atsScore: 0,
         keywordsMissing: [],
         jobsMatched: 0,
-        suggestions: [
-          `⚠️ Analysis Error: ${analysisError.message}`,
-          "Please ensure your PDF is not a scanned image and contains readable text.",
-          "Check your internet connection and try again."
-        ],
+        suggestions: [`⚠️ Platform Error: ${analysisError.message}`],
         trends: [],
-        summary: "Analysis failed due to technical issues.",
+        summary: "Analysis failed due to a technical error.",
         skillsExtracted: [],
         experienceLevel: "N/A",
         topStrengths: [],
