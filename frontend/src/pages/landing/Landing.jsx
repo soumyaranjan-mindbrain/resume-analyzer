@@ -68,7 +68,7 @@ const Hero = () => {
   }, []);
 
   return (
-    <section ref={heroRef} className="relative min-h-[100vh] pt-40 pb-20 overflow-hidden px-6">
+    <section ref={heroRef} className="relative min-h-[100vh] pt-24 lg:pt-40 pb-16 lg:pb-20 overflow-hidden px-6">
 
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div className="absolute -top-20 -left-20 w-[600px] h-[600px] bg-purple-200/40 blur-[120px] rounded-full" />
@@ -264,9 +264,9 @@ const Features = () => {
 const CTA = () => {
   const navigate = useNavigate();
   return (
-    <section className="py-16 lg:py-32 px-6 mb-10 lg:mb-20">
+    <section className="py-12 lg:py-32 px-6 mb-8 lg:mb-20">
       <div className="container mx-auto max-w-7xl">
-        <div className="relative clay-card !p-8 md:!p-20 overflow-hidden text-center border-white/60 bg-white/40 backdrop-blur-md">
+        <div className="relative clay-card !p-6 md:!p-20 overflow-hidden text-center border-white/60 bg-white/40 backdrop-blur-md">
 
           <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary-200/40 blur-[100px] rounded-full -translate-y-1/2 translate-x-1/2" />
 

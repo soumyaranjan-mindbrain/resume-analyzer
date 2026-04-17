@@ -162,7 +162,7 @@ const AdminDashboard = () => {
         </div>
 
         {/* Legend Area */}
-        <div className="flex flex-wrap items-center justify-center gap-10 pt-12 border-t border-slate-100 mt-4 relative z-10">
+        <div className="flex flex-wrap items-center justify-center gap-4 lg:gap-10 pt-10 lg:pt-12 border-t border-slate-100 mt-4 relative z-10">
           <div className="flex items-center gap-3">
             <div className="w-5 h-5 rounded-lg bg-[#f38d49]" />
             <span className="text-xs font-bold text-slate-600">Resumes Uploaded</span>

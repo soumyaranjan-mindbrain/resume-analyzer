@@ -88,7 +88,7 @@ const Auth = () => {
         </div>
 
 
-        <div ref={formPanelRef} className="clay-card !p-8 md:!p-12 relative max-w-md mx-auto w-full lg:max-w-none">
+        <div ref={formPanelRef} className="clay-card !p-6 md:!p-12 relative max-w-md mx-auto w-full lg:max-w-none">
           <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--primary-200)] blur-[120px] rounded-full opacity-40 -translate-y-1/2 translate-x-1/4 pointer-events-none" />
 
           <div className="relative z-10 space-y-8">

@@ -169,7 +169,7 @@ const Profile = () => {
       <div className="max-w-[1400px] mx-auto py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
 
-          <div className="lg:col-span-1 bg-white rounded-2xl p-8 shadow-[0_8px_30px_rgba(0,0,0,0.06)] border border-slate-200 relative overflow-hidden flex flex-col items-center h-full">
+          <div className="lg:col-span-1 bg-white rounded-2xl p-6 lg:p-8 shadow-[0_8px_30px_rgba(0,0,0,0.06)] border border-slate-200 relative overflow-hidden flex flex-col items-center h-full">
 
             <div className="relative z-10 flex flex-col items-center w-full">
               <div className="relative mb-6">
@@ -256,7 +256,7 @@ const Profile = () => {
             </div>
           </div>
 
-          <div className="lg:col-span-2 bg-white rounded-2xl p-8 shadow-[0_8px_30px_rgba(0,0,0,0.06)] border border-slate-200 relative flex flex-col h-full">
+          <div className="lg:col-span-2 bg-white rounded-2xl p-6 lg:p-8 shadow-[0_8px_30px_rgba(0,0,0,0.06)] border border-slate-200 relative flex flex-col h-full">
             <h3 className="text-2xl font-bold text-slate-800 mb-8 tracking-tight">Account Settings</h3>
 
             <div className="grid sm:grid-cols-2 gap-6 flex-1">
