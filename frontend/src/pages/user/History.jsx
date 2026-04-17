@@ -69,8 +69,8 @@ const ReportModal = ({ isOpen, onClose, resume }) => {
   }, [isOpen]);
 
   return (
-    <div className="fixed inset-0 lg:left-64 z-[100] flex flex-col bg-slate-50 overflow-hidden animate-in slide-in-from-right duration-500 shadow-2xl font-sans">
-      <div className="relative z-20 px-4 lg:px-8 py-3 lg:py-5 flex items-center justify-between bg-white border-b border-slate-100">
+    <div className="fixed inset-0 lg:left-64 z-[100] flex flex-col bg-slate-50 overflow-hidden print:overflow-visible print:h-auto animate-in slide-in-from-right duration-500 shadow-2xl font-sans">
+      <div className="relative z-20 px-4 lg:px-8 py-3 lg:py-5 flex items-center justify-between bg-white border-b border-slate-100 print:hidden">
         <div className="max-w-[1280px] mx-auto w-full flex items-center justify-between gap-8">
           <div className="flex items-center gap-5">
             <div className="w-10 h-10 lg:w-12 lg:h-12 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20 shrink-0">
@@ -95,22 +95,27 @@ const ReportModal = ({ isOpen, onClose, resume }) => {
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto custom-scrollbar relative z-10 py-6 lg:py-10 px-4 lg:px-8">
-        <div className="max-w-[1280px] mx-auto space-y-6 lg:space-y-10">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-6">
-            <div className="lg:col-span-4 bg-white rounded-xl p-8 border border-slate-100 shadow-sm flex flex-col items-center justify-center text-center">
+      <div className="flex-1 overflow-y-auto custom-scrollbar relative z-10 py-6 lg:py-10 md:px-4 lg:px-8 px-0 print:p-12 print:overflow-visible print:h-auto">
+        <div className="max-w-[1280px] mx-auto space-y-0 md:space-y-6 lg:space-y-10">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 md:gap-5 lg:gap-6">
+            <div className="lg:col-span-4 bg-white rounded-none md:rounded-xl p-3 lg:p-8 border-x-0 md:border-x border-y md:border-slate-100 shadow-sm flex flex-col items-center justify-center text-center">
               <div className="relative w-36 h-36 lg:w-44 lg:h-44 mb-6">
                 <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                  <circle cx="50" cy="50" r="42" fill="none" stroke="#f1f5f9" strokeWidth="8" />
+                  <circle cx="50" cy="50" r="40" fill="none" stroke="#f1f5f9" strokeWidth="8" />
                   <circle
-                    cx="50" cy="50" r="42" fill="none" stroke="currentColor" strokeWidth="8"
-                    strokeDasharray={2 * Math.PI * 42} strokeDashoffset={2 * Math.PI * 42 * (1 - atsScore / 100)} strokeLinecap="round"
-                    className={cn("transition-all duration-1000", atsScore > 70 ? "text-blue-600" : "text-amber-500")}
+                    cx="50" cy="50" r="40" fill="none" stroke="currentColor" strokeWidth="8"
+                    strokeDasharray={2 * Math.PI * 40} strokeDashoffset={2 * Math.PI * 40 * (1 - atsScore / 100)} strokeLinecap="round"
+                    className={cn(
+                      "transition-all duration-1000",
+                      atsScore >= 75 ? "text-indigo-600" :
+                        atsScore >= 60 ? "text-emerald-500" :
+                          atsScore >= 40 ? "text-amber-500" : "text-rose-500"
+                    )}
                   />
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
                   <span className="text-4xl lg:text-5xl font-black text-slate-900 tracking-tighter leading-none">{atsScore}</span>
-                  <span className="text-[8px] lg:text-[9px] font-black uppercase tracking-[0.2em] text-slate-500 mt-2">Overall Match</span>
+                  <span className="text-[8px] lg:text-[9px] font-black uppercase tracking-[0.2em] text-slate-500 mt-2.5">Overall Match</span>
                 </div>
               </div>
               <div className={cn("px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border mb-3", grade.bg, grade.color, grade.border)}>
@@ -118,7 +123,7 @@ const ReportModal = ({ isOpen, onClose, resume }) => {
               </div>
               <p className="text-slate-500 text-[8px] font-bold uppercase tracking-[0.2em]">SaaS Benchmarked Verdict</p>
             </div>
-            <div className="lg:col-span-8 bg-white border border-slate-100 rounded-xl p-6 lg:p-8 shadow-sm flex flex-col justify-between">
+            <div className="lg:col-span-8 bg-white border-x-0 md:border-x border-y md:border-slate-100 rounded-none md:rounded-xl p-3 lg:p-8 shadow-sm flex flex-col justify-between">
               <div className="space-y-6">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center text-blue-600 border border-blue-100">
@@ -136,7 +141,7 @@ const ReportModal = ({ isOpen, onClose, resume }) => {
           </div>
 
           {analysis.scoreBreakdown && (
-            <div className="bg-white rounded-xl p-6 border border-slate-100 shadow-sm">
+            <div className="bg-white rounded-none md:rounded-xl p-5 lg:p-6 border-x-0 md:border-x border-y md:border-slate-100 shadow-sm">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-8 h-8 bg-slate-50 rounded-lg flex items-center justify-center border border-slate-100">
                   <Filter className="w-3.5 h-3.5 text-slate-500" />
@@ -166,8 +171,8 @@ const ReportModal = ({ isOpen, onClose, resume }) => {
             </div>
           )}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <div className="bg-white rounded-xl p-6 border border-slate-100 shadow-sm group">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-0 md:gap-5">
+            <div className="bg-white rounded-none md:rounded-xl p-3.5 lg:p-6 border-x-0 md:border-x border-y md:border-slate-100 shadow-sm group">
               <div className="flex items-center gap-3 mb-5">
                 <div className="w-9 h-9 bg-emerald-50 rounded-lg flex items-center justify-center text-emerald-600 border border-emerald-100 shadow-sm group-hover:bg-emerald-500 group-hover:text-white transition-all">
                   <CheckCircle2 className="w-4 h-4" />
@@ -183,7 +188,7 @@ const ReportModal = ({ isOpen, onClose, resume }) => {
                 ))}
               </div>
             </div>
-            <div className="bg-white rounded-xl p-6 border border-slate-100 shadow-sm group">
+            <div className="bg-white rounded-none md:rounded-xl p-3.5 lg:p-6 border-x-0 md:border-x border-y md:border-slate-100 shadow-sm group">
               <div className="flex items-center gap-3 mb-5">
                 <div className="w-9 h-9 bg-rose-50 rounded-lg flex items-center justify-center text-rose-600 border border-rose-100 shadow-sm group-hover:bg-rose-600 group-hover:text-white transition-all">
                   <AlertCircle className="w-4 h-4" />
@@ -202,7 +207,7 @@ const ReportModal = ({ isOpen, onClose, resume }) => {
           </div>
 
           {analysis.suggestions && analysis.suggestions.length > 0 && (
-            <div className="bg-white rounded-xl p-6 lg:p-8 border border-slate-100 shadow-sm">
+            <div className="bg-white rounded-none md:rounded-xl p-3.5 lg:p-8 border-x-0 md:border-x border-y md:border-slate-100 shadow-sm">
               <div className="flex items-center gap-3 mb-8">
                 <div className="w-9 h-9 bg-blue-600 rounded-lg flex items-center justify-center text-white shadow-lg shadow-blue-500/10">
                   <Zap className="w-4 h-4" />

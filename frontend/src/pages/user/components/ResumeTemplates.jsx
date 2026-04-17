@@ -19,13 +19,12 @@ export const Template1 = ({ data }) => (
         className="bg-white mx-auto print:shadow-none print:border-none"
         style={{
             width: '210mm',
-            height: '297mm',
+            minHeight: '297mm',
             padding: '25mm 20mm',
             fontFamily: fonts.serif,
             color: '#1a1a1a',
             lineHeight: '1.4',
             position: 'relative',
-            overflow: 'hidden',
             boxSizing: 'border-box'
         }}
     >
@@ -103,13 +102,12 @@ export const Template2 = ({ data }) => (
         className="bg-white mx-auto print:shadow-none print:border-none"
         style={{
             width: '210mm',
-            height: '297mm',
+            minHeight: '297mm',
             padding: '20mm',
             fontFamily: fonts.sans,
             color: '#1e293b',
             lineHeight: '1.5',
-            boxSizing: 'border-box',
-            overflow: 'hidden'
+            boxSizing: 'border-box'
         }}
     >
         <header style={{ marginBottom: '10mm' }}>
@@ -193,13 +191,12 @@ export const Template3 = ({ data }) => (
         className="bg-white mx-auto print:shadow-none print:border-none"
         style={{
             width: '210mm',
-            height: '297mm',
+            minHeight: '297mm',
             padding: '20mm',
             fontFamily: fonts.sans,
             color: '#000',
             lineHeight: '1.4',
-            boxSizing: 'border-box',
-            overflow: 'hidden'
+            boxSizing: 'border-box'
         }}
     >
         <header style={{ borderBottom: '2px solid #000', paddingBottom: '4mm', marginBottom: '6mm' }}>
@@ -257,11 +254,10 @@ export const Template4 = ({ data }) => (
         className="bg-white mx-auto print:shadow-none print:border-none flex"
         style={{
             width: '210mm',
-            height: '297mm',
+            minHeight: '297mm',
             fontFamily: fonts.sans,
             color: '#1a1a1a',
-            boxSizing: 'border-box',
-            overflow: 'hidden'
+            boxSizing: 'border-box'
         }}
     >
         {/* Concise Sidebar */}

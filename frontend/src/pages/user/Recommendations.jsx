@@ -192,7 +192,7 @@ const Recommendations = () => {
   }
 
   return (
-    <div className="max-w-[1400px] mx-auto pb-8">
+    <div className="max-w-[1400px] mx-auto pb-8 md:px-4 px-0">
       <div className="flex flex-col lg:flex-row gap-8">
 
         <div className="flex-1 space-y-8">
@@ -207,16 +207,16 @@ const Recommendations = () => {
               recommendations.map((rec, idx) => (
                 <div
                   key={idx}
-                  className="bg-white rounded-2xl p-5 lg:p-6 border border-slate-100 relative overflow-hidden group shadow-sm transition-all duration-500"
+                  className="bg-white rounded-none md:rounded-xl p-5 lg:p-6 border-x-0 md:border-x border-y md:border-slate-100 relative overflow-hidden group shadow-sm transition-all duration-500"
                 >
-                  <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 lg:gap-6">
+                  <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 lg:gap-6 px-4 md:px-0">
                     <div className="flex items-start lg:items-center gap-4 lg:gap-6">
                       <div className="w-12 h-12 lg:w-14 lg:h-14 bg-slate-50 rounded-xl lg:rounded-2xl flex items-center justify-center border border-slate-100 shadow-sm shrink-0">
                         {rec.type === 'skill' ? <Activity className="w-5 h-5 lg:w-6 lg:h-6 text-blue-600" /> : <Lightbulb className="w-5 h-5 lg:w-6 lg:h-6 text-amber-500" />}
                       </div>
-                      <div>
-                        <h3 className="text-xl font-bold text-slate-800 tracking-tight mb-1">{rec.title}</h3>
-                        <p className="text-slate-600 font-normal text-sm max-w-[450px] leading-relaxed">{rec.description}</p>
+                      <div className="w-full">
+                        <h3 className="text-lg lg:text-xl font-bold text-slate-800 tracking-tight mb-1">{rec.title}</h3>
+                        <p className="text-slate-600 font-normal text-sm lg:max-w-[450px] leading-relaxed">{rec.description}</p>
                       </div>
                     </div>
                   </div>

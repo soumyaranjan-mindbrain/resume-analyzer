@@ -7,7 +7,7 @@
 
 @layer base {
   :root {
-    
+
     --primary-50: #EEF2FF;
     --primary-100: #E0E7FF;
     --primary-200: #C7D2FE;
@@ -20,30 +20,34 @@
     --primary-900: #312E81;
     --primary-950: #1E1B4B;
 
-    
+
     --clay-shadow-1: 20px 20px 40px rgba(163, 177, 198, 0.5), -20px -20px 40px rgba(255, 255, 255, 1);
     --clay-shadow-2: 12px 12px 25px rgba(163, 177, 198, 0.4), -12px -12px 25px rgba(255, 255, 255, 1);
     --clay-shadow-3: inset 6px 6px 12px rgba(163, 177, 198, 0.3), inset -6px -6px 12px rgba(255, 255, 255, 0.8);
 
-    
+
     --neutral-50: #f5f7fb;
     --neutral-100: #eef1f6;
     --neutral-200: #e2e8f0;
     --neutral-300: #cbd5e1;
-    --neutral-400: #64748b; /* Increased contrast from #94a3b8 */
-    --neutral-500: #475569; /* Increased contrast from #64748b */
-    --neutral-600: #334155; /* Increased contrast from #475569 */
+    --neutral-400: #64748b;
+    /* Increased contrast from #94a3b8 */
+    --neutral-500: #475569;
+    /* Increased contrast from #64748b */
+    --neutral-600: #334155;
+    /* Increased contrast from #475569 */
     --neutral-700: #334155;
     --neutral-800: #334155;
-    --neutral-900: #1e293b; /* Softened from #0f172a for smoothness */
+    --neutral-900: #1e293b;
+    /* Softened from #0f172a for smoothness */
     --neutral-950: #0f172a;
 
-    
+
     --brand-gradient: linear-gradient(135deg, #7b61ff 0%, #4da3ff 100%);
     --mindvista-gradient: linear-gradient(135deg, #fbcfe8 0%, #c4b5fd 50%, #67e8f9 100%);
     --surface-gradient: linear-gradient(145deg, #f0f3f8, #e6eaf0);
-    
-    
+
+
     --text-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.8125rem);
     --text-sm: clamp(0.875rem, 0.825rem + 0.3vw, 0.9375rem);
     --text-base: clamp(1rem, 0.95rem + 0.4vw, 1.0625rem);
@@ -84,22 +88,27 @@
   }
 
   body::before {
-    background: #7dd3fc30; 
+    background: #7dd3fc30;
     top: -200px;
     right: -100px;
     animation: float-blob 25s infinite alternate;
   }
 
   body::after {
-    background: #ffffff; 
+    background: #ffffff;
     bottom: -200px;
     left: -100px;
     animation: float-blob 30s infinite alternate-reverse;
   }
 
   @keyframes float-blob {
-    0% { transform: translate(0, 0) scale(1); }
-    100% { transform: translate(100px, 50px) scale(1.1); }
+    0% {
+      transform: translate(0, 0) scale(1);
+    }
+
+    100% {
+      transform: translate(100px, 50px) scale(1.1);
+    }
   }
 
   ::selection {
@@ -107,7 +116,12 @@
     color: var(--neutral-900);
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: 'Inter', sans-serif;
     letter-spacing: -0.02em;
     color: var(--neutral-900);
@@ -116,7 +130,7 @@
 }
 
 @layer components {
-  
+
   .glass-card {
     background: rgba(255, 255, 255, 0.45);
     backdrop-filter: blur(16px);
@@ -133,12 +147,12 @@
   }
 
   .clay-card {
-    background: #ffffff; 
-    border-radius: 40px; 
-    box-shadow: 
-      20px 20px 60px rgba(163, 177, 198, 0.4), 
+    background: #ffffff;
+    border-radius: 40px;
+    box-shadow:
+      20px 20px 60px rgba(163, 177, 198, 0.4),
       -20px -20px 60px rgba(255, 255, 255, 1),
-      inset 0 0 0 1px rgba(255,255,255,0.5);
+      inset 0 0 0 1px rgba(255, 255, 255, 0.5);
     border: 1px solid rgba(255, 255, 255, 1);
     transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
   }
@@ -201,17 +215,17 @@
     font-weight: 500;
     color: var(--neutral-900);
     transition: all 0.2s;
-    box-shadow: 
-      inset 4px 4px 8px rgba(163, 177, 198, 0.2), 
+    box-shadow:
+      inset 4px 4px 8px rgba(163, 177, 198, 0.2),
       inset -4px -4px 8px rgba(255, 255, 255, 0.7),
-      0 2px 4px rgba(0,0,0,0.02);
+      0 2px 4px rgba(0, 0, 0, 0.02);
   }
 
   .input-clay:focus {
     outline: none;
     border-color: var(--primary-200);
-    box-shadow: 
-      inset 2px 2px 4px rgba(163, 177, 198, 0.1), 
+    box-shadow:
+      inset 2px 2px 4px rgba(163, 177, 198, 0.1),
       inset -2px -2px 4px rgba(255, 255, 255, 0.5),
       0 0 0 4px var(--primary-50);
   }
@@ -221,7 +235,7 @@
     background: #ffffff;
     border: 1px solid rgba(226, 232, 240, 0.8);
     border-radius: 1rem;
-    box-shadow: 
+    box-shadow:
       0 1px 3px 0 rgba(0, 0, 0, 0.05),
       0 1px 2px 0 rgba(0, 0, 0, 0.03),
       0 4px 6px -1px rgba(0, 0, 0, 0.02),
@@ -231,8 +245,8 @@
 
   .admin-card:hover {
     transform: translateY(-2px);
-    box-shadow: 
-      0 10px 15px -3px rgba(0, 0, 0, 0.05), 
+    box-shadow:
+      0 10px 15px -3px rgba(0, 0, 0, 0.05),
       0 4px 6px -2px rgba(0, 0, 0, 0.03),
       0 0 0 1px rgba(59, 130, 246, 0.1);
     border-color: rgba(59, 130, 246, 0.2);
@@ -241,8 +255,15 @@
 
 
 @keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-15px); }
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-15px);
+  }
 }
 
 .animate-float {
@@ -253,14 +274,17 @@
 ::-webkit-scrollbar {
   width: 8px;
 }
+
 ::-webkit-scrollbar-track {
   background: #f5f7fb;
 }
+
 ::-webkit-scrollbar-thumb {
   background: #cbd5e1;
   border-radius: 20px;
   border: 2px solid #f5f7fb;
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background: #A5B4FC;
 }
@@ -269,3 +293,12 @@
   mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
 }
 
+@media print {
+  @page {
+    margin: 0;
+  }
+
+  .print-hidden {
+    display: none !important;
+  }
+}

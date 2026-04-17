@@ -18,7 +18,10 @@ import {
   Layers,
   Search,
   Key,
-  Upload
+  Upload,
+  Sparkles,
+  Rocket,
+  Package
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
 import { getAnalytics, getMyResumes } from '../../services/api';
@@ -82,7 +85,7 @@ const SkillInsights = () => {
 
   if (resumes.length === 0) {
     return (
-      <div className="max-w-[1200px] mx-auto py-20 text-center">
+      <div className="max-w-[1200px] mx-auto py-10 lg:py-20 text-center">
         <div className="w-24 h-24 bg-slate-50 rounded-2xl flex items-center justify-center mx-auto mb-6 text-blue-600 shadow-sm border border-slate-100">
           <Target className="w-10 h-10" />
         </div>
@@ -108,11 +111,11 @@ const SkillInsights = () => {
   }
 
   return (
-    <div className="max-w-[1400px] mx-auto pb-8 px-4">
+    <div className="max-w-[1400px] mx-auto pb-8 md:px-4 px-0">
       {/* Mastery Markers - Good Points & Critical Gaps */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-0 md:gap-5 lg:gap-8 mb-0 md:mb-8 lg:mb-12">
         {/* Good Points / Strengths */}
-        <div className="bg-white rounded-[2.5rem] p-6 lg:p-10 border border-slate-100 shadow-sm relative overflow-hidden group">
+        <div className="bg-white rounded-none md:rounded-[1.5rem] p-5 lg:p-10 border-x-0 md:border-x border-y md:border-slate-100 shadow-sm relative overflow-hidden group">
           <div className="absolute -top-12 -right-12 w-48 h-48 bg-emerald-50 rounded-full blur-3xl opacity-50 group-hover:opacity-100 transition-opacity" />
           <div className="flex items-center gap-4 mb-8 relative z-10">
             <div className="w-12 h-12 bg-emerald-500 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-500/20">
@@ -126,17 +129,9 @@ const SkillInsights = () => {
           <div className="space-y-6 relative z-10">
             {analytics?.analytics?.topStrengths && analytics.analytics.topStrengths.length > 0 ? (
               analytics.analytics.topStrengths.map((str, i) => (
-                <div key={i} className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-bold text-slate-800 uppercase tracking-tight">{str}</span>
-                    <span className="text-[10px] font-black text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full uppercase">Elite</span>
-                  </div>
-                  <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-emerald-500 rounded-full transition-all duration-1000 ease-out"
-                      style={{ width: `${Math.max(85, 100 - (i * 5))}%` }}
-                    />
-                  </div>
+                <div key={i} className="flex items-center gap-3 p-3.5 bg-emerald-50/30 rounded-xl border border-emerald-100/50 group-hover:bg-white transition-all">
+                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-sm" />
+                  <span className="text-sm font-bold text-slate-800 uppercase tracking-tight">{str}</span>
                 </div>
               ))
             ) : (
@@ -146,7 +141,7 @@ const SkillInsights = () => {
         </div>
 
         {/* Critical Gaps / Weaknesses */}
-        <div className="bg-white rounded-[2.5rem] p-6 lg:p-10 border border-slate-100 shadow-sm relative overflow-hidden group">
+        <div className="bg-white rounded-none md:rounded-[1.5rem] p-5 lg:p-10 border-x-0 md:border-x border-y md:border-slate-100 shadow-sm relative overflow-hidden group">
           <div className="absolute -top-12 -right-12 w-48 h-48 bg-rose-50 rounded-full blur-3xl opacity-50 group-hover:opacity-100 transition-opacity" />
           <div className="flex items-center gap-4 mb-8 relative z-10">
             <div className="w-12 h-12 bg-slate-900 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-slate-900/20">
@@ -177,34 +172,29 @@ const SkillInsights = () => {
 
 
 
-      <div className="mt-12">
-        {/* Personalized Career Roadmap - Luxury Glass UI */}
-        <div className="bg-slate-900 rounded-[2.5rem] lg:rounded-[3.5rem] p-6 lg:p-14 relative overflow-hidden shadow-2xl">
-          {/* Animated Background Elements */}
-          <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-blue-500/10 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2" />
-          <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-purple-500/10 blur-[100px] rounded-full translate-y-1/2 -translate-x-1/2" />
+      <div className="mt-0 md:mt-6 lg:mt-10">
+        {/* Personalized Career Roadmap - High-Density Light UI */}
+        <div className="bg-white rounded-none md:rounded-[1.2rem] lg:rounded-[3rem] p-5 lg:p-10 relative overflow-hidden shadow-sm border-x-0 md:border-x border-y md:border-slate-100 italic-none">
+          <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-blue-50/50 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2" />
 
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-12 lg:mb-16 relative z-10">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 lg:mb-8 relative z-10">
             <div>
-              <h3 className="text-3xl lg:text-4xl font-black text-white tracking-tighter uppercase italic">Career Roadmap</h3>
-              <p className="text-slate-400 text-[11px] lg:text-xs font-bold uppercase tracking-[0.3em] mt-2 flex items-center gap-3">
-                <span className="w-8 h-px bg-blue-500/50" />
+              <h3 className="text-2xl lg:text-3xl font-black text-slate-900 tracking-tighter uppercase italic">Career Roadmap</h3>
+              <p className="text-slate-500 text-[10px] lg:text-xs font-bold uppercase tracking-[0.2em] mt-1 flex items-center gap-2">
+                <span className="w-6 h-px bg-blue-500/30" />
                 Bridging {missingSkills.length} Identified Gaps
               </p>
             </div>
-            <div className="w-fit px-5 py-2.5 bg-white/10 backdrop-blur-xl text-white rounded-2xl text-[9px] font-black uppercase tracking-[0.2em] border border-white/10 flex items-center gap-2">
-              <Sparkles className="w-3.5 h-3.5 text-blue-400" /> AI Synthesized Pathway
-            </div>
           </div>
 
-          <div className="relative space-y-12 lg:space-y-16 before:absolute before:inset-0 before:left-[23px] lg:before:left-[31px] before:top-8 before:bottom-8 before:w-1 lg:before:w-1.5 before:bg-gradient-to-b before:from-blue-600/50 before:via-purple-600/20 before:to-transparent before:z-0">
+          <div className="relative space-y-4 lg:space-y-6 before:absolute before:inset-0 before:left-[17px] lg:before:left-[27px] before:top-8 before:bottom-0 before:w-px lg:before:w-1 before:bg-slate-200 before:z-0">
             {analytics?.analytics?.roadmap?.phases ? analytics.analytics.roadmap.phases.map((phase, idx) => (
-              <div key={idx} className="relative z-10 flex gap-5 lg:gap-10 group">
+              <div key={idx} className="relative z-10 flex gap-3 lg:gap-8 group">
                 {/* Step Indicator */}
-                <div className="w-12 h-12 lg:w-16 lg:h-16 bg-white/5 backdrop-blur-2xl border border-white/10 rounded-2xl lg:rounded-3xl flex items-center justify-center shadow-2xl group-hover:border-blue-500/50 transition-all shrink-0">
+                <div className="w-9 h-9 lg:w-14 lg:h-14 bg-white border border-slate-200 rounded-lg lg:rounded-2xl flex items-center justify-center shadow-sm group-hover:border-blue-500/50 transition-all shrink-0">
                   <div className={cn(
-                    "w-7 h-7 lg:w-9 lg:h-9 rounded-xl flex items-center justify-center font-black text-[10px] lg:text-xs ring-4 ring-slate-900/50 transition-all duration-500",
-                    idx === 0 ? "bg-blue-600 text-white shadow-[0_0_20px_rgba(37,99,235,0.4)]" : "bg-white/10 text-slate-400"
+                    "w-6 h-6 lg:w-8 lg:h-8 rounded-lg flex items-center justify-center font-black text-[10px] lg:text-xs ring-4 ring-white transition-all duration-500",
+                    idx === 0 ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20" : "bg-slate-100 text-slate-400"
                   )}>
                     {idx + 1}
                   </div>
@@ -212,37 +202,37 @@ const SkillInsights = () => {
 
                 {/* Step Content */}
                 <div className="flex-1">
-                  <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-2 mb-4">
-                    <h4 className="text-xl lg:text-2xl font-black text-white tracking-tight italic uppercase">{phase.title}</h4>
-                    <div className="flex items-center gap-3">
+                  <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-1.5 mb-2.5">
+                    <h4 className="text-base lg:text-xl font-bold text-slate-800 tracking-tight leading-tight uppercase">{phase.title}</h4>
+                    <div className="flex items-center gap-2">
                       <span className={cn(
-                        "text-[9px] font-black px-3 py-1 rounded-full uppercase tracking-widest border",
-                        phase.difficulty === 'Advanced' ? "border-purple-500/30 text-purple-400 bg-purple-500/10" :
-                          (phase.difficulty === 'Intermediate' ? "border-blue-500/30 text-blue-400 bg-blue-500/10" : "border-emerald-500/30 text-emerald-400 bg-emerald-500/10")
+                        "text-[8px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest border",
+                        phase.difficulty === 'Advanced' ? "border-purple-200 text-purple-600 bg-purple-50" :
+                          (phase.difficulty === 'Intermediate' ? "border-blue-200 text-blue-600 bg-blue-50" : "border-emerald-200 text-emerald-600 bg-emerald-50")
                       )}>
                         {phase.difficulty || 'Intermediate'}
                       </span>
-                      <span className="text-[9px] font-black text-white/40 bg-white/5 px-3 py-1 rounded-full uppercase tracking-widest border border-white/5">
+                      <span className="text-[8px] font-black text-slate-400 bg-slate-50 px-2 py-0.5 rounded-full uppercase tracking-widest border border-slate-100">
                         {phase.estimatedDays || (idx + 1) * 14} Days
                       </span>
                     </div>
                   </div>
 
-                  <div className="bg-white/[0.03] backdrop-blur-3xl border border-white/[0.05] rounded-[2rem] lg:rounded-[2.5rem] p-6 lg:p-8 hover:bg-white/[0.05] hover:border-white/10 transition-all duration-500">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                  <div className="bg-slate-50/50 border border-slate-100 rounded-none md:rounded-[1rem] lg:rounded-[2rem] p-3 lg:p-6 hover:bg-white hover:shadow-md transition-all duration-500 border-x-0 md:border-x">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                       <div>
-                        <h5 className="text-[9px] font-black text-blue-400 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
-                          <Target className="w-3.5 h-3.5" /> High-Level Objective
+                        <h5 className="text-[8px] font-black text-blue-600 uppercase tracking-[0.2em] mb-3 flex items-center gap-2">
+                          <Target className="w-3 h-3" /> Core Objective
                         </h5>
-                        <p className="text-slate-300 text-[13px] lg:text-sm font-medium leading-relaxed">
+                        <p className="text-slate-600 text-[12px] lg:text-sm font-medium leading-relaxed">
                           {phase.objective}
                         </p>
 
                         {phase.steps && (
-                          <div className="mt-6 flex flex-wrap gap-2">
+                          <div className="mt-4 flex flex-wrap gap-1.5">
                             {phase.steps.map((step, sIdx) => (
-                              <div key={sIdx} className="px-3 py-1.5 bg-white/5 border border-white/5 rounded-xl text-[10px] text-slate-400 font-bold uppercase tracking-tight flex items-center gap-2 group/step hover:border-blue-500/30 hover:text-white transition-all">
-                                <CheckCircle2 className="w-3 h-3 text-blue-500" />
+                              <div key={sIdx} className="px-2 py-1 bg-white border border-slate-100 rounded-lg text-[9px] text-slate-500 font-bold uppercase tracking-tight flex items-center gap-1.5 hover:border-blue-500/30 hover:text-blue-600 transition-all">
+                                <CheckCircle2 className="w-2.5 h-2.5 text-blue-500" />
                                 {step}
                               </div>
                             ))}
@@ -250,64 +240,77 @@ const SkillInsights = () => {
                         )}
                       </div>
 
-                      <div className="bg-blue-600/5 border border-blue-500/20 rounded-3xl p-6 lg:p-7 relative overflow-hidden group/project">
-                        <div className="absolute -right-8 -bottom-8 w-32 h-32 bg-blue-500/5 rounded-full blur-2xl group-hover/project:scale-125 transition-transform duration-700" />
-                        <h5 className="text-[9px] font-black text-blue-500 uppercase tracking-widest mb-4">Milestone Project</h5>
-                        <h6 className="text-base lg:text-lg font-black text-white mb-2 italic tracking-tight uppercase line-clamp-1">{phase.project?.title}</h6>
-                        <p className="text-[12px] text-slate-400 leading-relaxed font-medium line-clamp-3">{phase.project?.description}</p>
+                      <div className="bg-slate-50 border border-slate-100 rounded-none md:rounded-2xl p-4 lg:p-6 relative overflow-hidden group/project shadow-sm">
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-100/50 blur-[80px] rounded-full -translate-y-1/2 translate-x-1/2" />
 
-                        <div className="mt-6 flex items-center justify-between">
-                          <span className="text-[9px] font-black text-blue-400 uppercase tracking-widest">Recommended Build</span>
-                          <ChevronRight className="w-4 h-4 text-white/20 group-hover/project:translate-x-1 group-hover/project:text-blue-500 transition-all" />
+                        <div className="relative z-10">
+                          <div className="flex items-center gap-3 mb-6">
+                            <div className="w-10 h-10 bg-blue-600/10 rounded-xl flex items-center justify-center text-blue-600 border border-blue-200 shadow-sm">
+                              <Rocket className="w-5 h-5 animate-bounce-slow" />
+                            </div>
+                            <div>
+                              <h5 className="text-[9px] font-black text-blue-600 uppercase tracking-[0.2em] mb-0.5">Capstone Experience</h5>
+                              <h6 className="text-lg lg:text-xl font-black text-slate-900 tracking-tight uppercase leading-tight line-clamp-1">{phase.project?.title || "Enterprise Prototype"}</h6>
+                            </div>
+                          </div>
+
+                          <p className="text-sm text-slate-800 leading-relaxed font-semibold mb-8 max-w-[500px]">
+                            {phase.project?.description || "Build a production-grade application to validate your mastery of this phase's core architecture and deployment patterns."}
+                          </p>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                            <div>
+                              <h6 className="text-[8px] font-black text-slate-700 uppercase tracking-[0.3em] mb-4 flex items-center gap-2">
+                                <Package className="w-3 h-3" /> Tech Stack Radar
+                              </h6>
+                              <div className="flex flex-wrap gap-2">
+                                {(phase.skills || ["React", "Node.js", "MongoDB", "Auth0"]).map((s, i) => (
+                                  <span key={i} className="px-3 py-1 bg-white border border-slate-200 rounded-lg text-[9px] text-slate-800 font-bold uppercase tracking-tight shadow-sm">
+                                    {s}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                            <div>
+                              <h6 className="text-[8px] font-black text-slate-700 uppercase tracking-[0.3em] mb-4 flex items-center gap-2">
+                                <CheckCircle2 className="w-3 h-3 text-emerald-500" /> Key Masteries
+                              </h6>
+                              <ul className="space-y-2.5">
+                                {["Clean Architecture", "API Orchestration", "Security Headers"].map((item, i) => (
+                                  <li key={i} className="text-[10px] text-slate-800 font-semibold flex items-center gap-2.5">
+                                    <div className="w-1 h-1 rounded-full bg-blue-500" />
+                                    {item}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          </div>
+
                         </div>
                       </div>
                     </div>
 
-                    <div className="pt-6 border-t border-white/5 flex flex-wrap items-center justify-between gap-4">
-                      <div className="flex items-center gap-6">
-                        <div className="flex items-center gap-2.5">
-                          <div className={cn(
-                            "w-2 h-2 rounded-full shadow-[0_0_10px]",
-                            phase.status === 'Locked' ? "bg-slate-600 shadow-slate-600/20" : "bg-blue-500 shadow-blue-500/50 animate-pulse"
-                          )} />
-                          <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                            {phase.status === 'Locked' ? 'Phase Locked' : 'In Progress'}
-                          </span>
-                        </div>
-                        <div className="w-px h-3 bg-white/10 hidden sm:block" />
-                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest hidden sm:inline">
-                          Priority: <span className={cn(
-                            "italic",
-                            phase.priority === 'High' ? "text-rose-500" : "text-blue-400"
-                          )}>{phase.priority || (idx === 0 ? 'High' : 'Medium')}</span>
-                        </span>
-                      </div>
-
-                      <button className="px-6 py-2.5 bg-white text-slate-900 rounded-xl font-black text-[9px] uppercase tracking-widest hover:bg-blue-600 hover:text-white transition-all active:scale-95 shadow-xl shadow-white/5">
-                        View Resources
-                      </button>
-                    </div>
                   </div>
                 </div>
               </div>
             )) : missingSkills.length > 0 ? missingSkills.map((skill, idx) => (
-              <div key={idx} className="relative z-10 flex gap-6 lg:gap-10 group">
-                <div className="w-12 h-12 lg:w-16 lg:h-16 bg-white/5 backdrop-blur-2xl border border-white/10 rounded-2xl lg:rounded-3xl flex items-center justify-center shadow-2xl shrink-0">
-                  <div className="w-7 h-7 lg:w-9 lg:h-9 rounded-xl bg-white/10 flex items-center justify-center text-slate-400 font-black text-[10px] lg:text-xs italic">
+              <div key={idx} className="relative z-10 flex gap-4 lg:gap-8 group">
+                <div className="w-10 h-10 lg:w-14 lg:h-14 bg-slate-50 border border-slate-100 rounded-xl lg:rounded-2xl flex items-center justify-center shadow-sm shrink-0">
+                  <div className="w-6 h-6 lg:w-8 lg:h-8 rounded-lg bg-white flex items-center justify-center text-slate-400 font-black text-[10px] lg:text-xs italic border border-slate-100">
                     {idx + 1}
                   </div>
                 </div>
 
-                <div className="flex-1 mt-2">
-                  <div className="bg-white/[0.02] backdrop-blur-xl border border-white/[0.05] rounded-[2rem] p-6 lg:p-8 hover:bg-white/[0.04] transition-all duration-300">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+                <div className="flex-1 mt-1">
+                  <div className="bg-slate-50/30 border border-slate-100/60 rounded-none md:rounded-[1.5rem] p-3.5 hover:bg-white/50 transition-all duration-300 border-x-0 md:border-x">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                       <div>
-                        <h4 className="text-xl font-black text-white italic uppercase tracking-tight mb-2">Master {skill.name}</h4>
-                        <p className="text-slate-400 text-sm font-medium leading-relaxed">
-                          Achieve professional proficiency in {skill.name} to increase your job match rating.
+                        <h4 className="text-lg font-black text-slate-800 italic uppercase tracking-tight mb-1">Master {skill.name}</h4>
+                        <p className="text-slate-500 text-[12px] font-medium leading-normal">
+                          Achieve professional proficiency to increase your market match.
                         </p>
                       </div>
-                      <button className="px-8 py-3.5 bg-blue-600 text-white rounded-[1.2rem] font-black text-[10px] uppercase tracking-[0.2em] shadow-2xl shadow-blue-500/20 hover:bg-blue-500 active:scale-95 transition-all shrink-0">
+                      <button className="px-6 py-3 bg-blue-600 text-white rounded-xl font-black text-[9px] uppercase tracking-widest shadow-lg shadow-blue-500/10 hover:bg-blue-700 active:scale-95 transition-all shrink-0">
                         Initiate Phase
                       </button>
                     </div>
@@ -315,9 +318,9 @@ const SkillInsights = () => {
                 </div>
               </div>
             )) : (
-              <div className="py-24 text-center bg-white/[0.02] rounded-[3rem] border border-dashed border-white/10">
-                <Map className="w-16 h-16 text-white/5 mx-auto mb-6" />
-                <p className="text-white/40 font-black text-xs uppercase tracking-[0.2em]">Upload a resume to generate your custom learning path.</p>
+              <div className="py-20 text-center bg-slate-50/50 rounded-[2.5rem] border border-dashed border-slate-200">
+                <Map className="w-12 h-12 text-slate-200 mx-auto mb-4" />
+                <p className="text-slate-400 font-black text-[10px] uppercase tracking-[0.2em]">Upload a resume to generate your trajectory.</p>
               </div>
             )}
           </div>

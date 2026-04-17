@@ -75,7 +75,7 @@ const AppLayout = ({ children }) => {
   const currentPage = pageInfo[location.pathname];
 
   return (
-    <div className="min-h-screen bg-[#f4f7fc] flex w-full h-[100dvh] overflow-hidden">
+    <div className="min-h-screen bg-[#f4f7fc] flex w-full h-[100dvh] overflow-hidden print:h-auto print:overflow-visible">
 
 
       {sidebarOpen && (
@@ -89,7 +89,7 @@ const AppLayout = ({ children }) => {
       {/* Sidebar */}
       <aside
         className={cn(
-          "absolute lg:static top-0 left-0 z-50 h-full w-64 bg-white border-r border-slate-200 transform transition-transform duration-300 ease-spring flex flex-col pt-8 pb-8 shrink-0",
+          "absolute lg:static top-0 left-0 z-50 h-full w-64 bg-white border-r border-slate-200 transform transition-transform duration-300 ease-spring flex flex-col pt-8 pb-8 shrink-0 print:hidden",
           sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         )}
       >
@@ -158,7 +158,7 @@ const AppLayout = ({ children }) => {
       </aside>
 
 
-      <main className="flex-1 flex flex-col min-w-0 h-full relative overflow-hidden bg-[#eff3f6]">
+      <main className="flex-1 flex flex-col min-w-0 h-full relative overflow-hidden bg-[#eff3f6] print:h-auto print:overflow-visible px-0">
 
         {user?.role !== 'admin' ? (
           <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-20">
@@ -177,7 +177,7 @@ const AppLayout = ({ children }) => {
         <div className="relative z-10 flex flex-col h-full">
 
 
-          <header className="h-20 lg:h-24 px-4 lg:px-8 shrink-0 flex items-center justify-between z-30">
+          <header className="h-20 lg:h-24 px-4 lg:px-8 shrink-0 flex items-center justify-between z-30 print:hidden">
             {/* Mobile Sidebar Toggle */}
             <button
               onClick={() => setSidebarOpen(true)}
