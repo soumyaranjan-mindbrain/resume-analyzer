@@ -98,19 +98,19 @@ const ReportModal = ({ isOpen, onClose, resume }) => {
       <div className="flex-1 overflow-y-auto custom-scrollbar relative z-10 py-6 lg:py-10 px-4 lg:px-8">
         <div className="max-w-[1280px] mx-auto space-y-6 lg:space-y-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-6">
-            <div className="lg:col-span-4 bg-white rounded-xl p-6 border border-slate-100 shadow-sm flex flex-col items-center justify-center text-center">
-              <div className="relative w-32 h-32 lg:w-40 lg:h-40 mb-5">
-                <svg className="w-full h-full transform -rotate-90">
-                  <circle cx="50%" cy="50%" r="45%" fill="none" stroke="#f8fafc" strokeWidth="6" />
+            <div className="lg:col-span-4 bg-white rounded-xl p-8 border border-slate-100 shadow-sm flex flex-col items-center justify-center text-center">
+              <div className="relative w-36 h-36 lg:w-44 lg:h-44 mb-6">
+                <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                  <circle cx="50" cy="50" r="42" fill="none" stroke="#f1f5f9" strokeWidth="8" />
                   <circle
-                    cx="50%" cy="50%" r="45%" fill="none" stroke="currentColor" strokeWidth="6"
-                    strokeDasharray={2 * Math.PI * 45} strokeDashoffset={2 * Math.PI * 45 * (1 - atsScore / 100)} strokeLinecap="round"
+                    cx="50" cy="50" r="42" fill="none" stroke="currentColor" strokeWidth="8"
+                    strokeDasharray={2 * Math.PI * 42} strokeDashoffset={2 * Math.PI * 42 * (1 - atsScore / 100)} strokeLinecap="round"
                     className={cn("transition-all duration-1000", atsScore > 70 ? "text-blue-600" : "text-amber-500")}
                   />
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-5xl font-black text-slate-900 tracking-tighter leading-none">{atsScore}</span>
-                  <span className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-500 mt-1.5">Overall Match</span>
+                  <span className="text-4xl lg:text-5xl font-black text-slate-900 tracking-tighter leading-none">{atsScore}</span>
+                  <span className="text-[8px] lg:text-[9px] font-black uppercase tracking-[0.2em] text-slate-500 mt-2">Overall Match</span>
                 </div>
               </div>
               <div className={cn("px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border mb-3", grade.bg, grade.color, grade.border)}>
@@ -118,7 +118,7 @@ const ReportModal = ({ isOpen, onClose, resume }) => {
               </div>
               <p className="text-slate-500 text-[8px] font-bold uppercase tracking-[0.2em]">SaaS Benchmarked Verdict</p>
             </div>
-            <div className="lg:col-span-8 bg-white border border-slate-100 rounded-xl p-8 shadow-sm flex flex-col justify-between">
+            <div className="lg:col-span-8 bg-white border border-slate-100 rounded-xl p-6 lg:p-8 shadow-sm flex flex-col justify-between">
               <div className="space-y-6">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center text-blue-600 border border-blue-100">
@@ -202,7 +202,7 @@ const ReportModal = ({ isOpen, onClose, resume }) => {
           </div>
 
           {analysis.suggestions && analysis.suggestions.length > 0 && (
-            <div className="bg-white rounded-xl p-8 border border-slate-100 shadow-sm">
+            <div className="bg-white rounded-xl p-6 lg:p-8 border border-slate-100 shadow-sm">
               <div className="flex items-center gap-3 mb-8">
                 <div className="w-9 h-9 bg-blue-600 rounded-lg flex items-center justify-center text-white shadow-lg shadow-blue-500/10">
                   <Zap className="w-4 h-4" />
@@ -354,39 +354,37 @@ const History = () => {
       {/* Header removed as requested */}
 
       {resumes.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-10">
-          <div className="bg-white p-6 rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-all group overflow-hidden relative">
-            <div className="absolute -right-4 -bottom-4 w-28 h-28 bg-blue-50 rounded-full opacity-50 transition-transform group-hover:scale-110" />
+        <div className="grid grid-cols-3 md:grid-cols-3 gap-3 md:gap-5 mb-8 md:mb-10">
+          <div className="bg-white p-3 lg:p-6 rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-all group overflow-hidden relative">
+            <div className="absolute -right-4 -bottom-4 w-16 h-16 lg:w-28 lg:h-28 bg-blue-50 rounded-full opacity-50 transition-transform group-hover:scale-110" />
             <div className="relative z-10">
-              <p className="text-[9px] font-bold text-slate-500 uppercase tracking-[0.2em] mb-3">Total Inventories</p>
-              <div className="flex items-end gap-2.5">
-                <span className="text-4xl font-black text-slate-900 tracking-tighter">{stats.total}</span>
-                <span className="text-[10px] font-bold text-blue-600 mb-1.5 uppercase tracking-tight">Active</span>
+              <p className="text-[7px] lg:text-[9px] font-bold text-slate-500 uppercase tracking-[0.2em] mb-1 lg:mb-3">Total</p>
+              <div className="flex items-end gap-1 lg:gap-2.5">
+                <span className="text-xl lg:text-4xl font-black text-slate-900 tracking-tighter">{stats.total}</span>
+                <span className="text-[7px] lg:text-[10px] font-bold text-blue-600 mb-0.5 lg:mb-1.5 uppercase tracking-tight hidden sm:inline">Active</span>
               </div>
             </div>
           </div>
-          <div className="bg-white p-6 rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-all group overflow-hidden relative">
-            <div className="absolute -right-4 -bottom-4 w-28 h-28 bg-emerald-50 rounded-full opacity-50 transition-transform group-hover:scale-110" />
+          <div className="bg-white p-3 lg:p-6 rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-all group overflow-hidden relative">
+            <div className="absolute -right-4 -bottom-4 w-16 h-16 lg:w-28 lg:h-28 bg-emerald-50 rounded-full opacity-50 transition-transform group-hover:scale-110" />
             <div className="relative z-10">
-              <p className="text-[9px] font-bold text-slate-500 uppercase tracking-[0.2em] mb-3">Average Benchmark</p>
-              <div className="flex items-end gap-2.5">
-                <span className="text-4xl font-black text-slate-900 tracking-tighter">{stats.average}%</span>
-                <div className="flex flex-col mb-1.5">
-                  <TrendingUp className="w-3.5 h-3.5 text-emerald-500 mb-0.5" />
-                  <span className="text-[8px] font-bold text-emerald-600 uppercase tracking-tight">Index</span>
+              <p className="text-[7px] lg:text-[9px] font-bold text-slate-500 uppercase tracking-[0.2em] mb-1 lg:mb-3">Avg</p>
+              <div className="flex items-end gap-1 lg:gap-2.5">
+                <span className="text-xl lg:text-4xl font-black text-slate-900 tracking-tighter">{stats.average}%</span>
+                <div className="flex flex-col mb-0.5 lg:mb-1.5">
+                  <TrendingUp className="w-2.5 h-2.5 lg:w-3.5 lg:h-3.5 text-emerald-500 mb-0.5" />
                 </div>
               </div>
             </div>
           </div>
-          <div className="bg-white p-6 rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-all group overflow-hidden relative">
-            <div className="absolute -right-4 -bottom-4 w-28 h-28 bg-amber-50 rounded-full opacity-50 transition-transform group-hover:scale-110" />
+          <div className="bg-white p-3 lg:p-6 rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-all group overflow-hidden relative">
+            <div className="absolute -right-4 -bottom-4 w-16 h-16 lg:w-28 lg:h-28 bg-amber-50 rounded-full opacity-50 transition-transform group-hover:scale-110" />
             <div className="relative z-10">
-              <p className="text-[9px] font-bold text-slate-500 uppercase tracking-[0.2em] mb-3">Elite Peak</p>
-              <div className="flex items-end gap-2.5">
-                <span className="text-4xl font-black text-slate-900 tracking-tighter">{stats.top}%</span>
-                <div className="flex flex-col mb-1.5">
-                  <Star className="w-3.5 h-3.5 text-amber-500 mb-0.5 fill-amber-500" />
-                  <span className="text-[8px] font-bold text-amber-600 uppercase tracking-tight">Performance</span>
+              <p className="text-[7px] lg:text-[9px] font-bold text-slate-500 uppercase tracking-[0.2em] mb-1 lg:mb-3">Peak</p>
+              <div className="flex items-end gap-1 lg:gap-2.5">
+                <span className="text-xl lg:text-4xl font-black text-slate-900 tracking-tighter">{stats.top}%</span>
+                <div className="flex flex-col mb-0.5 lg:mb-1.5">
+                  <Star className="w-2.5 h-2.5 lg:w-3.5 lg:h-3.5 text-amber-500 mb-0.5 fill-amber-500" />
                 </div>
               </div>
             </div>
@@ -438,7 +436,7 @@ const History = () => {
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h3 className="text-lg font-bold text-slate-800 tracking-tight group-hover/card:text-blue-600 transition-colors truncate">
+                        <h3 className="text-base lg:text-lg font-bold text-slate-800 tracking-tight group-hover/card:text-blue-600 transition-colors truncate">
                           {getNameFromPath(resume)}
                         </h3>
                       </div>
@@ -465,7 +463,7 @@ const History = () => {
                       </div>
                     )}
 
-                    <div className="flex items-center gap-4 justify-end">
+                    <div className="flex items-center gap-3 lg:gap-4 justify-between sm:justify-end border-t sm:border-t-0 border-slate-50 pt-4 sm:pt-0">
                       {isAnalyzed ? (
                         <button
                           onClick={() => handleViewReport(resume)}

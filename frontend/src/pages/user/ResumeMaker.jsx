@@ -482,7 +482,7 @@ const ResumeMaker = () => {
         <div className="relative">
             <div className="max-w-[1400px] mx-auto pb-10">
                 {/* Neural Launchpad - Luxury Light UI */}
-                <div className="bg-white rounded-[3.5rem] p-12 mb-20 relative overflow-hidden shadow-[0_40px_100px_-20px_rgba(0,0,0,0.05)] border border-slate-200/60">
+                <div className="bg-white rounded-[2.5rem] lg:rounded-[3.5rem] p-6 lg:p-12 mb-10 lg:mb-20 relative overflow-hidden shadow-[0_40px_100px_-20px_rgba(0,0,0,0.05)] border border-slate-200/60">
                     <div className="absolute top-0 right-0 w-1/2 h-full bg-blue-50/30 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2" />
 
                     <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
@@ -536,7 +536,7 @@ const ResumeMaker = () => {
                                     value={jdText}
                                     onChange={(e) => setJdText(e.target.value)}
                                     placeholder="Paste the Job Description to align your narrative with elite industry benchmarks..."
-                                    className="w-full h-64 bg-slate-50/50 border border-slate-200/60 rounded-[2.5rem] p-8 text-slate-700 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500/50 transition-all resize-none placeholder:text-slate-400"
+                                    className="w-full h-48 lg:h-64 bg-slate-50/50 border border-slate-200/60 rounded-[2rem] lg:rounded-[2.5rem] p-5 lg:p-8 text-slate-700 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500/50 transition-all resize-none placeholder:text-slate-400"
                                 />
 
                                 <button

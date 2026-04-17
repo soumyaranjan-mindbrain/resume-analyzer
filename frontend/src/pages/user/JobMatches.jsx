@@ -401,54 +401,54 @@ const JobMatches = () => {
           <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-40" onClick={closeModals} />
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <div className="w-full max-w-4xl bg-white rounded-3xl lg:rounded-[2.5rem] border border-slate-200 shadow-[0_30px_100px_-25px_rgba(15,23,42,0.5)] overflow-hidden flex flex-col max-h-[90vh]">
-              <div className="p-6 lg:p-8 flex items-start justify-between gap-4 lg:gap-6 border-b border-slate-100 bg-slate-50/50">
-                <div className="flex items-center gap-6">
-                  <div className="w-20 h-20 bg-white border border-slate-200 rounded-3xl flex items-center justify-center p-4 shadow-sm shrink-0">
+              <div className="p-5 lg:p-8 flex items-start justify-between gap-4 lg:gap-6 border-b border-slate-100 bg-slate-50/50">
+                <div className="flex items-center gap-4 lg:gap-6">
+                  <div className="w-16 h-16 lg:w-20 lg:h-20 bg-white border border-slate-200 rounded-2xl lg:rounded-3xl flex items-center justify-center p-3 lg:p-4 shadow-sm shrink-0">
                     <img src={selectedJob.logo || `https://ui-avatars.com/api/?name=${selectedJob.company}&background=random`} alt={selectedJob.company} className="w-full h-full object-contain mix-blend-multiply" />
                   </div>
                   <div className="min-w-0">
-                    <h3 className="text-3xl font-bold text-slate-900 tracking-tight truncate uppercase">{selectedJob.title}</h3>
-                    <div className="flex flex-wrap items-center gap-4 mt-2">
-                      <span className="text-blue-600 font-bold uppercase tracking-widest text-[11px]">{selectedJob.company}</span>
-                      <span className="w-1.5 h-1.5 rounded-full bg-slate-300" />
-                      <span className="text-slate-500 font-medium text-[11px] uppercase tracking-widest flex items-center gap-1.5">
+                    <h3 className="text-xl lg:text-3xl font-bold text-slate-900 tracking-tight truncate uppercase">{selectedJob.title}</h3>
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-2">
+                      <span className="text-blue-600 font-bold uppercase tracking-widest text-[9px] lg:text-[11px]">{selectedJob.company}</span>
+                      <span className="hidden sm:inline w-1.5 h-1.5 rounded-full bg-slate-300" />
+                      <span className="text-slate-500 font-medium text-[9px] lg:text-[11px] uppercase tracking-widest flex items-center gap-1.5">
                         <MapPin className="w-3.5 h-3.5" /> {selectedJob.location || 'Remote'}
                       </span>
-                      <span className="w-1.5 h-1.5 rounded-full bg-slate-300" />
-                      <span className="text-slate-500 font-medium text-[11px] uppercase tracking-widest flex items-center gap-1.5">
+                      <span className="hidden sm:inline w-1.5 h-1.5 rounded-full bg-slate-300" />
+                      <span className="text-slate-500 font-medium text-[9px] lg:text-[11px] uppercase tracking-widest flex items-center gap-1.5">
                         <Briefcase className="w-3.5 h-3.5" /> {selectedJob.type || 'Full-time'}
                       </span>
                     </div>
                   </div>
                 </div>
-                <button onClick={closeModals} className="p-3 rounded-2xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-400 hover:text-red-500 transition-all shadow-sm">
+                <button onClick={closeModals} className="p-2.5 lg:p-3 rounded-2xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-400 hover:text-red-500 transition-all shadow-sm">
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
-              <div className="p-6 lg:p-8 space-y-6 lg:space-y-8 overflow-y-auto custom-scrollbar flex-1">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div className="bg-slate-50 rounded-2xl p-5 border border-slate-100">
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Estimated Salary</p>
-                    <p className="text-lg font-bold text-slate-800">{selectedJob.salary || 'Market Rate'}</p>
+              <div className="p-5 lg:p-8 space-y-6 lg:space-y-8 overflow-y-auto custom-scrollbar flex-1">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6">
+                  <div className="bg-slate-50 rounded-2xl p-4 lg:p-5 border border-slate-100 text-center md:text-left">
+                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1">Estimated Salary</p>
+                    <p className="text-base lg:text-lg font-bold text-slate-800">{selectedJob.salary || 'Market Rate'}</p>
                   </div>
-                  <div className="bg-slate-50 rounded-2xl p-5 border border-slate-100">
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Job Category</p>
-                    <p className="text-lg font-bold text-slate-800">{selectedJob.category || 'Tech'}</p>
+                  <div className="bg-slate-50 rounded-2xl p-4 lg:p-5 border border-slate-100 text-center md:text-left">
+                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1">Job Category</p>
+                    <p className="text-base lg:text-lg font-bold text-slate-800">{selectedJob.category || 'Tech'}</p>
                   </div>
-                  <div className="bg-slate-50 rounded-2xl p-5 border border-slate-100">
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Posted On</p>
-                    <p className="text-lg font-bold text-slate-800">{selectedJob.createdAt ? new Date(selectedJob.createdAt).toLocaleDateString() : 'Recent'}</p>
+                  <div className="bg-slate-50 rounded-2xl p-4 lg:p-5 border border-slate-100 text-center md:text-left">
+                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1">Posted On</p>
+                    <p className="text-base lg:text-lg font-bold text-slate-800">{selectedJob.createdAt ? new Date(selectedJob.createdAt).toLocaleDateString() : 'Recent'}</p>
                   </div>
                 </div>
 
                 <div>
-                  <h4 className="text-xs font-bold uppercase tracking-widest text-blue-600 mb-4 flex items-center gap-2">
+                  <h4 className="text-[10px] font-black uppercase tracking-widest text-blue-600 mb-4 flex items-center gap-2">
                     <CheckCircle2 className="w-4 h-4" /> Skills Required
                   </h4>
                   <div className="flex flex-wrap gap-2">
                     {(selectedJob.skills || []).map((s, i) => (
-                      <span key={i} className="px-4 py-2 rounded-xl bg-slate-900 text-white text-[10px] font-bold uppercase tracking-wider">
+                      <span key={i} className="px-3 lg:px-4 py-2 rounded-xl bg-slate-900 text-white text-[9px] lg:text-[10px] font-bold uppercase tracking-wider">
                         {s}
                       </span>
                     ))}
@@ -457,39 +457,39 @@ const JobMatches = () => {
 
                 {selectedJob.description && (
                   <div>
-                    <h4 className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-4 border-b border-slate-100 pb-2">Full Description</h4>
-                    <p className="text-md text-slate-700 leading-relaxed whitespace-pre-wrap font-normal">{selectedJob.description}</p>
+                    <h4 className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-4 border-b border-slate-100 pb-2">Full Description</h4>
+                    <p className="text-sm lg:text-md text-slate-700 leading-relaxed whitespace-pre-wrap font-normal">{selectedJob.description}</p>
                   </div>
                 )}
 
                 {(selectedJob.requirements || selectedJob.responsibilities) && (
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 pt-4 border-t border-slate-100">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 pt-4 border-t border-slate-100">
                     {selectedJob.requirements && (
                       <div>
-                        <h4 className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-4">Core Requirements</h4>
-                        <p className="text-sm text-slate-600 leading-relaxed whitespace-pre-wrap">{selectedJob.requirements}</p>
+                        <h4 className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-3">Core Requirements</h4>
+                        <p className="text-[13px] text-slate-600 leading-relaxed whitespace-pre-wrap">{selectedJob.requirements}</p>
                       </div>
                     )}
                     {selectedJob.responsibilities && (
                       <div>
-                        <h4 className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-4">Internal Responsibilities</h4>
-                        <p className="text-sm text-slate-600 leading-relaxed whitespace-pre-wrap">{selectedJob.responsibilities}</p>
+                        <h4 className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-3">Internal Responsibilities</h4>
+                        <p className="text-[13px] text-slate-600 leading-relaxed whitespace-pre-wrap">{selectedJob.responsibilities}</p>
                       </div>
                     )}
                   </div>
                 )}
               </div>
 
-              <div className="p-6 lg:p-8 border-t border-slate-100 bg-slate-50/30 flex items-center justify-end gap-3 lg:gap-4">
+              <div className="p-5 lg:p-8 border-t border-slate-100 bg-slate-50/30 flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3 lg:gap-4">
                 <button
                   onClick={closeModals}
-                  className="px-8 py-4 rounded-2xl border border-slate-200 bg-white text-slate-700 font-bold text-xs uppercase tracking-widest hover:bg-slate-50 transition-all active:scale-95"
+                  className="px-8 py-3.5 lg:py-4 rounded-xl lg:rounded-2xl border border-slate-200 bg-white text-slate-700 font-bold text-[10px] lg:text-xs uppercase tracking-widest hover:bg-slate-50 transition-all active:scale-95"
                 >
                   Close
                 </button>
                 <button
                   onClick={() => { setDetailsOpen(false); openApply(selectedJob); }}
-                  className="px-10 py-4 rounded-2xl bg-slate-900 text-white font-bold text-xs uppercase tracking-widest hover:bg-slate-800 transition-all shadow-xl shadow-slate-900/10 active:scale-95"
+                  className="px-10 py-3.5 lg:py-4 rounded-xl lg:rounded-2xl bg-slate-900 text-white font-bold text-[10px] lg:text-xs uppercase tracking-widest hover:bg-slate-800 transition-all shadow-xl shadow-slate-900/10 active:scale-95"
                 >
                   Apply Now
                 </button>
