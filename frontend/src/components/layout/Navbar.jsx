@@ -68,12 +68,14 @@ const Navbar = () => {
         </div>
 
 
-        <button
-          className="md:hidden p-2 text-[var(--neutral-500)] hover:text-[var(--primary-500)] transition-colors"
-          onClick={() => setMobileOpen(!mobileOpen)}
-        >
-          {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-        </button>
+        <div className="md:hidden flex items-center justify-center">
+          <button
+            onClick={() => navigate('/auth')}
+            className="btn-mindvista !py-1.5 !px-4 !text-[9px] !rounded-lg"
+          >
+            Get Started
+          </button>
+        </div>
       </div>
 
 
