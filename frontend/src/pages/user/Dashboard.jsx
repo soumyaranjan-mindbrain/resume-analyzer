@@ -189,27 +189,27 @@ const Dashboard = () => {
 
   return (
     <div className="space-y-6 max-w-[1400px] mx-auto pb-10 px-4 sm:px-0">
-      <div className="relative overflow-hidden rounded-3xl bg-white border border-slate-100 flex shadow-[0_10px_40px_-15px_rgba(0,0,0,0.08)] min-h-[200px]">
+      <div className="relative overflow-hidden rounded-3xl bg-white border border-slate-100 flex flex-col md:flex-row shadow-[0_10px_40px_-15px_rgba(0,0,0,0.08)] min-h-[160px] md:min-h-[200px]">
         <div className="absolute inset-0 w-full h-full">
           <img
             src={dashboardBanner}
             alt="Welcome Banner"
             className="w-full h-full object-cover object-center"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-white/60 via-white/10 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-b md:bg-gradient-to-r from-white/80 via-white/40 md:from-white/60 md:via-white/10 to-transparent" />
         </div>
 
-        <div className="relative z-10 p-8 flex flex-col justify-center w-full max-w-2xl">
-          <div className="mb-6 space-y-2">
-            <h1 className="text-3xl font-bold text-slate-800 tracking-tight leading-tight">Your personal AI-powered resume dashboard is updated.</h1>
-            <p className="text-slate-600 font-medium text-base">Upload your latest version to stay ahead of industry trends.</p>
+        <div className="relative z-10 p-6 md:p-8 flex flex-col justify-center w-full max-w-2xl">
+          <div className="mb-4 md:mb-6 space-y-1 md:space-y-2">
+            <h1 className="text-xl md:text-3xl font-bold text-slate-800 tracking-tight leading-tight">Your personal AI-powered resume dashboard is updated.</h1>
+            <p className="text-slate-600 font-medium text-xs md:text-base">Upload your latest version to stay ahead of industry trends.</p>
           </div>
           <div className="pt-0">
             <button
               onClick={() => fileInputRef.current?.click()}
-              className="inline-flex items-center gap-3 bg-blue-600 text-white px-8 py-4 rounded-xl text-sm font-medium uppercase tracking-wider hover:bg-blue-700 transition-all shadow-md active:scale-95"
+              className="inline-flex items-center gap-3 bg-blue-600 text-white px-6 md:px-8 py-3 md:py-4 rounded-xl text-xs md:text-sm font-medium uppercase tracking-wider hover:bg-blue-700 transition-all shadow-md active:scale-95"
             >
-              <Upload className="w-5 h-5" />
+              <Upload className="w-4 h-4 md:w-5 md:h-5" />
               Upload New Resume
             </button>
           </div>
@@ -241,39 +241,40 @@ const Dashboard = () => {
           </div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
           {summaryCards.map((card) => {
             const Icon = card.icon;
             const tone = toneStyles[card.tone] || toneStyles.blue;
 
             return (
-              <div key={card.label} className="bg-white rounded-2xl p-5 border border-slate-200 relative overflow-hidden group shadow-[0_8px_30px_rgba(0,0,0,0.06)] hover:shadow-[0_20px_50px_rgba(0,0,0,0.1)] transition-all duration-300">
+              <div key={card.label} className="bg-white rounded-2xl p-4 md:p-5 border border-slate-200 relative overflow-hidden group shadow-[0_8px_30px_rgba(0,0,0,0.06)] hover:shadow-[0_20px_50px_rgba(0,0,0,0.1)] transition-all duration-300 flex flex-col justify-between h-full">
                 <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-2.5">
-                      <div className={cn("w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center", tone.icon)}>
-                        <Icon className="w-4.5 h-4.5" />
+                  <div className="flex items-center justify-between mb-2 md:mb-3">
+                    <div className="flex items-center gap-1.5 md:gap-2.5">
+                      <div className={cn("w-7 h-7 md:w-9 md:h-9 rounded-lg md:rounded-xl bg-slate-50 flex items-center justify-center", tone.icon)}>
+                        <Icon className="w-3.5 h-3.5 md:w-4.5 md:h-4.5" />
                       </div>
-                      <span className="font-bold text-slate-500 text-[10px] uppercase tracking-widest leading-none">{card.label}</span>
+                      <span className="font-bold text-slate-500 text-[8px] md:text-[10px] uppercase tracking-widest leading-none truncate">{card.label}</span>
                     </div>
-                    <ChevronRight className="w-3.5 h-3.5 text-slate-300 group-hover:text-blue-500 transition-colors" />
                   </div>
 
-                  <h2 className="text-4xl font-black text-slate-900 tracking-tighter mb-2">{card.value}</h2>
+                  <h2 className="text-2xl md:text-4xl font-black text-slate-900 tracking-tighter mb-1 md:mb-2">{card.value}</h2>
 
                   {card.detail && (
-                    <p className="text-slate-500 text-[10px] font-bold leading-relaxed mb-4 uppercase tracking-wider opacity-60 line-clamp-1">
+                    <p className="text-slate-500 text-[7px] md:text-[9px] font-bold leading-relaxed mb-3 md:mb-4 uppercase tracking-wider opacity-60 line-clamp-2 md:line-clamp-1">
                       {card.detail}
                     </p>
                   )}
+                </div>
 
+                <div className="mt-auto">
                   {card.note && (
                     <div className={cn(
-                      "px-2.5 py-1.5 rounded-lg inline-flex items-center gap-1.5",
+                      "px-2 py-1 md:px-2.5 md:py-1.5 rounded-md md:rounded-lg inline-flex items-center gap-1 md:gap-1.5",
                       card.noteTone === 'text-emerald-600' ? 'bg-emerald-50' : 'bg-slate-50'
                     )}>
-                      {card.noteIcon && <card.noteIcon className={cn("w-3 h-3", card.noteTone)} />}
-                      <span className={cn("text-[8px] font-black uppercase tracking-widest", card.noteTone || 'text-slate-500')}>
+                      {card.noteIcon && <card.noteIcon className={cn("w-2.5 h-2.5 md:w-3 md:h-3", card.noteTone)} />}
+                      <span className={cn("text-[7px] md:text-[8px] font-black uppercase tracking-widest", card.noteTone || 'text-slate-500')}>
                         {card.note}
                       </span>
                     </div>

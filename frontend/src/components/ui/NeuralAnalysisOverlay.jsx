@@ -34,26 +34,26 @@ const NeuralAnalysisOverlay = () => {
     const currentStageIndex = stages.findIndex(s => s.id === status);
 
     return (
-        <div ref={overlayRef} className="fixed inset-0 z-[1000] flex items-center justify-center p-6 bg-slate-500/10 backdrop-blur-sm transition-all">
-            <div ref={cardRef} className="relative w-full max-w-lg bg-white border border-white rounded-[2.5rem] p-10 lg:p-14 shadow-[0_40px_80px_-20px_rgba(0,0,0,0.1)] overflow-hidden">
+        <div ref={overlayRef} className="fixed inset-0 z-[1000] flex items-center justify-center p-4 lg:p-6 bg-slate-500/10 backdrop-blur-sm transition-all">
+            <div ref={cardRef} className="relative w-full max-w-lg bg-white border border-white rounded-[2rem] lg:rounded-[2.5rem] p-6 lg:p-14 shadow-[0_40px_80px_-20px_rgba(0,0,0,0.1)] overflow-hidden">
 
                 {/* Surface Gradients */}
                 <div className="absolute -top-32 -right-32 w-64 h-64 bg-blue-50/50 blur-[100px] rounded-full" />
                 <div className="absolute -bottom-32 -left-32 w-64 h-64 bg-indigo-50/50 blur-[100px] rounded-full" />
 
-                <div className="relative z-10 space-y-10">
+                <div className="relative z-10 space-y-6 lg:space-y-10">
                     {/* Header */}
                     <div className="text-center space-y-2">
                         <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 rounded-full border border-blue-100 text-blue-600 text-[9px] font-black uppercase tracking-[0.3em] mb-2">
                             <Activity className="w-3 h-3 animate-pulse" /> Neural Calibration
                         </div>
-                        <h2 className="text-3xl font-bold text-slate-800 tracking-tight leading-none">Analyzing Profile</h2>
-                        <p className="text-slate-400 font-bold text-[10px] uppercase tracking-widest">{file?.name || 'resume_payload.pdf'}</p>
+                        <h2 className="text-xl lg:text-3xl font-bold text-slate-800 tracking-tight leading-none">Analyzing Profile</h2>
+                        <p className="text-slate-400 font-bold text-[8px] lg:text-[10px] uppercase tracking-widest truncate max-w-[200px] mx-auto">{file?.name || 'resume_payload.pdf'}</p>
                     </div>
 
                     {/* Progress Engine */}
-                    <div className="space-y-6">
-                        <div className="relative h-2.5 bg-slate-100 rounded-full overflow-hidden">
+                    <div className="space-y-4 lg:space-y-6">
+                        <div className="relative h-2 bg-slate-100 rounded-full overflow-hidden">
                             <div
                                 className="absolute top-0 left-0 h-full bg-blue-600 rounded-full transition-all duration-500"
                                 style={{ width: `${progress}%` }}
@@ -65,19 +65,19 @@ const NeuralAnalysisOverlay = () => {
 
                         <div className="flex items-center justify-between px-1">
                             <div className="flex items-center gap-2">
-                                <Loader2 className="w-3.5 h-3.5 text-blue-500 animate-spin" />
-                                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                <Loader2 className="w-3 h-3 lg:w-3.5 lg:h-3.5 text-blue-500 animate-spin" />
+                                <span className="text-[8px] lg:text-[10px] font-black text-slate-400 uppercase tracking-widest">
                                     {status === 'uploading' ? 'Transmitting Data...' :
                                         status === 'parsing' ? 'Deep Parse Active...' :
                                             'Strategic Synthesis...'}
                                 </span>
                             </div>
-                            <span className="text-xl font-black text-slate-800 leading-none tracking-tighter">{Math.round(progress)}%</span>
+                            <span className="text-lg lg:text-xl font-black text-slate-800 leading-none tracking-tighter">{Math.round(progress)}%</span>
                         </div>
                     </div>
 
                     {/* Simple Stages */}
-                    <div className="grid grid-cols-3 gap-6 pt-2 border-t border-slate-50">
+                    <div className="grid grid-cols-3 gap-4 lg:grid-cols-3 lg:gap-6 pt-2 border-t border-slate-50">
                         {stages.map((stage, i) => {
                             const isActive = status === stage.id;
                             const isCompleted = currentStageIndex > i;
@@ -85,14 +85,14 @@ const NeuralAnalysisOverlay = () => {
                             return (
                                 <div key={stage.id} className="text-center space-y-2">
                                     <div className={cn(
-                                        "w-10 h-10 rounded-xl mx-auto flex items-center justify-center transition-all duration-300 border",
+                                        "w-8 h-8 lg:w-10 lg:h-10 rounded-lg lg:rounded-xl mx-auto flex items-center justify-center transition-all duration-300 border",
                                         isActive ? "bg-white border-blue-500 text-blue-600 shadow-md scale-110" :
                                             isCompleted ? "bg-emerald-50 border-emerald-100 text-emerald-500" :
                                                 "bg-slate-50 border-slate-100 text-slate-300"
                                     )}>
-                                        {isCompleted ? <CheckCircle2 className="w-5 h-5" /> : <stage.icon className={cn("w-5 h-5", isActive && "animate-pulse")} />}
+                                        {isCompleted ? <CheckCircle2 className="w-4 h-4 lg:w-5 lg:h-5" /> : <stage.icon className={cn("w-4 h-4 lg:w-5 lg:h-5", isActive && "animate-pulse")} />}
                                     </div>
-                                    <p className={cn("text-[9px] font-bold uppercase tracking-wider", isActive ? "text-slate-800" : "text-slate-300")}>{stage.label}</p>
+                                    <p className={cn("text-[8px] lg:text-[9px] font-bold uppercase tracking-wider", isActive ? "text-slate-800" : "text-slate-300")}>{stage.label}</p>
                                 </div>
                             );
                         })}
@@ -102,7 +102,7 @@ const NeuralAnalysisOverlay = () => {
                     <div className="pt-2">
                         <button
                             onClick={cancelAnalysis}
-                            className="w-full py-4 text-slate-400 hover:text-slate-600 font-bold text-[10px] uppercase tracking-widest transition-colors bg-slate-50 hover:bg-slate-100 rounded-2xl"
+                            className="w-full py-3 lg:py-4 text-slate-400 hover:text-slate-600 font-bold text-[9px] lg:text-[10px] uppercase tracking-widest transition-colors bg-slate-50 hover:bg-slate-100 rounded-xl lg:rounded-2xl"
                         >
                             Cancel Analysis
                         </button>

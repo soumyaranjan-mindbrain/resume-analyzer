@@ -182,7 +182,11 @@ const JobMatches = () => {
       }
     } catch (e) {
       clearInterval(progressInterval);
-      setApplyError(e?.message || 'Apply failed. Please try again.');
+      const isValidationError = e?.message?.includes('Validation Error:');
+      const friendlyMsg = isValidationError
+        ? e.message.replace('Validation Error:', '').trim()
+        : 'Please upload a professional resume to analyze properly.';
+      setApplyError(friendlyMsg);
     }
   };
 
@@ -262,7 +266,11 @@ const JobMatches = () => {
 
       await runApply(selectedJob, resumeId);
     } catch (err) {
-      setApplyError(err.message || 'File upload failed');
+      const isValidationError = err?.message?.includes('Validation Error:');
+      const friendlyMsg = isValidationError
+        ? err.message.replace('Validation Error:', '').trim()
+        : 'Please upload a professional resume to analyze properly.';
+      setApplyError(friendlyMsg);
       setApplyStep('choose');
     }
   };

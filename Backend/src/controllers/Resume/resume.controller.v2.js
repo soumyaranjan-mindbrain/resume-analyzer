@@ -98,6 +98,7 @@ const uploadResume = async (req, res) => {
       }
     } catch (extractErr) {
       console.error("[Upload] Text extraction failed:", extractErr.message);
+      throw extractErr;
     }
 
     // Step 2: Upload buffer to Cloudinary
@@ -143,7 +144,8 @@ const uploadResume = async (req, res) => {
 
       // If it's a validation failure from our service, block the upload entirely
       if (analysisError.message?.includes("does not appear to be a professional resume") ||
-        analysisError.message?.includes("valid resume payload")) {
+        analysisError.message?.includes("valid resume payload") ||
+        analysisError.message?.includes("Validation Error:")) {
         throw analysisError;
       }
 
@@ -167,7 +169,15 @@ const uploadResume = async (req, res) => {
     console.log("[Upload SUCCESS] Resume saved:", resume.id);
     res.json({ success: true, resume: { ...resume, extractedText }, analysis: analysisData });
   } catch (err) {
-    console.error("[Upload ERROR]", err.message, err.stack);
+    console.error("[Upload ERROR]", err.message);
+
+    // Clean, professional response for validation failures
+    if (err.message?.includes("Validation Error:")) {
+      return res.status(400).json({
+        error: err.message.replace("Validation Error:", "").trim()
+      });
+    }
+
     res.status(500).json({ error: err.message });
   }
 };
@@ -187,6 +197,9 @@ const matchResume = async (req, res) => {
 
     res.json({ success: true, resumeId, ...fallbackJobMatch(jobDescription, resume.analysis) });
   } catch (err) {
+    if (err.message?.includes("Validation Error:")) {
+      return res.status(400).json({ error: err.message.replace("Validation Error:", "").trim() });
+    }
     res.status(500).json({ error: err.message });
   }
 };
@@ -270,6 +283,9 @@ const reanalyzeResume = async (req, res) => {
     await saveAnalysis(resume.id, analysisData);
     res.json({ success: true, resumeId, analysis: analysisData });
   } catch (err) {
+    if (err.message?.includes("Validation Error:")) {
+      return res.status(400).json({ error: err.message.replace("Validation Error:", "").trim() });
+    }
     res.status(500).json({ error: err.message });
   }
 };

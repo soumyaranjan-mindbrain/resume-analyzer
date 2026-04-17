@@ -177,13 +177,20 @@ const AppLayout = ({ children }) => {
         <div className="relative z-10 flex flex-col h-full">
 
 
-          <header className="h-24 px-8 shrink-0 flex items-center justify-between z-30">
+          <header className="h-20 lg:h-24 px-4 lg:px-8 shrink-0 flex items-center justify-between z-30">
+            {/* Mobile Sidebar Toggle */}
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="lg:hidden p-2 rounded-xl bg-white shadow-sm border border-slate-200 text-slate-600 hover:text-blue-600 transition-all mr-2"
+            >
+              <Menu className="w-6 h-6" />
+            </button>
 
-            <div className="flex items-center gap-4 flex-1">
+            <div className="flex items-center gap-4 flex-1 min-w-0">
               {currentPage && (
-                <div className="animate-in fade-in slide-in-from-left-4 duration-500">
-                  <h2 className="text-xl font-bold text-slate-800 tracking-tight">{currentPage.title}</h2>
-                  <p className="text-xs font-medium text-slate-500 tracking-wide">{currentPage.subtitle}</p>
+                <div className="animate-in fade-in slide-in-from-left-4 duration-500 overflow-hidden">
+                  <h2 className="text-sm lg:text-xl font-bold text-slate-800 tracking-tight truncate">{currentPage.title}</h2>
+                  <p className="text-[10px] lg:text-xs font-medium text-slate-500 tracking-wide truncate">{currentPage.subtitle}</p>
                 </div>
               )}
             </div>

@@ -61,9 +61,16 @@ export const AnalysisProvider = ({ children }) => {
 
         } catch (err) {
             console.error('Global Analysis Error:', err);
-            setError(err.message || 'Operation failed');
+
+            // Mask technical errors with professional guidance
+            const isValidationError = err.message?.includes('Validation Error:');
+            const friendlyMsg = isValidationError
+                ? err.message.replace('Validation Error:', '').trim()
+                : 'Please upload a professional resume to analyze properly.';
+
+            setError(friendlyMsg);
             setIsAnalyzing(false);
-            toast.error(err.message || 'Analysis failed');
+            toast.error(friendlyMsg);
         }
     }, [navigate]);
 

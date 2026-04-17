@@ -26,31 +26,11 @@ export const ConfigProvider = ({ children }) => {
         // Initial fetch
         fetchConfig();
 
-        // Establish SSE connection for real-time updates
-        const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-        const eventSource = new EventSource(`${API_BASE_URL}/config/stream`, {
-            withCredentials: true
-        });
-
-        eventSource.onmessage = (event) => {
-            try {
-                const data = JSON.parse(event.data);
-                setMaintenanceMode(data.config?.maintenanceMode || false);
-            } catch (error) {
-                console.error('Error parsing config stream data:', error);
-            }
-        };
-
-        eventSource.onerror = (error) => {
-            console.error('SSE Error:', error);
-            eventSource.close();
-            // Fallback to polling if SSE fails, but at a much lower frequency
-            const fallback = setInterval(fetchConfig, 30000);
-            return () => clearInterval(fallback);
-        };
+        // Fallback to polling every 30 seconds
+        const pollInterval = setInterval(fetchConfig, 30000);
 
         return () => {
-            eventSource.close();
+            clearInterval(pollInterval);
         };
     }, []);
 

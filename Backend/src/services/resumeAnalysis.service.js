@@ -3,7 +3,54 @@ const axios = require("axios");
 const mammoth = require("mammoth");
 const { groq } = require("../config/groq");
 
-const GROQ_MODEL = process.env.GROQ_MODEL || "llama-3.3-70b-versatile";
+const FREE_MODELS = [
+  "llama-3.1-8b-instant",
+  "llama-3.3-70b-versatile",
+  "mixtral-8x7b-32768",
+  "gemma2-9b-it"
+];
+
+/**
+ * Centrally managed AI invocation with automatic model failover for 429 errors.
+ */
+async function callGroqWithFailover(payload, options = {}) {
+  const preferredModel = process.env.GROQ_MODEL;
+  // Create a priority list: [User Preferred Model, ...Standard Free Pool]
+  const modelPool = Array.from(new Set([
+    ...(preferredModel ? [preferredModel] : []),
+    ...FREE_MODELS
+  ]));
+
+  let lastError = null;
+
+  for (let i = 0; i < modelPool.length; i++) {
+    const currentModel = modelPool[i];
+    try {
+      console.log(`[AI Engine] Attempting request with model: ${currentModel} (Attempt ${i + 1}/${modelPool.length})`);
+
+      const response = await groq.chat.completions.create({
+        ...payload,
+        model: currentModel,
+      });
+
+      return response;
+    } catch (error) {
+      lastError = error;
+      const isRateLimit = error.status === 429 || error.message?.includes("rate_limit_exceeded") || error.message?.includes("Rate limit reached");
+
+      if (isRateLimit && i < modelPool.length - 1) {
+        console.warn(`[AI Engine] Rate limit hit for ${currentModel}. Switching to ${modelPool[i + 1]}...`);
+        continue; // Try next model
+      }
+
+      // If it's not a rate limit, or we've exhausted all models, throw
+      console.error(`[AI Engine] Permanent failure on ${currentModel}:`, error.message);
+      throw error;
+    }
+  }
+
+  throw lastError || new Error("AI call failed after exhausting all available models.");
+}
 
 // ─────────────────────────────────────────────
 //  PDF TEXT EXTRACTION  (fixed pdf-parse usage)
@@ -45,12 +92,14 @@ async function extractTextFromPdf(input) {
     console.log(`[PDF] Extracted ${text.length} characters.`);
 
     if (text.length < 20) {
-      throw new Error(`Extracted text too short (${text.length} chars) — likely scanned/image PDF or corrupted`);
+      throw new Error(`Validation Error: Extracted text too short (${text.length} chars). Please ensure your PDF is not a scanned image and contains readable text.`);
     }
 
     return text;
   } catch (err) {
     console.error("[PDF] Extraction failed:", err.message);
+    // Preserving the prefix if it's already a Validation Error
+    if (err.message.includes("Validation Error:")) throw err;
     throw new Error("PDF extraction failed: " + err.message);
   }
 }
@@ -74,12 +123,13 @@ async function extractTextFromDocx(input) {
     console.log(`[DOCX] Extracted ${text.length} characters`);
 
     if (text.length < 50) {
-      throw new Error(`Extracted text too short (${text.length} chars)`);
+      throw new Error(`Validation Error: Extracted text too short (${text.length} chars). Please ensure your document contains readable text.`);
     }
 
     return text;
   } catch (err) {
     console.error("[DOCX] Extraction failed:", err.message);
+    if (err.message.includes("Validation Error:")) throw err;
     throw new Error("DOCX extraction failed: " + err.message);
   }
 }
@@ -203,8 +253,7 @@ async function analyzeResumeText(resumeText, jobDescription = null) {
     : buildAnalysisPrompt(resumeText);
 
   try {
-    const response = await groq.chat.completions.create({
-      model: GROQ_MODEL,
+    const response = await callGroqWithFailover({
       messages: [
         { role: "system", content: "You are a specialized ATS grading system. Respond with valid JSON ONLY." },
         { role: "user", content: prompt },
@@ -226,7 +275,7 @@ async function analyzeResumeText(resumeText, jobDescription = null) {
     // Handle Document Validation Failure
     if (parsed.isResume === false) {
       console.warn("[Groq] Validation Failed:", parsed.error);
-      throw new Error(parsed.error || "Invalid Document: This system only processes professional resumes.");
+      throw new Error(`Validation Error: ${parsed.error || "The uploaded document is not a professional resume. Please upload a valid resume."}`);
     }
 
     // Handle both { breakdown: {...} } and top-level keys
@@ -329,8 +378,7 @@ Context:
 Generate 3-4 phases that are specific, realistic, and actionable.`;
 
   try {
-    const response = await groq.chat.completions.create({
-      model: GROQ_MODEL,
+    const response = await callGroqWithFailover({
       messages: [
         {
           role: "system",
@@ -434,8 +482,7 @@ ${resumeText.slice(0, 8000)}
 ---`;
 
   try {
-    const response = await groq.chat.completions.create({
-      model: GROQ_MODEL,
+    const response = await callGroqWithFailover({
       messages: [
         { role: "system", content: "You extract structured resume data. Respond with valid JSON ONLY." },
         { role: "user", content: prompt },
@@ -483,8 +530,7 @@ ${jobDescription}
 Return the optimized JSON object now.`;
 
   try {
-    const response = await groq.chat.completions.create({
-      model: GROQ_MODEL,
+    const response = await callGroqWithFailover({
       messages: [
         { role: "system", content: "You optimize resume data for JD alignment. Respond with valid JSON ONLY." },
         { role: "user", content: prompt },

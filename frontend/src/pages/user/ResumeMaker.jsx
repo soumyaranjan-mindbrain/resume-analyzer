@@ -157,7 +157,11 @@ const ResumeMaker = () => {
             setView('editor');
         } catch (err) {
             console.error('Synthesis failed:', err);
-            toast.error('Synthesis interrupted. Please verify credentials.', { id: 'autofill' });
+            const isValidationError = err?.message?.includes('Validation Error:');
+            const friendlyMsg = isValidationError
+                ? err.message.replace('Validation Error:', '').trim()
+                : 'Please upload a professional resume to analyze properly.';
+            toast.error(friendlyMsg, { id: 'autofill' });
         } finally {
             setIsProcessing(false);
         }

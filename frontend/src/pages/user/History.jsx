@@ -128,7 +128,9 @@ const ReportModal = ({ isOpen, onClose, resume }) => {
                   <h4 className="text-[11px] font-black text-slate-900 tracking-tight uppercase">Strategic Assessment</h4>
                 </div>
                 <p className="text-lg font-bold text-slate-700 leading-relaxed italic">
-                  "{analysis.summary || "Performing a deep strategic analysis of your professional trajectory and industry alignment..."}"
+                  "{(!analysis.summary || analysis.summary.includes('⚠️ Platform Error') || analysis.summary.includes('Analysis failed'))
+                    ? "Please upload a professional resume to analyze properly."
+                    : analysis.summary}"
                 </p>
               </div>
             </div>
@@ -209,26 +211,28 @@ const ReportModal = ({ isOpen, onClose, resume }) => {
                 <h4 className="text-xs font-black text-slate-900 tracking-tight uppercase">Tactical Roadmap</h4>
               </div>
               <div className="space-y-0 pl-1">
-                {analysis.suggestions.map((step, i) => (
-                  <div key={i} className="flex gap-4 pb-4 last:pb-0 group/step">
-                    <div className="flex flex-col items-center">
-                      <div className="w-7 h-7 rounded-lg bg-white text-slate-900 flex items-center justify-center text-xs font-black border border-slate-200 group-hover/step:bg-blue-600 group-hover/step:text-white group-hover/step:border-blue-600 transition-all duration-300 relative z-10 shadow-xs">
-                        {i + 1}
+                {(analysis.suggestions || [])
+                  .filter(step => !step.includes('⚠️ Platform Error') && !step.includes('Analysis failed'))
+                  .map((step, i) => (
+                    <div key={i} className="flex gap-4 pb-4 last:pb-0 group/step">
+                      <div className="flex flex-col items-center">
+                        <div className="w-7 h-7 rounded-lg bg-white text-slate-900 flex items-center justify-center text-xs font-black border border-slate-200 group-hover/step:bg-blue-600 group-hover/step:text-white group-hover/step:border-blue-600 transition-all duration-300 relative z-10 shadow-xs">
+                          {i + 1}
+                        </div>
+                        {i !== analysis.suggestions.length - 1 && (
+                          <div className="w-px flex-1 bg-slate-100 group-hover/step:bg-blue-200 transition-colors my-1" />
+                        )}
                       </div>
-                      {i !== analysis.suggestions.length - 1 && (
-                        <div className="w-px flex-1 bg-slate-100 group-hover/step:bg-blue-200 transition-colors my-1" />
-                      )}
-                    </div>
-                    <div className="flex-1">
-                      <div className="p-3 bg-slate-50/50 rounded-xl border border-slate-100 group-hover/step:bg-white transition-all">
-                        <div className="flex items-start gap-2.5">
-                          <div className="w-1 h-1 rounded-full bg-blue-400 mt-1.5 shrink-0" />
-                          <p className="font-bold text-xs text-slate-800 leading-relaxed tracking-tight">{step}</p>
+                      <div className="flex-1">
+                        <div className="p-3 bg-slate-50/50 rounded-xl border border-slate-100 group-hover/step:bg-white transition-all">
+                          <div className="flex items-start gap-2.5">
+                            <div className="w-1 h-1 rounded-full bg-blue-400 mt-1.5 shrink-0" />
+                            <p className="font-bold text-xs text-slate-800 leading-relaxed tracking-tight">{step}</p>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
               </div>
             </div>
           )}
