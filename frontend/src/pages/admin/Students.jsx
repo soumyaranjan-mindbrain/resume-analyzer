@@ -137,7 +137,7 @@ const Students = () => {
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
-            <div className="relative group flex-1 min-w-[240px]">
+            <div className="relative group flex-1 min-w-[180px] lg:min-w-[240px]">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
               <input
                 type="text"

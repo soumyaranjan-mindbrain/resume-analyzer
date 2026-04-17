@@ -70,18 +70,17 @@ const ReportModal = ({ isOpen, onClose, resume }) => {
 
   return (
     <div className="fixed inset-0 lg:left-64 z-[100] flex flex-col bg-slate-50 overflow-hidden animate-in slide-in-from-right duration-500 shadow-2xl font-sans">
-      <div className="relative z-20 px-8 py-5 flex items-center justify-between bg-white border-b border-slate-100">
+      <div className="relative z-20 px-4 lg:px-8 py-3 lg:py-5 flex items-center justify-between bg-white border-b border-slate-100">
         <div className="max-w-[1280px] mx-auto w-full flex items-center justify-between gap-8">
           <div className="flex items-center gap-5">
-            <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
-              <ShieldCheck className="w-6 h-6 text-white" />
+            <div className="w-10 h-10 lg:w-12 lg:h-12 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20 shrink-0">
+              <ShieldCheck className="w-5 h-5 lg:w-6 lg:h-6 text-white" />
             </div>
-            <div>
-              <h2 className="text-lg font-black text-slate-900 tracking-tight mb-1">Career Strategy Report</h2>
-              <div className="flex items-center gap-3">
-                <span className="text-slate-500 font-bold text-[10px] uppercase tracking-widest leading-none">Analysis Ref: 2026-ASR</span>
-                <span className="w-1 h-1 bg-slate-200 rounded-full" />
-                <span className="text-blue-600 font-black text-[10px] uppercase tracking-widest">{getNameFromPath(resume)}</span>
+            <div className="min-w-0">
+              <h2 className="text-base lg:text-lg font-black text-slate-900 tracking-tight lg:mb-1 truncate">Career Strategy Report</h2>
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                <span className="text-slate-500 font-bold text-[9px] uppercase tracking-widest leading-none">Ref: 2026-ASR</span>
+                <span className="text-blue-600 font-black text-[9px] lg:text-[10px] uppercase tracking-widest truncate max-w-[120px] lg:max-w-none">{getNameFromPath(resume)}</span>
               </div>
             </div>
           </div>
@@ -96,16 +95,16 @@ const ReportModal = ({ isOpen, onClose, resume }) => {
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto custom-scrollbar relative z-10 py-10 px-8">
-        <div className="max-w-[1280px] mx-auto space-y-10">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div className="flex-1 overflow-y-auto custom-scrollbar relative z-10 py-6 lg:py-10 px-4 lg:px-8">
+        <div className="max-w-[1280px] mx-auto space-y-6 lg:space-y-10">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-6">
             <div className="lg:col-span-4 bg-white rounded-xl p-6 border border-slate-100 shadow-sm flex flex-col items-center justify-center text-center">
-              <div className="relative w-40 h-40 mb-5">
+              <div className="relative w-32 h-32 lg:w-40 lg:h-40 mb-5">
                 <svg className="w-full h-full transform -rotate-90">
-                  <circle cx="80" cy="80" r="74" fill="none" stroke="#f8fafc" strokeWidth="6" />
+                  <circle cx="50%" cy="50%" r="45%" fill="none" stroke="#f8fafc" strokeWidth="6" />
                   <circle
-                    cx="80" cy="80" r="74" fill="none" stroke="currentColor" strokeWidth="6"
-                    strokeDasharray={465} strokeDashoffset={465 - (465 * atsScore) / 100} strokeLinecap="round"
+                    cx="50%" cy="50%" r="45%" fill="none" stroke="currentColor" strokeWidth="6"
+                    strokeDasharray={2 * Math.PI * 45} strokeDashoffset={2 * Math.PI * 45 * (1 - atsScore / 100)} strokeLinecap="round"
                     className={cn("transition-all duration-1000", atsScore > 70 ? "text-blue-600" : "text-amber-500")}
                   />
                 </svg>
@@ -127,7 +126,7 @@ const ReportModal = ({ isOpen, onClose, resume }) => {
                   </div>
                   <h4 className="text-[11px] font-black text-slate-900 tracking-tight uppercase">Strategic Assessment</h4>
                 </div>
-                <p className="text-lg font-bold text-slate-700 leading-relaxed italic">
+                <p className="text-base lg:text-lg font-bold text-slate-700 leading-relaxed italic">
                   "{(!analysis.summary || analysis.summary.includes('⚠️ Platform Error') || analysis.summary.includes('Analysis failed'))
                     ? "Please upload a professional resume to analyze properly."
                     : analysis.summary}"
@@ -144,7 +143,7 @@ const ReportModal = ({ isOpen, onClose, resume }) => {
                 </div>
                 <h4 className="text-[11px] font-black text-slate-900 tracking-tight uppercase">Technical Matrix</h4>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-10 gap-y-8">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-4 lg:gap-x-10 gap-y-6 lg:gap-y-8">
                 {Object.entries(analysis.scoreBreakdown).map(([key, value]) => {
                   const max = key === 'keywords' ? 20 : (key === 'achievements' || key === 'skillAlignment') ? 40 : 10;
                   const ratio = (value / max) * 100;

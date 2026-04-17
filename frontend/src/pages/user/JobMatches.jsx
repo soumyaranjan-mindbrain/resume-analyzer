@@ -320,16 +320,18 @@ const JobMatches = () => {
                     </div>
 
                     <div className="flex-1 min-w-0 pt-1">
-                      <div className="flex items-center gap-3 mb-2 flex-wrap">
-                        <h3 className="text-2xl font-bold text-slate-800 tracking-tight group-hover/card:text-blue-600 transition-colors uppercase tracking-tight">{job.title}</h3>
-                        <span className="px-2.5 py-1 bg-blue-50 text-blue-700 rounded-lg font-medium text-[9px] uppercase tracking-wider border border-blue-200">
-                          {job.type || 'Full-time'}
-                        </span>
-                        {job.category && (
-                          <span className="px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded-lg font-medium text-[9px] uppercase tracking-wider border border-emerald-200">
-                            {job.category}
+                      <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-3 mb-2 flex-wrap">
+                        <h3 className="text-xl md:text-2xl font-bold text-slate-800 tracking-tight group-hover/card:text-blue-600 transition-colors uppercase tracking-tight">{job.title}</h3>
+                        <div className="flex flex-wrap gap-2">
+                          <span className="px-2.5 py-1 bg-blue-50 text-blue-700 rounded-lg font-medium text-[9px] uppercase tracking-wider border border-blue-200">
+                            {job.type || 'Full-time'}
                           </span>
-                        )}
+                          {job.category && (
+                            <span className="px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded-lg font-medium text-[9px] uppercase tracking-wider border border-emerald-200">
+                              {job.category}
+                            </span>
+                          )}
+                        </div>
                       </div>
 
                       <div className="flex flex-wrap items-center gap-x-5 gap-y-2 mb-4">
@@ -360,29 +362,31 @@ const JobMatches = () => {
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-6 shrink-0">
+                  <div className="flex flex-col md:flex-row items-stretch md:items-center gap-3 md:gap-6 shrink-0 w-full md:w-auto mt-4 md:mt-0 pt-4 md:pt-0 border-t md:border-t-0 border-slate-100">
                     <button
                       onClick={() => openDetails(job)}
-                      className="flex items-center gap-2.5 px-6 py-3.5 bg-white text-slate-800 rounded-xl font-semibold text-[11px] uppercase tracking-widest shadow-sm border border-slate-200 hover:bg-slate-50 active:scale-95 transition-all"
+                      className="flex-1 md:flex-none flex items-center justify-center gap-2.5 px-4 lg:px-6 py-3 lg:py-3.5 bg-white text-slate-800 rounded-xl font-semibold text-[10px] lg:text-[11px] uppercase tracking-widest shadow-sm border border-slate-200 hover:bg-slate-50 active:scale-95 transition-all"
                     >
                       View Details
                       <ChevronRight className="w-4 h-4" />
                     </button>
 
-                    <button
-                      onClick={() => handleCopyJD(job)}
-                      className="flex items-center gap-2.5 px-6 py-3.5 bg-white text-blue-600 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-sm border border-blue-100 hover:bg-blue-50 transition-all active:scale-95"
-                    >
-                      <FileText className="w-3.5 h-3.5" />
-                      Copy JD
-                    </button>
+                    <div className="grid grid-cols-2 gap-2 lg:gap-3 flex-1 md:flex-none">
+                      <button
+                        onClick={() => handleCopyJD(job)}
+                        className="flex items-center justify-center gap-2 px-3 lg:px-4 py-3 lg:py-3.5 bg-white text-blue-600 rounded-xl font-black text-[9px] lg:text-[10px] uppercase tracking-widest shadow-sm border border-blue-100 hover:bg-blue-50 transition-all active:scale-95"
+                      >
+                        <FileText className="w-3.5 h-3.5" />
+                        JD
+                      </button>
 
-                    <button
-                      onClick={() => openApply(job)}
-                      className="flex items-center gap-2.5 px-8 py-3.5 bg-slate-900 text-white rounded-xl font-bold text-[11px] uppercase tracking-widest shadow-md hover:bg-slate-800 active:scale-95 transition-all"
-                    >
-                      Apply Now
-                    </button>
+                      <button
+                        onClick={() => openApply(job)}
+                        className="flex items-center justify-center gap-2 px-3 lg:px-4 py-3 lg:py-3.5 bg-slate-900 text-white rounded-xl font-bold text-[10px] lg:text-[11px] uppercase tracking-widest shadow-md hover:bg-slate-800 active:scale-95 transition-all"
+                      >
+                        Apply
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -396,8 +400,8 @@ const JobMatches = () => {
         <>
           <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-40" onClick={closeModals} />
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div className="w-full max-w-4xl bg-white rounded-[2.5rem] border border-slate-200 shadow-[0_30px_100px_-25px_rgba(15,23,42,0.5)] overflow-hidden flex flex-col max-h-[90vh]">
-              <div className="p-8 flex items-start justify-between gap-6 border-b border-slate-100 bg-slate-50/50">
+            <div className="w-full max-w-4xl bg-white rounded-3xl lg:rounded-[2.5rem] border border-slate-200 shadow-[0_30px_100px_-25px_rgba(15,23,42,0.5)] overflow-hidden flex flex-col max-h-[90vh]">
+              <div className="p-6 lg:p-8 flex items-start justify-between gap-4 lg:gap-6 border-b border-slate-100 bg-slate-50/50">
                 <div className="flex items-center gap-6">
                   <div className="w-20 h-20 bg-white border border-slate-200 rounded-3xl flex items-center justify-center p-4 shadow-sm shrink-0">
                     <img src={selectedJob.logo || `https://ui-avatars.com/api/?name=${selectedJob.company}&background=random`} alt={selectedJob.company} className="w-full h-full object-contain mix-blend-multiply" />
@@ -422,7 +426,7 @@ const JobMatches = () => {
                 </button>
               </div>
 
-              <div className="p-8 space-y-8 overflow-y-auto custom-scrollbar flex-1">
+              <div className="p-6 lg:p-8 space-y-6 lg:space-y-8 overflow-y-auto custom-scrollbar flex-1">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="bg-slate-50 rounded-2xl p-5 border border-slate-100">
                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Estimated Salary</p>
@@ -476,7 +480,7 @@ const JobMatches = () => {
                 )}
               </div>
 
-              <div className="p-8 border-t border-slate-100 bg-slate-50/30 flex items-center justify-end gap-4">
+              <div className="p-6 lg:p-8 border-t border-slate-100 bg-slate-50/30 flex items-center justify-end gap-3 lg:gap-4">
                 <button
                   onClick={closeModals}
                   className="px-8 py-4 rounded-2xl border border-slate-200 bg-white text-slate-700 font-bold text-xs uppercase tracking-widest hover:bg-slate-50 transition-all active:scale-95"
@@ -500,8 +504,8 @@ const JobMatches = () => {
         <>
           <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-40" onClick={closeModals} />
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div className="w-full max-w-2xl bg-white rounded-[2.5rem] border border-slate-200 shadow-[0_30px_100px_-25px_rgba(15,23,42,0.5)] overflow-hidden flex flex-col max-h-[95vh]">
-              <div className="p-8 flex items-start justify-between gap-4 border-b border-slate-100 bg-slate-50/50">
+            <div className="w-full max-w-2xl bg-white rounded-3xl lg:rounded-[2.5rem] border border-slate-200 shadow-[0_30px_100px_-25px_rgba(15,23,42,0.5)] overflow-hidden flex flex-col max-h-[95vh]">
+              <div className="p-6 lg:p-8 flex items-start justify-between gap-4 border-b border-slate-100 bg-slate-50/50">
                 <div className="flex items-center gap-5">
                   <div className="w-14 h-14 bg-white border border-slate-200 rounded-2xl flex items-center justify-center p-3 shadow-sm shrink-0">
                     <img src={selectedJob.logo || `https://ui-avatars.com/api/?name=${selectedJob.company}&background=random`} alt={selectedJob.company} className="w-full h-full object-contain mix-blend-multiply" />
@@ -516,7 +520,7 @@ const JobMatches = () => {
                 </button>
               </div>
 
-              <div className={cn("p-8 space-y-6 overflow-y-auto flex-1", applyStep === 'result' ? 'bg-slate-50/30' : '')}>
+              <div className={cn("p-6 lg:p-8 space-y-6 overflow-y-auto flex-1", applyStep === 'result' ? 'bg-slate-50/30' : '')}>
                 {applyStep === 'choose' && (
                   <>
                     <div className="space-y-4">
@@ -656,7 +660,7 @@ const JobMatches = () => {
 
                     {/* Score Summary */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="bg-white rounded-[2rem] p-8 border border-slate-100 shadow-sm flex flex-col items-center text-center justify-center">
+                      <div className="bg-white rounded-[2rem] p-6 lg:p-8 border border-slate-100 shadow-sm flex flex-col items-center text-center justify-center">
                         <div className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-600 mb-4">ATS Compatibility Score</div>
                         <div className="relative w-32 h-32 flex items-center justify-center mb-4">
                           <svg className="w-full h-full -rotate-90">
@@ -686,7 +690,7 @@ const JobMatches = () => {
                         </p>
                       </div>
 
-                      <div className="bg-white rounded-[2rem] p-8 border border-slate-100 shadow-sm space-y-6">
+                      <div className="bg-white rounded-[2rem] p-6 lg:p-8 border border-slate-100 shadow-sm space-y-6">
                         <div>
                           <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-2">Experience Level</p>
                           <span className="px-4 py-2 bg-slate-900 text-white text-[11px] font-bold uppercase tracking-widest rounded-xl">

@@ -218,7 +218,7 @@ const Dashboard = () => {
 
       {/* Metrics Section */}
       {resumes.length === 0 ? (
-        <div className="bg-white rounded-[2rem] p-12 border border-slate-200 shadow-[0_20px_50px_rgba(0,0,0,0.06)] text-center relative overflow-hidden group mb-8">
+        <div className="bg-white rounded-3xl lg:rounded-[2rem] p-6 lg:p-12 border border-slate-200 shadow-[0_20px_50px_rgba(0,0,0,0.06)] text-center relative overflow-hidden group mb-8">
           <div className="absolute top-0 right-0 p-8 opacity-[0.03] rotate-12 group-hover:rotate-0 transition-transform duration-700">
             <Target className="w-64 h-64 text-blue-600" />
           </div>
@@ -287,8 +287,8 @@ const Dashboard = () => {
       )}
 
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
-        <div className="bg-white rounded-2xl p-8 shadow-[0_8px_30px_rgba(0,0,0,0.06)] border border-slate-200 flex flex-col relative overflow-hidden">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 items-stretch">
+        <div className="bg-white rounded-2xl p-6 lg:p-8 shadow-[0_8px_30px_rgba(0,0,0,0.06)] border border-slate-200 flex flex-col relative overflow-hidden">
           <div className="flex items-center justify-between mb-8 relative z-10">
             <h3 className="font-semibold text-slate-800 text-xl tracking-tight">Skill Breakdown</h3>
             <MoreHorizontal className="w-5 h-5 text-slate-300 cursor-pointer hover:text-slate-600 transition-colors" />
@@ -333,7 +333,7 @@ const Dashboard = () => {
         </div>
 
 
-        <div className="bg-white rounded-2xl p-8 shadow-[0_8px_30px_rgba(0,0,0,0.06)] border border-slate-200 flex flex-col justify-between relative overflow-hidden">
+        <div className="bg-white rounded-2xl p-6 lg:p-8 shadow-[0_8px_30px_rgba(0,0,0,0.06)] border border-slate-200 flex flex-col justify-between relative overflow-hidden">
           <div className="flex items-center justify-between relative z-10 shrink-0 mb-6">
             <h3 className="font-semibold text-slate-800 text-xl tracking-tight">Mastery Insights</h3>
             <div className="flex gap-2">

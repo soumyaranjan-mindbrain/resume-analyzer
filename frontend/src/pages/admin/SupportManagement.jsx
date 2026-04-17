@@ -188,9 +188,9 @@ const SupportManagement = () => {
             {activeTab === 'TICKETS' ? (
                 <>
                     {/* Stats and Filter Header */}
-                    <div className="flex flex-col xl:flex-row justify-between gap-6">
+                    <div className="flex flex-col lg:flex-row justify-between gap-6">
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 flex-1">
-                            <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex items-center justify-between group hover:border-blue-500/30 transition-all">
+                            <div className="bg-white p-5 lg:p-6 rounded-2xl lg:rounded-3xl border border-slate-100 shadow-sm flex items-center justify-between group hover:border-blue-500/30 transition-all">
                                 <div className="space-y-1">
                                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Total Tickets</p>
                                     <p className="text-3xl font-black text-slate-900">{tickets.length}</p>
@@ -219,18 +219,18 @@ const SupportManagement = () => {
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-3">
-                            <div className="relative group max-w-xs">
+                        <div className="flex flex-col sm:flex-row items-center gap-3 w-full lg:w-auto">
+                            <div className="relative group w-full lg:max-w-xs">
                                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
                                 <input
                                     type="text"
                                     placeholder="Search tickets..."
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="w-full pl-12 pr-6 py-4 bg-white border border-slate-200 rounded-3xl text-sm font-bold focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all shadow-inner"
+                                    className="w-full pl-12 pr-6 py-3.5 lg:py-4 bg-white border border-slate-200 rounded-2xl lg:rounded-3xl text-sm font-bold focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all shadow-inner"
                                 />
                             </div>
-                            <div className="bg-white p-1 rounded-full border border-slate-200 flex items-center shadow-inner">
+                            <div className="bg-white p-1 rounded-2xl lg:rounded-full border border-slate-200 flex items-center shadow-inner w-full lg:w-auto">
                                 <button
                                     onClick={() => setStatusFilter('ALL')}
                                     className={cn("px-5 py-2.5 rounded-full text-xs font-black uppercase tracking-widest transition-all", statusFilter === 'ALL' ? "bg-slate-900 text-white shadow-lg" : "text-slate-500 hover:bg-slate-50")}
@@ -395,22 +395,22 @@ const SupportManagement = () => {
             {selectedTicket && activeTab === 'TICKETS' && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 animate-in fade-in duration-300">
                     <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md" onClick={() => setSelectedTicket(null)} />
-                    <div className="relative w-full max-w-2xl bg-white rounded-[3rem] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.3)] border border-white/20 overflow-hidden animate-in zoom-in-95 duration-300">
-                        <div className="px-10 py-8 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
+                    <div className="relative w-full max-w-2xl bg-white rounded-2xl lg:rounded-[3rem] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.3)] border border-white/20 overflow-hidden animate-in zoom-in-95 duration-300 mx-4">
+                        <div className="px-6 lg:px-10 py-6 lg:py-8 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
                             <div className="flex items-center gap-4">
-                                <div className="w-14 h-14 bg-slate-900 rounded-2xl flex items-center justify-center text-white shadow-xl">
-                                    <MessageCircle className="w-7 h-7" />
+                                <div className="w-12 h-12 lg:w-14 lg:h-14 bg-slate-900 rounded-2xl flex items-center justify-center text-white shadow-xl">
+                                    <MessageCircle className="w-6 h-6 lg:w-7 lg:h-7" />
                                 </div>
                                 <div>
-                                    <h3 className="text-2xl font-black text-slate-900 tracking-tight">Manage Support Ticket</h3>
-                                    <p className="text-slate-400 font-bold text-[10px] uppercase tracking-widest mt-1">Ticket ID: {selectedTicket.id?.slice(-8).toUpperCase()}</p>
+                                    <h3 className="text-xl lg:text-2xl font-black text-slate-900 tracking-tight">Manage Ticket</h3>
+                                    <p className="text-slate-400 font-bold text-[9px] lg:text-[10px] uppercase tracking-widest mt-1">ID: {selectedTicket.id?.slice(-8).toUpperCase()}</p>
                                 </div>
                             </div>
                             <button onClick={() => setSelectedTicket(null)} className="w-10 h-10 rounded-full border border-slate-200 flex items-center justify-center hover:bg-slate-50 transition-all">
                                 <X className="w-5 h-5 text-slate-500" />
                             </button>
                         </div>
-                        <div className="p-10 space-y-8">
+                        <div className="p-6 lg:p-10 space-y-6 lg:space-y-8">
                             <div className="bg-slate-50 rounded-[2rem] p-6 border border-slate-100 space-y-3 relative overflow-hidden">
                                 <div className="flex items-center gap-3">
                                     <div className="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center font-black text-slate-400">

@@ -112,7 +112,7 @@ const SkillInsights = () => {
       {/* Mastery Markers - Good Points & Critical Gaps */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 mb-12">
         {/* Good Points / Strengths */}
-        <div className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm relative overflow-hidden">
+        <div className="bg-white rounded-3xl lg:rounded-[2.5rem] p-6 lg:p-8 border border-slate-100 shadow-sm relative overflow-hidden">
           <div className="absolute top-0 right-0 p-6 opacity-10">
             <CheckCircle2 className="w-24 h-24 text-emerald-500" />
           </div>
@@ -137,7 +137,7 @@ const SkillInsights = () => {
         </div>
 
         {/* Critical Gaps / Weaknesses */}
-        <div className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm relative overflow-hidden">
+        <div className="bg-white rounded-3xl lg:rounded-[2.5rem] p-6 lg:p-8 border border-slate-100 shadow-sm relative overflow-hidden">
           <div className="absolute top-0 right-0 p-6 opacity-10">
             <AlertCircle className="w-24 h-24 text-rose-500" />
           </div>
@@ -169,23 +169,23 @@ const SkillInsights = () => {
 
       <div className="mt-12">
         {/* Personalized Career Roadmap - Now Full Screen */}
-        <div className="bg-white rounded-[2.5rem] p-10 border border-slate-100 relative overflow-hidden shadow-sm">
-          <div className="flex items-center justify-between mb-12">
+        <div className="bg-white rounded-3xl lg:rounded-[2.5rem] p-6 lg:p-10 border border-slate-100 relative overflow-hidden shadow-sm">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 lg:mb-12">
             <div>
-              <h3 className="text-3xl font-bold text-slate-900 tracking-tight">Personalized Career Roadmap</h3>
-              <p className="text-slate-500 font-normal mt-1">Strategic steps to bridge your {missingSkills.length} identified skill gaps.</p>
+              <h3 className="text-2xl lg:text-3xl font-bold text-slate-900 tracking-tight">Personalized Career Roadmap</h3>
+              <p className="text-slate-500 text-sm font-normal mt-1">Strategic steps to bridge your {missingSkills.length} identified skill gaps.</p>
             </div>
-            <div className="px-4 py-2 bg-blue-50 text-blue-700 rounded-xl text-[10px] font-bold uppercase tracking-widest border border-blue-100">
+            <div className="w-fit px-4 py-2 bg-blue-50 text-blue-700 rounded-xl text-[10px] font-bold uppercase tracking-widest border border-blue-100">
               AI Generated Path
             </div>
           </div>
 
-          <div className="relative space-y-12 before:absolute before:inset-0 before:left-[31px] before:top-8 before:bottom-8 before:w-0.5 before:bg-slate-100 before:z-0">
+          <div className="relative space-y-8 lg:space-y-12 before:absolute before:inset-0 before:left-[23px] lg:before:left-[31px] before:top-8 before:bottom-8 before:w-0.5 before:bg-slate-100 before:z-0">
             {analytics?.analytics?.roadmap?.phases ? analytics.analytics.roadmap.phases.map((phase, idx) => (
-              <div key={idx} className="relative z-10 flex gap-8 group">
+              <div key={idx} className="relative z-10 flex gap-4 lg:gap-8 group">
                 {/* Step Indicator */}
-                <div className="w-16 h-16 bg-white border-4 border-slate-50 rounded-2xl flex items-center justify-center shadow-sm group-hover:border-blue-50 transition-all shrink-0">
-                  <div className="w-8 h-8 rounded-lg bg-slate-900 flex items-center justify-center text-white font-bold text-xs ring-4 ring-slate-50">
+                <div className="w-12 h-12 lg:w-16 lg:h-16 bg-white border-2 lg:border-4 border-slate-50 rounded-xl lg:rounded-2xl flex items-center justify-center shadow-sm group-hover:border-blue-50 transition-all shrink-0">
+                  <div className="w-6 h-6 lg:w-8 lg:h-8 rounded-md lg:rounded-lg bg-slate-900 flex items-center justify-center text-white font-bold text-[10px] lg:text-xs ring-2 lg:ring-4 ring-slate-50">
                     {idx + 1}
                   </div>
                 </div>
@@ -202,7 +202,7 @@ const SkillInsights = () => {
                     </span>
                   </div>
 
-                  <div className="bg-slate-50/50 border border-slate-100 rounded-2xl p-6 hover:bg-white hover:shadow-md transition-all duration-300">
+                  <div className="bg-slate-50/50 border border-slate-100 rounded-2xl p-4 lg:p-6 hover:bg-white hover:shadow-md transition-all duration-300">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                       <div>
                         <div className="flex items-center gap-3 mb-3">
@@ -273,8 +273,8 @@ const SkillInsights = () => {
             )) : missingSkills.length > 0 ? missingSkills.map((skill, idx) => (
               <div key={idx} className="relative z-10 flex gap-8 group">
                 {/* Step Indicator */}
-                <div className="w-16 h-16 bg-white border-4 border-slate-50 rounded-2xl flex items-center justify-center shadow-sm group-hover:border-blue-50 transition-all shrink-0">
-                  <div className="w-8 h-8 rounded-lg bg-slate-900 flex items-center justify-center text-white font-bold text-xs ring-4 ring-slate-50">
+                <div className="w-12 h-12 lg:w-16 lg:h-16 bg-white border-2 lg:border-4 border-slate-50 rounded-xl lg:rounded-2xl flex items-center justify-center shadow-sm group-hover:border-blue-50 transition-all shrink-0">
+                  <div className="w-6 h-6 lg:w-8 lg:h-8 rounded-md lg:rounded-lg bg-slate-900 flex items-center justify-center text-white font-bold text-[10px] lg:text-xs ring-2 lg:ring-4 ring-slate-50">
                     {idx + 1}
                   </div>
                 </div>
@@ -286,7 +286,7 @@ const SkillInsights = () => {
                     <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-md uppercase tracking-wider">High Priority</span>
                   </div>
 
-                  <div className="bg-slate-50/50 border border-slate-100 rounded-2xl p-6 hover:bg-white hover:shadow-md transition-all duration-300">
+                  <div className="bg-slate-50/50 border border-slate-100 rounded-2xl p-4 lg:p-6 hover:bg-white hover:shadow-md transition-all duration-300">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div>
                         <h5 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Primary Objective</h5>

@@ -191,9 +191,9 @@ const ResumeMaker = () => {
                     .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
                     .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #cbd5e1; }
                 `}</style>
-                <div className="flex gap-8 no-print">
+                <div className="flex flex-col lg:flex-row gap-8 no-print">
                     {/* Editor Sidebar */}
-                    <div className="w-[450px] bg-white rounded-3xl border border-slate-200 shadow-sm flex flex-col flex-shrink-0">
+                    <div className="w-full lg:w-[450px] bg-white rounded-3xl border border-slate-200 shadow-sm flex flex-col shrink-0">
                         <div className="p-6 border-b border-slate-100 flex items-center justify-between">
                             <button
                                 onClick={() => setView('gallery')}
@@ -407,7 +407,7 @@ const ResumeMaker = () => {
                     </div>
 
                     {/* Preview Panel - Flat UI */}
-                    <div className="flex-1 bg-white overflow-hidden flex flex-col relative no-print">
+                    <div className="hidden lg:flex flex-1 bg-white overflow-hidden flex-col relative no-print">
                         <div className="flex-1 overflow-y-auto p-12 custom-scrollbar flex justify-center">
                             <div className="transform scale-[0.8] xl:scale-[0.9] origin-top shrink-0">
                                 <CurrentTemplate data={resumeData} />
@@ -462,9 +462,9 @@ const ResumeMaker = () => {
                                         <Sparkles className="w-10 h-10 text-white animate-spin-slow" />
                                     </div>
                                 </div>
-                                <div className="space-y-3">
-                                    <h3 className="text-2xl font-black text-slate-900 uppercase italic tracking-tight leading-none">Synthesizing Narrative</h3>
-                                    <p className="text-slate-500 font-medium text-sm">Aligning your professional trajectory with industry benchmarks and neural standards...</p>
+                                <div className="space-y-3 px-4">
+                                    <h3 className="text-xl lg:text-2xl font-black text-slate-900 uppercase italic tracking-tight leading-none">Synthesizing Narrative</h3>
+                                    <p className="text-slate-500 font-medium text-xs lg:text-sm">Aligning your professional trajectory with industry benchmarks and neural standards...</p>
                                 </div>
                                 <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
                                     <div className="h-full bg-blue-600 animate-loading-bar" />
@@ -564,7 +564,7 @@ const ResumeMaker = () => {
                         <span className="h-px w-12 bg-slate-200" />
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
                         {templates.map(template => (
                             <div
                                 key={template.id}

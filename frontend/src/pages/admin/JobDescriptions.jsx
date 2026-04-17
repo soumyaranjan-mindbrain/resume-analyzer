@@ -125,7 +125,7 @@ const JobDescriptions = () => {
 
         <button
           onClick={() => navigate('/admin/jobs/new')}
-          className="flex items-center justify-center gap-3 px-8 py-6 bg-slate-900 text-white rounded-2xl font-bold text-sm hover:bg-slate-800 transition-all shadow-xl shadow-slate-200 h-full whitespace-nowrap lg:min-w-[220px] group"
+          className="flex items-center justify-center gap-3 px-6 py-4 lg:px-8 lg:py-6 bg-slate-900 text-white rounded-2xl font-bold text-sm hover:bg-slate-800 transition-all shadow-xl shadow-slate-200 h-full whitespace-nowrap lg:min-w-[220px] group w-full lg:w-auto"
         >
           <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center group-hover:rotate-90 transition-transform duration-300">
             <Plus className="w-5 h-5" />
@@ -227,7 +227,7 @@ const JobDescriptions = () => {
                       </div>
                     </td>
                     <td className="py-6 px-8 text-right">
-                      <div className="flex items-center justify-end gap-2 opacity-40 group-hover:opacity-100 transition-opacity duration-300">
+                      <div className="flex items-center justify-end gap-2 lg:opacity-40 group-hover:opacity-100 transition-opacity duration-300">
                         <button
                           onClick={() => navigate(`/admin/jobs/edit/${job.id}`)}
                           className="p-2.5 bg-white border border-slate-200 text-slate-600 hover:text-blue-600 hover:border-blue-200 rounded-xl hover:shadow-lg hover:shadow-blue-500/10 transition-all transform hover:-translate-y-0.5"

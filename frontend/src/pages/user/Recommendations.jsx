@@ -207,12 +207,12 @@ const Recommendations = () => {
               recommendations.map((rec, idx) => (
                 <div
                   key={idx}
-                  className="bg-white rounded-2xl p-6 border border-slate-100 relative overflow-hidden group shadow-sm transition-all duration-500"
+                  className="bg-white rounded-2xl p-5 lg:p-6 border border-slate-100 relative overflow-hidden group shadow-sm transition-all duration-500"
                 >
-                  <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
-                    <div className="flex items-center gap-6">
-                      <div className="w-14 h-14 bg-slate-50 rounded-2xl flex items-center justify-center border border-slate-100 shadow-sm">
-                        {rec.type === 'skill' ? <Activity className="w-6 h-6 text-blue-600" /> : <Lightbulb className="w-6 h-6 text-amber-500" />}
+                  <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 lg:gap-6">
+                    <div className="flex items-start lg:items-center gap-4 lg:gap-6">
+                      <div className="w-12 h-12 lg:w-14 lg:h-14 bg-slate-50 rounded-xl lg:rounded-2xl flex items-center justify-center border border-slate-100 shadow-sm shrink-0">
+                        {rec.type === 'skill' ? <Activity className="w-5 h-5 lg:w-6 lg:h-6 text-blue-600" /> : <Lightbulb className="w-5 h-5 lg:w-6 lg:h-6 text-amber-500" />}
                       </div>
                       <div>
                         <h3 className="text-xl font-bold text-slate-800 tracking-tight mb-1">{rec.title}</h3>
@@ -231,13 +231,13 @@ const Recommendations = () => {
 
         <div className="w-full lg:w-[380px] space-y-8">
 
-          <div className="bg-white rounded-2xl p-8 border border-slate-100 relative overflow-hidden shadow-sm">
+          <div className="bg-white rounded-2xl p-6 lg:p-8 border border-slate-100 relative overflow-hidden shadow-sm">
             <div className="relative z-10">
-              <div className="flex items-center gap-4 mb-8">
-                <div className="w-12 h-12 bg-slate-50 rounded-xl flex items-center justify-center border border-slate-100">
-                  <ClipboardList className="w-6 h-6 text-blue-600" />
+              <div className="flex items-center gap-4 mb-6 lg:mb-8">
+                <div className="w-10 h-10 lg:w-12 lg:h-12 bg-slate-50 rounded-xl flex items-center justify-center border border-slate-100">
+                  <ClipboardList className="w-5 h-5 lg:w-6 lg:h-6 text-blue-600" />
                 </div>
-                <h3 className="text-2xl font-bold text-slate-800 tracking-tight">Best Practices</h3>
+                <h3 className="text-xl lg:text-2xl font-bold text-slate-800 tracking-tight">Best Practices</h3>
               </div>
 
               <div className="space-y-4 mb-10">

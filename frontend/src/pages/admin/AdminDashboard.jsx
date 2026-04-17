@@ -76,7 +76,7 @@ const AdminDashboard = () => {
       </div>
 
       {/* Grouped Bar Chart Section */}
-      <div className="bg-white rounded-xl p-7 border border-slate-200 shadow-sm flex flex-col min-h-[420px] max-h-[450px] relative overflow-hidden">
+      <div className="bg-white rounded-xl p-5 lg:p-7 border border-slate-200 shadow-sm flex flex-col min-h-[380px] lg:min-h-[420px] max-h-[500px] relative overflow-hidden">
         {/* Dotted Background Pattern like in image */}
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 0)', backgroundSize: '24px 24px' }} />
 
