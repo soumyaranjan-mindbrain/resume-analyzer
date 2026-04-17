@@ -16,7 +16,10 @@ import {
   X,
   ChevronDown,
   User,
-  LogOut
+  LogOut,
+  Monitor,
+  AlertTriangle,
+  ArrowRight
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
 import { useAuth } from '../../context/AuthContext';
@@ -29,6 +32,13 @@ const AppLayout = ({ children }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const [isMobile, setIsMobile] = React.useState(window.innerWidth < 1024);
+
+  React.useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 1024);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const userNavItems = [
     { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -242,7 +252,60 @@ const AppLayout = ({ children }) => {
 
 
           <div className="flex-1 overflow-y-auto px-6 pb-6 custom-scrollbar">
-            {children}
+            {user?.role === 'admin' && isMobile ? (
+              <div className="h-[100dvh] fixed inset-0 z-[100] bg-slate-50 flex flex-col items-center justify-center p-6 text-center overflow-hidden">
+                {/* Premium Background Elements */}
+                <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                  <div className="absolute top-[-10%] right-[-10%] w-[80%] h-[80%] bg-blue-100/40 blur-[120px] rounded-full animate-pulse" />
+                  <div className="absolute bottom-[-15%] left-[-15%] w-[90%] h-[90%] bg-slate-200/40 blur-[140px] rounded-full" />
+                  <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-[0.03]" />
+                </div>
+
+                <div className="relative z-10 max-w-sm w-full animate-in fade-in slide-in-from-bottom-8 duration-1000 ease-spring">
+
+                  <div className="space-y-4 mb-10">
+                    <h3 className="text-3xl font-black text-slate-900 tracking-tighter uppercase leading-[0.9] italic">
+                      Admin Access <br />
+                      <span className="text-blue-600">Restricted</span>
+                    </h3>
+                    <p className="text-slate-500 text-sm font-bold uppercase tracking-widest opacity-80">Device Mismatch Detected</p>
+                  </div>
+
+                  <p className="text-slate-600 text-sm font-semibold leading-relaxed mb-10 px-4">
+                    The MindVista Control Panel is a high-precision instrument optimized for <span className="text-blue-600 italic">Desktop Architectures</span> only. Large-scale data visualization requires a wider viewport.
+                  </p>
+
+                  <div className="space-y-3 mb-12">
+                    {[
+                      { id: '01', text: 'Switch to a Desktop Workstation' },
+                      { id: '02', text: 'Login via Windows or MacOS Browser' }
+                    ].map((step, i) => (
+                      <div key={i} className="group bg-white/60 backdrop-blur-xl border border-white shadow-sm rounded-3xl p-5 flex items-center gap-5 hover:bg-white hover:shadow-md transition-all duration-500">
+                        <div className="w-10 h-10 rounded-2xl bg-slate-900 text-white flex items-center justify-center font-black text-[12px] shrink-0 shadow-lg shadow-slate-900/10">
+                          {step.id}
+                        </div>
+                        <p className="text-xs font-black text-slate-800 text-left uppercase tracking-tight">{step.text}</p>
+                      </div>
+                    ))}
+                  </div>
+
+                  <button
+                    onClick={() => { logout(); navigate('/', { replace: true }); }}
+                    className="w-full flex items-center justify-center gap-4 px-8 py-5 bg-slate-900 text-white rounded-[2rem] font-black text-[11px] uppercase tracking-[0.25em] hover:bg-blue-600 hover:shadow-[0_20px_40px_-10px_rgba(59,130,246,0.4)] transition-all duration-500 group relative overflow-hidden active:scale-95"
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-400/0 via-white/20 to-blue-400/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
+                    Return to Landing Page <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform duration-500" />
+                  </button>
+                </div>
+
+                <div className="absolute bottom-10 left-0 right-0 flex flex-col items-center gap-3">
+                  <div className="w-12 h-1 bg-slate-200 rounded-full" />
+                  <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.4em]">Precision Operations Required</p>
+                </div>
+              </div>
+            ) : (
+              children
+            )}
           </div>
         </div>
       </main>

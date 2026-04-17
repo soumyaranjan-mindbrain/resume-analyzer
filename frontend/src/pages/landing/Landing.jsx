@@ -32,6 +32,7 @@ gsap.registerEase('jarvisSnap', (progress) => {
 
 
 
+
 const Hero = () => {
   const navigate = useNavigate();
   const heroRef = useRef(null);
@@ -40,19 +41,39 @@ const Hero = () => {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      const tl = gsap.timeline({ defaults: { ease: 'jarvisSnap', duration: 1.2 } });
+      // 1. Forced State - Ensure visibility is physically possible
+      gsap.set('.hero-animate', { visibility: 'visible', opacity: 1 });
+
+      // 2. Entry Animation
+      const tl = gsap.timeline({ defaults: { ease: 'power4.out', duration: 1.4 } });
 
       tl.from('.hero-animate', {
-        y: 40,
+        y: 60,
         opacity: 0,
-        stagger: 0.1,
+        filter: 'blur(10px)',
+        stagger: 0.2
       })
         .from(mockupRef.current, {
           x: 100,
           opacity: 0,
-          rotateY: -20,
-          duration: 1.5
-        }, '-=1');
+          duration: 1.5,
+          ease: 'expo.out'
+        }, '-=1.2');
+
+      // 3. Scroll Trigger - Only starts after hero is long gone
+      gsap.to('.hero-animate', {
+        scrollTrigger: {
+          trigger: heroRef.current,
+          start: '25% top',
+          end: '75% top',
+          scrub: true,
+          invalidateOnRefresh: true,
+        },
+        opacity: 0,
+        y: 50,
+        stagger: 0.05,
+        ease: 'none'
+      });
 
       gsap.to('.hero-float', {
         y: -15,
@@ -68,16 +89,16 @@ const Hero = () => {
   }, []);
 
   return (
-    <section ref={heroRef} className="relative min-h-[100vh] pt-24 lg:pt-40 pb-16 lg:pb-20 overflow-hidden px-6">
+    <section ref={heroRef} className="relative min-h-[100vh] flex flex-col justify-center pt-24 lg:pt-40 pb-16 lg:pb-20 overflow-hidden px-6">
 
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute -top-20 -left-20 w-[600px] h-[600px] bg-purple-200/40 blur-[120px] rounded-full" />
-        <div className="absolute top-1/2 -right-20 w-[500px] h-[500px] bg-cyan-200/30 blur-[100px] rounded-full" />
-        <div className="absolute -bottom-20 left-1/2 w-[600px] h-[600px] bg-pink-200/40 blur-[120px] rounded-full" />
+        <div className="bg-parallax absolute -top-20 -left-20 w-[600px] h-[600px] bg-purple-200/40 blur-[120px] rounded-full" />
+        <div className="bg-parallax absolute top-1/2 -right-20 w-[500px] h-[500px] bg-cyan-200/30 blur-[100px] rounded-full text-parallax" />
+        <div className="bg-parallax absolute -bottom-20 left-1/2 w-[600px] h-[600px] bg-pink-200/40 blur-[120px] rounded-full" />
       </div>
 
       <div className="container mx-auto max-w-7xl grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center relative z-10">
-        <div ref={textGroupRef} className="space-y-6 md:space-y-8 text-center lg:text-left">
+        <div ref={textGroupRef} className="space-y-6 md:space-y-8 text-center lg:text-left w-full max-w-2xl mx-auto lg:max-w-none lg:mx-0">
           <h1 className="hero-animate text-4xl md:text-7xl font-bold leading-[1.1] tracking-tight text-slate-800">
             Land more <br className="hidden md:block" />
             <span className="mindvista-text inline-block py-1">Interview Calls</span> <br className="hidden md:block" />
@@ -90,7 +111,7 @@ const Hero = () => {
         </div>
 
 
-        <div ref={mockupRef} className="relative flex items-center justify-center p-4 md:p-10 order-first lg:order-last">
+        <div ref={mockupRef} className="relative hidden lg:flex items-center justify-center p-4 md:p-10 order-first lg:order-last">
           <div className="relative w-full max-w-[320px] md:max-w-[450px]">
 
             <div className="hero-float relative z-20 clay-card !p-6 md:!p-10 rotate-[-2deg] md:rotate-[-4deg] border-white/60 shadow-2xl">
@@ -207,7 +228,7 @@ const Features = () => {
   return (
     <section id="product" ref={containerRef} className="pt-20 lg:pt-60 pb-20 lg:pb-32 px-6 relative z-10">
       <div className="container mx-auto max-w-7xl">
-        <div className="mb-16 lg:mb-32 text-center max-w-4xl mx-auto">
+        <div className="mb-16 lg:mb-32 text-center max-w-4xl mx-auto reveal-animate">
           <div className="space-y-8 lg:space-y-16">
             <div>
               <h2 className="text-3xl md:text-6xl font-bold text-slate-800 tracking-tight leading-[1.1] mb-6 md:mb-8">
@@ -230,7 +251,7 @@ const Features = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-10">
           {featureCards.map((card, i) => (
-            <div key={i} className="feature-card clay-card !p-5 group min-h-[220px] md:min-h-[280px] flex flex-col">
+            <div key={i} className="feature-card clay-card !p-5 group min-h-[220px] md:min-h-[280px] flex flex-col opacity-0 translate-y-20 scale-90">
               <div className="flex justify-between items-center mb-4 md:mb-6">
                 <div className="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center border border-purple-100 shadow-sm transition-all duration-700 group-hover:scale-110 group-hover:rotate-6">
                   {React.cloneElement(card.icon, { className: 'w-4 h-4 ' + card.icon.props.className.split(' ').slice(2).join(' ') })}
@@ -266,7 +287,7 @@ const CTA = () => {
   return (
     <section className="py-12 lg:py-32 px-6 mb-8 lg:mb-20">
       <div className="container mx-auto max-w-7xl">
-        <div className="relative clay-card !p-6 md:!p-20 overflow-hidden text-center border-white/60 bg-white/40 backdrop-blur-md">
+        <div className="relative clay-card !p-6 md:!p-20 overflow-hidden text-center border-white/60 bg-white/40 backdrop-blur-md cta-animate opacity-0 translate-y-20 scale-95">
 
           <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary-200/40 blur-[100px] rounded-full -translate-y-1/2 translate-x-1/2" />
 
@@ -297,6 +318,64 @@ const Landing = () => {
   const location = useLocation();
 
   useEffect(() => {
+    const ctx = gsap.context(() => {
+      // Parallax Backgrounds
+      gsap.to('.bg-parallax', {
+        scrollTrigger: {
+          trigger: '.relative',
+          start: 'top top',
+          end: 'bottom bottom',
+          scrub: 1.5,
+        },
+        y: (i) => (i + 1) * 100,
+        rotate: (i) => (i + 1) * 15,
+        ease: 'none'
+      });
+
+      // Feature Reveals with clean scale
+      gsap.to('.feature-card', {
+        scrollTrigger: {
+          trigger: '#product',
+          start: 'top 80%',
+        },
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        stagger: 0.15,
+        duration: 1.4,
+        ease: 'elastic.out(1, 0.75)'
+      });
+
+      // CTA Reveal with depth
+      gsap.to('.cta-animate', {
+        scrollTrigger: {
+          trigger: '.cta-animate',
+          start: 'top 85%',
+        },
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        duration: 1.5,
+        ease: 'back.out(1.7)'
+      });
+
+      // Section Header reveals
+      gsap.from('.reveal-animate', {
+        scrollTrigger: {
+          trigger: '.reveal-animate',
+          start: 'top 90%'
+        },
+        opacity: 0,
+        y: 30,
+        duration: 1
+      });
+
+    });
+
+    return () => ctx.revert();
+  }, []);
+
+  useEffect(() => {
     const params = new URLSearchParams(location.search);
     if (params.get('maintenance') === 'true') {
       toast.error('The platform is currently undergoing scheduled maintenance. Please check back shortly.', {
@@ -304,7 +383,6 @@ const Landing = () => {
         duration: 5000,
         icon: '🛠️'
       });
-      // Clean up the URL
       window.history.replaceState({}, document.title, "/");
     }
   }, [location]);
