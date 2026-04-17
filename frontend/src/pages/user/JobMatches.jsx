@@ -20,13 +20,16 @@ import {
   TrendingUp,
   Target,
   Lightbulb,
-  ArrowRight
+  ArrowRight,
+  Sparkles
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
 import { getAllJobs, getJobById, getResumes, reanalyzeResume, uploadResume, applyToJob } from '../../services/api';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
 
 const APPLY_CONTEXT_KEY = 'apply_job_context_v1';
+const GLOBAL_CACHE_KEY = 'MBI_GLOBAL_RESUME_CONTEXT';
 
 const JobMatches = () => {
   const navigate = useNavigate();
@@ -164,11 +167,43 @@ const JobMatches = () => {
 
       setApplyResult(analysis);
       setApplyStep('result');
+
+      // Sync to Global Cache
+      try {
+        const existing = JSON.parse(sessionStorage.getItem(GLOBAL_CACHE_KEY) || '{}');
+        sessionStorage.setItem(GLOBAL_CACHE_KEY, JSON.stringify({
+          ...existing,
+          lastAnalysis: analysis,
+          lastJobTitle: job.title,
+          timestamp: new Date().toISOString()
+        }));
+      } catch (err) {
+        console.error('Failed to sync to global cache:', err);
+      }
     } catch (e) {
       clearInterval(progressInterval);
       setApplyError(e?.message || 'Apply failed. Please try again.');
-      setApplyStep('error');
     }
+  };
+
+  const handleCopyJD = (job) => {
+    const details = [
+      `Job Title: ${job.title}`,
+      `Company: ${job.company}`,
+      `Location: ${job.location || 'Remote'}`,
+      `Salary: ${job.salary || 'Competitive'}`,
+      `Type: ${job.type || 'Full-time'}`,
+      `\nDescription:\n${job.description || ''}`,
+      `\nRequirements:\n${job.requirements || ''}`,
+      `\nSkills: ${(job.skills || []).join(', ')}`
+    ].join('\n');
+
+    navigator.clipboard.writeText(details)
+      .then(() => toast.success('Job Details Copied to Clipboard!'))
+      .catch((err) => {
+        console.error('Copy failed:', err);
+        toast.error('Failed to copy details');
+      });
   };
 
   const handleFinalApply = async () => {
@@ -327,11 +362,18 @@ const JobMatches = () => {
                     </button>
 
                     <button
+                      onClick={() => handleCopyJD(job)}
+                      className="flex items-center gap-2.5 px-6 py-3.5 bg-white text-blue-600 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-sm border border-blue-100 hover:bg-blue-50 transition-all active:scale-95"
+                    >
+                      <FileText className="w-3.5 h-3.5" />
+                      Copy JD
+                    </button>
+
+                    <button
                       onClick={() => openApply(job)}
-                      className="flex items-center gap-2.5 px-8 py-3.5 bg-slate-900 text-white rounded-xl font-semibold text-[11px] uppercase tracking-widest shadow-md hover:bg-slate-800 active:scale-95 transition-all"
+                      className="flex items-center gap-2.5 px-8 py-3.5 bg-slate-900 text-white rounded-xl font-bold text-[11px] uppercase tracking-widest shadow-md hover:bg-slate-800 active:scale-95 transition-all"
                     >
                       Apply Now
-                      <ChevronRight className="w-4 h-4" />
                     </button>
                   </div>
                 </div>
@@ -503,6 +545,15 @@ const JobMatches = () => {
                           <div className="flex-1">
                             <div className="text-md font-bold text-slate-800">Upload Fresh Resume</div>
                             <div className="text-xs text-slate-500 mt-1 font-medium">Upload a specifically tailored resume for this role.</div>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                navigate('/resume-maker', { state: { triggerAutoFill: true, jobDescription: selectedJob.description } });
+                              }}
+                              className="mt-3 text-[10px] font-black text-blue-600 uppercase tracking-widest hover:underline flex items-center gap-2"
+                            >
+                              <Sparkles className="w-3 h-3" /> or create tailored resume with Resume Maker
+                            </button>
                           </div>
                         </div>
 

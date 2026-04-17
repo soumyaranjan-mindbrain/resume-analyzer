@@ -103,6 +103,16 @@ export const getFeedback = async (resumeId) => {
   return response.data;
 };
 
+export const autoFillFromResume = async (resumeId) => {
+  const response = await apiClient.post('/resume/resume-maker/auto-fill', { resumeId });
+  return response.data;
+};
+
+export const optimizeForJD = async (resumeData, jobDescription) => {
+  const response = await apiClient.post('/resume/resume-maker/optimize', { resumeData, jobDescription });
+  return response.data;
+};
+
 // Dashboard APIs
 export const getDashboardStats = async () => {
   const response = await apiClient.get('/dashboard');

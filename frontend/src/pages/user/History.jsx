@@ -29,7 +29,8 @@ import {
   Cpu
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
-import { getResumes, deleteResume, analyzeResume, uploadResume } from '../../services/api';
+import { getResumes, deleteResume, analyzeResume } from '../../services/api';
+import { useAnalysis } from '../../context/AnalysisContext';
 
 const getNameFromPath = (resume) => {
   if (!resume) return 'Untitled Resume';
@@ -254,13 +255,7 @@ const History = () => {
   const [selectedResume, setSelectedResume] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [hasAutoOpened, setHasAutoOpened] = useState(false);
-
-  // Direct Upload State
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [analysisProgress, setAnalysisProgress] = useState(0);
-  const [analysisStatus, setAnalysisStatus] = useState('idle'); // uploading, parsing, generating
-  const [analysisFile, setAnalysisFile] = useState(null);
-  const [analysisError, setAnalysisError] = useState('');
+  const { startAnalysis, isAnalyzing } = useAnalysis();
 
   const fetchResumes = async () => {
     try {
@@ -290,50 +285,7 @@ const History = () => {
   };
 
   const handleDirectUpload = async (file) => {
-    setIsAnalyzing(true);
-    setAnalysisFile(file);
-    setAnalysisStatus('uploading');
-    setAnalysisProgress(0);
-    setAnalysisError('');
-
-    try {
-      const formData = new FormData();
-      formData.append('file', file);
-
-      // 1. Upload Phase
-      const uploadResp = await uploadResume(formData, (progressEvent) => {
-        const realPercent = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-        setAnalysisProgress(Math.min(realPercent * 0.4, 40));
-      });
-
-      const resumeId = uploadResp?.resume?.id || uploadResp?.resume?._id;
-      if (!resumeId) throw new Error('Upload failed');
-
-      // 2. Parsing Phase
-      setAnalysisStatus('parsing');
-      let p = 40;
-      const interval = setInterval(() => {
-        p += Math.random() * 5;
-        if (p >= 80) clearInterval(interval);
-        setAnalysisProgress(Math.min(p, 80));
-      }, 300);
-
-      // 3. Generation Phase
-      await analyzeResume(resumeId);
-      clearInterval(interval);
-      setAnalysisStatus('generating');
-      setAnalysisProgress(100);
-
-      await new Promise(r => setTimeout(r, 800));
-
-      setIsAnalyzing(false);
-      setAnalysisFile(null);
-      handleUploadSuccess(resumeId);
-    } catch (err) {
-      console.error('Direct Upload Error:', err);
-      setAnalysisError(err.message || 'Operation failed');
-      setIsAnalyzing(false);
-    }
+    startAnalysis(file);
   };
 
   // Auto-effects
@@ -460,48 +412,8 @@ const History = () => {
           </div>
         ) : (
           <>
-            {isAnalyzing && (
-              <div className="bg-white rounded-2xl border-2 border-blue-500 p-8 shadow-xl shadow-blue-500/10 animate-pulse relative overflow-hidden group mb-8">
-                <div className="absolute inset-0 bg-blue-50/10 pointer-events-none" />
-                <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-10">
-                  <div className="flex items-center gap-6">
-                    <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-blue-600/30 shrink-0">
-                      <Zap className="w-8 h-8" />
-                    </div>
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-3">
-                        <span className="px-2.5 py-1 bg-blue-50 text-blue-600 rounded-lg font-black text-[9px] uppercase tracking-widest border border-blue-100">
-                          {analysisStatus === 'uploading' ? 'Phase 01: Transmitting' : analysisStatus === 'parsing' ? 'Phase 02: Deep Parsing' : 'Phase 03: Finalizing'}
-                        </span>
-                        <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
-                        <span className="text-slate-400 font-bold text-[10px] uppercase tracking-widest">{analysisFile?.name || 'Resume'}</span>
-                      </div>
-                      <h4 className="text-2xl font-black text-slate-800 tracking-tight leading-none uppercase">
-                        {analysisStatus === 'uploading' ? 'Uploading to AI Cloud...' : analysisStatus === 'parsing' ? 'Extracting Strategic Value...' : 'Generating Career Report...'}
-                      </h4>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-8">
-                    <div className="relative w-24 h-24 flex items-center justify-center">
-                      <svg className="w-full h-full -rotate-90">
-                        <circle cx="48" cy="48" r="42" fill="none" stroke="#f1f5f9" strokeWidth="8" />
-                        <circle
-                          cx="48" cy="48" r="42" fill="none" stroke="#2563eb" strokeWidth="8"
-                          strokeDasharray={264} strokeDashoffset={264 - (264 * Math.round(analysisProgress)) / 100}
-                          strokeLinecap="round" className="transition-all duration-500"
-                        />
-                      </svg>
-                      <span className="absolute text-xl font-black text-slate-800">{Math.round(analysisProgress)}%</span>
-                    </div>
-                    <div className="flex gap-2">
-                      <ShieldCheck className={cn("w-6 h-6", analysisProgress > 30 ? "text-blue-600" : "text-slate-200")} />
-                      <Cpu className={cn("w-6 h-6", analysisProgress > 60 ? "text-blue-600" : "text-slate-200")} />
-                      <Zap className={cn("w-6 h-6", analysisProgress > 90 ? "text-blue-600" : "text-slate-200")} />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
+            {/* Global NeuralAnalysisOverlay handles the showing of analysis now */}
+
             {resumes.map((resume) => {
               const isAnalyzed = Boolean(resume.analysis);
               const atsScore = resume.analysis?.atsScore ?? 0;

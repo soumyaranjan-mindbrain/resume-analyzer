@@ -18,6 +18,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import dashboardBanner from '../../assets/dashboard-banner-seamless.png';
 import { useAuth } from '../../context/AuthContext';
+import { useAnalysis } from '../../context/AnalysisContext';
 import { getDashboardStats, getMyResumes } from '../../services/api';
 
 const cn = (...classes) => classes.filter(Boolean).join(' ');
@@ -70,6 +71,7 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
   const { user } = useAuth();
+  const { startAnalysis, isAnalyzing } = useAnalysis();
   const [stats, setStats] = useState(null);
   const [resumes, setResumes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -77,7 +79,8 @@ const Dashboard = () => {
   const handleFileSelect = (e) => {
     const file = e.target.files[0];
     if (file) {
-      navigate('/history', { state: { fileToUpload: file } });
+      startAnalysis(file);
+      e.target.value = ''; // Reset input value to allow re-uploading same file
     }
   };
 
@@ -233,13 +236,8 @@ const Dashboard = () => {
             >
               <Upload className="w-5 h-5" /> Initialize Analysis
             </button>
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={handleFileSelect}
-              className="hidden"
-              accept=".pdf,.docx"
-            />
+            {/* Hidden file input removed from here */}
+
           </div>
         </div>
       ) : (
@@ -375,6 +373,13 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleFileSelect}
+        className="hidden"
+        accept=".pdf,.docx"
+      />
     </div>
   );
 };

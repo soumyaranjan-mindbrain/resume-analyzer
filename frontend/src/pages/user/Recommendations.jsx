@@ -15,32 +15,20 @@ import { cn } from '../../utils/cn';
 import { getFeedback, getMyResumes } from '../../services/api';
 import { useNavigate } from 'react-router-dom';
 
+const GLOBAL_CACHE_KEY = 'MBI_GLOBAL_RESUME_CONTEXT';
+
 const Recommendations = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
-  const [activeTab, setActiveTab] = useState('Improvement Tips');
-  const [recommendations, setRecommendations] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [resumes, setResumes] = useState([]);
-
-  const handleFileSelect = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      navigate('/history', { state: { fileToUpload: file } });
-    }
-  };
-
-  useEffect(() => {
-    const fetchData = async () => {
+  const [recommendations, setRecommendations] = useState(() => {
+    // Instant Cache Initialization
+    const cached = sessionStorage.getItem(GLOBAL_CACHE_KEY);
+    if (cached) {
       try {
-        setLoading(true);
-        const resumeData = await getMyResumes();
-        const list = resumeData.resumes || [];
-        setResumes(list);
-
-        if (list.length > 0) {
-          const feedbackData = await getFeedback(list[0]._id || list[0].id);
-          const tips = [
+        const parsed = JSON.parse(cached);
+        if (parsed.lastAnalysis) {
+          const feedbackData = parsed.lastAnalysis;
+          return [
             ...(feedbackData.aiFeedback || []).map((text, idx) => ({
               id: idx,
               title: text,
@@ -68,11 +56,79 @@ const Recommendations = () => {
               type: 'tip'
             }
           ];
-          setRecommendations(tips);
+        }
+      } catch (e) {
+        console.error('Initial cache parse error:', e);
+      }
+    }
+    return [];
+  });
+
+  const [loading, setLoading] = useState(() => {
+    const cached = sessionStorage.getItem(GLOBAL_CACHE_KEY);
+    if (cached) {
+      try {
+        const parsed = JSON.parse(cached);
+        if (parsed.lastAnalysis) return false; // Already have data
+      } catch (e) { }
+    }
+    return true;
+  });
+  const [resumes, setResumes] = useState([]);
+
+  const handleFileSelect = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      navigate('/history', { state: { fileToUpload: file } });
+    }
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const resumeData = await getMyResumes();
+        const list = resumeData.resumes || [];
+        setResumes(list);
+
+        // Only fetch feedback if we don't have it in state or if we want a fresh copy
+        if (recommendations.length === 0 && list.length > 0) {
+          setLoading(true);
+          const feedbackData = await getFeedback(list[0]._id || list[0].id);
+
+          if (feedbackData) {
+            const tips = [
+              ...(feedbackData.aiFeedback || []).map((text, idx) => ({
+                id: idx,
+                title: text,
+                description: text,
+                actionText: 'Apply Tip',
+                type: 'skill'
+              })),
+              ...(feedbackData.recommendations || []),
+              {
+                id: 'extra-1',
+                title: 'Industry Keyword Alignment',
+                description: 'Our AI detected that adding more cloud-native keywords (Docker, Kubernetes) would increase your visibility for modern DevOps roles.',
+                type: 'tip'
+              },
+              {
+                id: 'extra-2',
+                title: 'Impact Statement Optimization',
+                description: 'Try rephrasing your experience bullets to start with strong action verbs like "Spearheaded" or "Orchestrated" for better impact.',
+                type: 'skill'
+              },
+              {
+                id: 'extra-3',
+                title: 'Section Reordering',
+                description: 'Moving your "Skills" section above "Education" is recommended for roles with 2+ years of experience to highlight technical proficiency.',
+                type: 'tip'
+              }
+            ];
+            setRecommendations(tips);
+          }
         }
       } catch (error) {
-        console.error('Failed to fetch recommendations:', error);
-        setRecommendations([]);
+        console.error('Background fetch failed:', error);
       } finally {
         setLoading(false);
       }
@@ -196,10 +252,10 @@ const Recommendations = () => {
               </div>
 
               <button
-                onClick={() => fileInputRef.current?.click()}
-                className="w-full py-4 bg-white border border-slate-200 rounded-2xl font-black text-slate-500 text-[10px] uppercase tracking-[0.2em] hover:bg-slate-50 hover:text-blue-600 hover:border-blue-200 transition-all flex items-center justify-center gap-3 shadow-sm"
+                onClick={() => navigate('/resume-maker', { state: { triggerAutoFill: true } })}
+                className="w-full py-4 bg-slate-900 text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] shadow-xl shadow-slate-900/10 hover:bg-blue-600 transition-all flex items-center justify-center gap-3 active:scale-95"
               >
-                <Upload className="w-4 h-4" /> Optimize Now
+                Optimize Now
               </button>
             </div>
           </div>

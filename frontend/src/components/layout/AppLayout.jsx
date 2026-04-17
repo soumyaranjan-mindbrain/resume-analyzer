@@ -3,6 +3,7 @@ import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
   FileText,
+  FileEdit,
   Briefcase,
   ShieldCheck,
   BarChart3,
@@ -20,6 +21,7 @@ import {
 import { cn } from '../../utils/cn';
 import { useAuth } from '../../context/AuthContext';
 import Logo from '../common/Logo';
+import NeuralAnalysisOverlay from '../ui/NeuralAnalysisOverlay';
 
 const AppLayout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -31,6 +33,7 @@ const AppLayout = ({ children }) => {
   const userNavItems = [
     { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { path: '/history', label: 'My Resumes', icon: FileText },
+    { path: '/resume-maker', label: 'Resume Maker', icon: FileEdit },
     { path: '/matches', label: 'Jobs', icon: Briefcase },
     { path: '/recommendations', label: 'Recommendations', icon: ShieldCheck },
     { path: '/insights', label: 'Skill Insights', icon: CloudLightning },
@@ -54,6 +57,7 @@ const AppLayout = ({ children }) => {
       subtitle: 'Welcome back to your personalized career intelligence suite.'
     },
     '/history': { title: 'My Resumes', subtitle: 'Manage and track all your analyzed documents.' },
+    '/resume-maker': { title: 'Resume Maker', subtitle: 'Construct your professional narrative with AI.' },
     '/matches': { title: 'Jobs', subtitle: 'High-probability career opportunities for you.' },
     '/recommendations': { title: 'Recommendations', subtitle: 'AI-driven suggestions for your next career move.' },
     '/insights': { title: 'Skill Insights', subtitle: 'Detailed breakdown of your professional expertise.' },
@@ -250,6 +254,7 @@ const AppLayout = ({ children }) => {
           border-radius: 20px;
         }
       `}} />
+      <NeuralAnalysisOverlay />
     </div>
   );
 };

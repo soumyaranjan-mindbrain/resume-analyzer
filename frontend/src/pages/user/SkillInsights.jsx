@@ -110,7 +110,7 @@ const SkillInsights = () => {
   return (
     <div className="max-w-[1400px] mx-auto pb-8 px-4">
       {/* Mastery Markers - Good Points & Critical Gaps */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 mb-12">
         {/* Good Points / Strengths */}
         <div className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm relative overflow-hidden">
           <div className="absolute top-0 right-0 p-6 opacity-10">
@@ -157,45 +157,6 @@ const SkillInsights = () => {
               ))
             ) : (
               <p className="text-slate-400 text-sm italic">No critical structural gaps identified.</p>
-            )}
-          </div>
-        </div>
-
-        {/* Strategic Goals - Moved to Top Row */}
-        <div className="bg-white rounded-[2.5rem] p-8 border border-slate-100 relative overflow-hidden shadow-sm h-full">
-          <div className="flex items-center gap-4 mb-8">
-            <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center border border-indigo-100 shadow-sm">
-              <Target className="w-5 h-5 text-indigo-600" />
-            </div>
-            <h3 className="text-xl font-bold text-slate-800 tracking-tight">Strategic Goals</h3>
-          </div>
-
-          <div className="space-y-4">
-            {missingSkills.slice(0, 3).map((skill, i) => (
-              <div key={i} className="flex flex-col p-4 bg-slate-50 border border-slate-100 rounded-2xl group transition-all hover:bg-white hover:shadow-md">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-3">
-                    <div className="w-7 h-7 bg-white rounded-lg flex items-center justify-center shadow-sm">
-                      <Star className="w-3 h-3 text-amber-500 fill-amber-500" />
-                    </div>
-                    <span className="font-bold text-slate-700 text-xs whitespace-nowrap overflow-hidden text-ellipsis max-w-[120px]">Learn {skill.name}</span>
-                  </div>
-                  <div className="text-[9px] font-bold text-blue-600">Q2 Target</div>
-                </div>
-                <div className="h-1 bg-slate-200 rounded-full overflow-hidden">
-                  <div className="h-full bg-blue-500 rounded-full" style={{ width: '0%' }} />
-                </div>
-              </div>
-            ))}
-            {missingSkills.length === 0 && (
-              ['Finish Unit Testing Path', 'Draft Portfolio Site', 'Update Tech Keywords'].map((label, i) => (
-                <div key={i} className="flex items-center gap-3 p-4 bg-slate-50 border border-slate-100 rounded-2xl">
-                  <div className="w-7 h-7 bg-white rounded-lg flex items-center justify-center shadow-sm">
-                    <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
-                  </div>
-                  <span className="font-bold text-slate-700 text-xs">{label}</span>
-                </div>
-              ))
             )}
           </div>
         </div>

@@ -23,10 +23,34 @@ export const ConfigProvider = ({ children }) => {
     };
 
     useEffect(() => {
+        // Initial fetch
         fetchConfig();
-        // High-frequency polling for near-realtime experience
-        const interval = setInterval(fetchConfig, 2000);
-        return () => clearInterval(interval);
+
+        // Establish SSE connection for real-time updates
+        const eventSource = new EventSource('http://localhost:5000/api/config/stream', {
+            withCredentials: true
+        });
+
+        eventSource.onmessage = (event) => {
+            try {
+                const data = JSON.parse(event.data);
+                setMaintenanceMode(data.config?.maintenanceMode || false);
+            } catch (error) {
+                console.error('Error parsing config stream data:', error);
+            }
+        };
+
+        eventSource.onerror = (error) => {
+            console.error('SSE Error:', error);
+            eventSource.close();
+            // Fallback to polling if SSE fails, but at a much lower frequency
+            const fallback = setInterval(fetchConfig, 30000);
+            return () => clearInterval(fallback);
+        };
+
+        return () => {
+            eventSource.close();
+        };
     }, []);
 
     return (

@@ -345,9 +345,142 @@ Generate 3-4 phases that are specific, realistic, and actionable.`;
   }
 }
 
+// ─────────────────────────────────────────────
+//  GROQ AI — RESUME DATA EXTRACTION (For Resume Maker)
+// ─────────────────────────────────────────────
+async function extractResumeData(resumeText) {
+  if (!process.env.GROQ_API_KEY) throw new Error("GROQ_API_KEY not found");
+
+  const prompt = `You are a specialized Data Extraction AI. 
+Extract all professional details from the resume below into a perfectly structured JSON object.
+Capture EVERY detail accurately.
+
+Return ONLY this JSON structure:
+{
+  "fullName": "Name",
+  "phone": "Phone",
+  "email": "Email",
+  "linkedin": "URL",
+  "portfolio": "URL",
+  "github": "URL",
+  "location": "City, Country",
+  "targetRole": "Extrapolated current/target role",
+  "summary": "Full professional summary",
+  "skills": ["Skill 1", "Skill 2"],
+  "languages": "List of languages",
+  "frameworks": "List of frameworks",
+  "cloud": "Cloud platforms",
+  "certifications": "Certifications",
+  "experience": [
+    {
+      "role": "Title",
+      "company": "Company",
+      "startDate": "Date",
+      "endDate": "Date",
+      "location": "Location",
+      "highlights": ["Bullet point 1", "Bullet point 2"]
+    }
+  ],
+  "education": [
+    {
+      "degree": "Degree",
+      "field": "Field",
+      "university": "University",
+      "year": "Year"
+    }
+  ],
+  "projects": [
+    {
+      "name": "Project Name",
+      "techStack": "Tools used",
+      "highlights": ["What you did", "Impact"]
+    }
+  ],
+  "achievements": [
+    { "label": "Revenue Growth", "value": "25%" }
+  ]
+}
+
+RESUME:
+---
+${resumeText.slice(0, 8000)}
+---`;
+
+  try {
+    const response = await groq.chat.completions.create({
+      model: GROQ_MODEL,
+      messages: [
+        { role: "system", content: "You extract structured resume data. Respond with valid JSON ONLY." },
+        { role: "user", content: prompt },
+      ],
+      temperature: 0.1,
+    });
+
+    const raw = response.choices[0]?.message?.content || "";
+    const jsonMatch = raw.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error("No JSON found in extraction response");
+
+    return JSON.parse(jsonMatch[0]);
+  } catch (error) {
+    console.error("[Groq] Extraction failed:", error.message);
+    throw error;
+  }
+}
+
+// ─────────────────────────────────────────────
+//  GROQ AI — JD OPTIMIZATION (For Resume Maker)
+// ─────────────────────────────────────────────
+async function optimizeResumeForJD(resumeData, jobDescription) {
+  if (!process.env.GROQ_API_KEY) throw new Error("GROQ_API_KEY not found");
+
+  const prompt = `You are a World-Class Resume Strategist and ATS Specialist.
+Your goal is to RE-ENGINEER the provided resume data to MAXIMIZE its match rate against the specific Job Description (JD).
+
+STRATEGIC INSTRUCTIONS:
+1.  PERSONALIZED SUMMARY (CAREER OBJECTIVE): Rewrite the 'summary' from scratch to be a high-impact branding statement. It must use keywords from the JD and explicitly state how the candidate solves the specific problems mentioned in the JD.
+2.  SKILLS SYNCHRONIZATION (CORE CAPABILITIES): Reorganize and update the 'skills' array. Prioritize the technical and soft skills highlighted in the JD. Ensure terminology exactly matches the JD (e.g., if JD says "Cloud Architecture", don't just say "AWS").
+3.  EXPERIENCE OPTIMIZATION: Rephrase 'highlights' for every role to emphasize accomplishments that are directly relevant to the JD's requirements. Use action verbs and quantifiable metrics where possible.
+4.  PROJECT ALIGNMENT: Tailor the 'projects' highlights to showcase relevance to the JD's tech stack and objectives.
+5.  VERACITY & INTEGRITY: Do not invent new jobs, dates, degrees, or companies. Stay honest to the candidate's core history.
+
+EXTREME IMPORTANCE: 
+- The tone should be authoritative, professional, and JD-aligned.
+- Return ONLY the full updated JSON object of the resume data.
+
+RESUME DATA:
+${JSON.stringify(resumeData, null, 2)}
+
+JOB DESCRIPTION:
+${jobDescription}
+
+Return the optimized JSON object now.`;
+
+  try {
+    const response = await groq.chat.completions.create({
+      model: GROQ_MODEL,
+      messages: [
+        { role: "system", content: "You optimize resume data for JD alignment. Respond with valid JSON ONLY." },
+        { role: "user", content: prompt },
+      ],
+      temperature: 0.3,
+    });
+
+    const raw = response.choices[0]?.message?.content || "";
+    const jsonMatch = raw.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error("No JSON found in optimization response");
+
+    return JSON.parse(jsonMatch[0]);
+  } catch (error) {
+    console.error("[Groq] Optimization failed:", error.message);
+    throw error;
+  }
+}
+
 module.exports = {
   extractTextFromPdf,
   extractTextFromDocx,
   analyzeResumeText,
   generateCareerRoadmap,
+  extractResumeData,
+  optimizeResumeForJD
 };

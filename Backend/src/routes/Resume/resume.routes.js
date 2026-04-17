@@ -12,6 +12,10 @@ const {
 } = require("../../controllers/Resume/resume.controller.v2");
 
 const { analyzeResume } = require("../../controllers/Analysis/analysis.controller.v2");
+const {
+  autoFillFromResume,
+  optimizeForJD,
+} = require("../../controllers/Resume/resumeMaker.controller");
 const { authMiddleware } = require("../../middleware/authMiddleware");
 
 const router = express.Router();
@@ -26,6 +30,8 @@ router.post("/reanalyze", authMiddleware, reanalyzeResume);
 router.post("/match", authMiddleware, matchResume);
 router.get("/feedback", authMiddleware, getResumeFeedback);
 router.get("/my-resumes", authMiddleware, getMyResumes);
+router.post("/resume-maker/auto-fill", authMiddleware, autoFillFromResume);
+router.post("/resume-maker/optimize", authMiddleware, optimizeForJD);
 router.get("/:id", authMiddleware, getResumeById);
 router.delete("/:id", authMiddleware, deleteResume);
 

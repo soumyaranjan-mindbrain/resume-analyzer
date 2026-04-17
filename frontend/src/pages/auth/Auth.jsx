@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import gsap from 'gsap';
-import { 
-  Mail, 
-  Lock, 
-  Eye, 
-  EyeOff, 
-  User, 
-  ArrowRight 
+import {
+  Mail,
+  Lock,
+  Eye,
+  EyeOff,
+  User,
+  ArrowRight
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
 import { useAuth } from '../../context/AuthContext';
@@ -24,18 +24,18 @@ const Auth = () => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  
+
   const leftPanelRef = useRef(null);
   const formPanelRef = useRef(null);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      gsap.fromTo(leftPanelRef.current, 
+      gsap.fromTo(leftPanelRef.current,
         { opacity: 0, x: -50 },
         { opacity: 1, x: 0, duration: 1.5, ease: 'power3.out' }
       );
 
-      gsap.fromTo(formPanelRef.current, 
+      gsap.fromTo(formPanelRef.current,
         { opacity: 0, x: 50 },
         { opacity: 1, x: 0, duration: 1.5, ease: 'power3.out', delay: 0.2 }
       );
@@ -70,8 +70,8 @@ const Auth = () => {
   return (
     <div className="min-h-screen flex items-center justify-center p-6 bg-transparent">
       <div className="max-w-6xl w-full grid lg:grid-cols-2 gap-12 items-center">
-        
-        
+
+
         <div ref={leftPanelRef} className="hidden lg:block space-y-12">
           <Logo size="lg" onClick={() => navigate('/')} />
           <div className="space-y-6">
@@ -80,17 +80,17 @@ const Auth = () => {
               <span className="kredo-text">Professional</span> <br />
               frequency.
             </h1>
-              <p className="text-xl text-[var(--neutral-600)] font-bold max-w-md leading-relaxed">
-                Step into the future of resume intelligence. One node away from peak career optimization.
-              </p>
+            <p className="text-xl text-[var(--neutral-600)] font-bold max-w-md leading-relaxed">
+              Step into the future of resume intelligence. One node away from peak career optimization.
+            </p>
           </div>
 
         </div>
 
-        
+
         <div ref={formPanelRef} className="clay-card !p-8 md:!p-12 relative max-w-md mx-auto w-full lg:max-w-none">
           <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--primary-200)] blur-[120px] rounded-full opacity-40 -translate-y-1/2 translate-x-1/4 pointer-events-none" />
-          
+
           <div className="relative z-10 space-y-8">
             <div className="lg:hidden mb-6">
               <Logo size="lg" onClick={() => navigate('/')} />
@@ -118,11 +118,11 @@ const Auth = () => {
                   <label className="text-xs font-bold uppercase tracking-widest text-slate-600 ml-1">Full Name</label>
                   <div className="relative">
                     <User className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      placeholder="John Doe"
+                      placeholder="Enter your name"
                       className="input-clay !pl-14 !bg-slate-50 !border-slate-200 focus:!bg-white transition-all shadow-sm"
                       required={!isLogin}
                     />
@@ -134,11 +134,11 @@ const Auth = () => {
                 <label className="text-xs font-bold uppercase tracking-widest text-slate-600 ml-1">Email Address</label>
                 <div className="relative">
                   <Mail className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                  <input 
-                    type="email" 
+                  <input
+                    type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="example@mail.com"
+                    placeholder="Enter your mail id"
                     className="input-clay !pl-14 !bg-slate-50 !border-slate-200 focus:!bg-white transition-all shadow-sm"
                     required
                   />
@@ -156,7 +156,7 @@ const Auth = () => {
                 </div>
                 <div className="relative">
                   <Lock className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                  <input 
+                  <input
                     type={showPassword ? 'text' : 'password'}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
@@ -164,7 +164,7 @@ const Auth = () => {
                     className="input-clay !pl-14 !pr-14 !bg-slate-50 !border-slate-200 focus:!bg-white transition-all shadow-sm"
                     required
                   />
-                  <button 
+                  <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-indigo-500 transition-colors"
@@ -175,7 +175,7 @@ const Auth = () => {
               </div>
 
               <div className="pt-2">
-                <button 
+                <button
                   type="submit"
                   disabled={loading}
                   className="btn-kredo w-full !py-4 flex items-center justify-center gap-3 relative overflow-hidden group"
@@ -184,7 +184,7 @@ const Auth = () => {
                     {isLogin ? 'Sign In' : 'Sign Up'}
                   </span>
                   {!loading && <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />}
-                  
+
                   {loading && (
                     <div className="absolute inset-0 flex items-center justify-center">
                       <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -195,7 +195,7 @@ const Auth = () => {
             </form>
 
             <div className="text-center pt-2">
-              <button 
+              <button
                 onClick={() => setIsLogin(!isLogin)}
                 className="text-xs font-bold text-slate-600 hover:text-indigo-700 transition-colors uppercase tracking-widest"
               >
