@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const configController = require("../../controllers/Config/config.controller");
-const { protect, admin } = require("../../middleware/authMiddleware");
+const { protect, admin } = require("../../middleware/auth-middleware");
 
 // Public route to check maintenance status
 router.get("/", configController.getConfig);

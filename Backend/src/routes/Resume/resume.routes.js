@@ -16,7 +16,7 @@ const {
   autoFillFromResume,
   optimizeForJD,
 } = require("../../controllers/Resume/resumeMaker.controller");
-const { authMiddleware } = require("../../middleware/authMiddleware");
+const { authMiddleware } = require("../../middleware/auth-middleware");
 
 const router = express.Router();
 

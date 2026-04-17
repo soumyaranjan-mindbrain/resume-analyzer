@@ -7,7 +7,7 @@ const {
   deleteAllData
 } = require("../../controllers/Settings/settings.controller");
 
-const { authMiddleware } = require("../../middleware/authMiddleware");
+const { authMiddleware } = require("../../middleware/auth-middleware");
 
 // Data Management
 router.get("/export", authMiddleware, exportData);

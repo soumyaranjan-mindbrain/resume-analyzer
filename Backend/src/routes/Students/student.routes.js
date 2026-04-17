@@ -9,7 +9,7 @@ const {
   deleteStudent,
 } = require("../../controllers/Student/student.controller");
 
-const { authMiddleware } = require("../../middleware/authMiddleware");
+const { authMiddleware } = require("../../middleware/auth-middleware");
 const authorize = require("../../middleware/roles");
 
 // Routes
