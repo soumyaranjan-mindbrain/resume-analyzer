@@ -67,7 +67,7 @@ const Auth = () => {
 
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6 bg-transparent">
+    <div className="flex-1 flex items-center justify-center p-6 bg-transparent overflow-hidden">
       <div className="max-w-6xl w-full grid lg:grid-cols-2 gap-12 items-center">
 
 
@@ -142,11 +142,11 @@ const Auth = () => {
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <label className="text-xs font-bold uppercase tracking-widest text-slate-600 ml-1">Password</label>
-                  {isLogin && (
+                  {/* {isLogin && (
                     <button type="button" className="text-xs font-bold text-indigo-600 hover:text-indigo-700">
                       Forgot Password?
                     </button>
-                  )}
+                  )} */}
                 </div>
                 <div className="relative">
                   <Lock className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
@@ -189,12 +189,16 @@ const Auth = () => {
             </form>
 
             <div className="text-center pt-2">
-              <button
-                onClick={() => setIsLogin(!isLogin)}
-                className="text-xs font-bold text-slate-600 hover:text-indigo-700 transition-colors uppercase tracking-widest"
-              >
-                {isLogin ? "Don't have an account? Sign up" : "Already have an account? Log in"}
-              </button>
+              <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                {isLogin ? "Don't have an account?" : "Already have an account?"}
+                <button
+                  type="button"
+                  onClick={() => setIsLogin(!isLogin)}
+                  className="ml-2 text-indigo-600 hover:text-indigo-700 transition-colors hover:underline"
+                >
+                  {isLogin ? "Sign up" : "Log in"}
+                </button>
+              </p>
             </div>
           </div>
         </div>

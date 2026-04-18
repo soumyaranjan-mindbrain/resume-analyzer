@@ -196,7 +196,7 @@ const Support = () => {
                                        type="button"
                                        onClick={() => setIsCategoryOpen(!isCategoryOpen)}
                                        className={cn(
-                                          "w-full px-6 py-4 bg-slate-50/50 border rounded-xl outline-none transition-all flex items-center justify-between group/btn shadow-inner",
+                                          "w-full h-16 px-6 bg-slate-50/50 border rounded-xl outline-none transition-all flex items-center justify-between group/btn shadow-inner",
                                           isCategoryOpen ? "border-blue-500 bg-white ring-4 ring-blue-500/5" : "border-slate-200 hover:border-slate-300"
                                        )}
                                     >
@@ -275,7 +275,7 @@ const Support = () => {
 
                            <button
                               disabled={submitting}
-                              className="w-full py-4.5 bg-blue-600 text-white rounded-xl font-black tracking-widest text-sm shadow-[0_15px_30px_-8px_rgba(37,99,235,0.25)] hover:bg-blue-700 active:scale-[0.98] transition-all flex items-center justify-center gap-3 disabled:opacity-50"
+                              className="w-full h-16 bg-blue-600 text-white rounded-xl font-black tracking-[0.2em] text-[11px] uppercase shadow-[0_20px_40px_-10px_rgba(37,99,235,0.3)] hover:bg-blue-700 active:scale-[0.98] transition-all flex items-center justify-center gap-4 disabled:opacity-50"
                            >
                               {submitting ? (
                                  <Loader2 className="w-5 h-5 animate-spin" />

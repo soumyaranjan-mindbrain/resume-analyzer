@@ -19,13 +19,12 @@ import {
   Search,
   Key,
   Upload,
-  Sparkles,
-  Rocket,
-  Package
+  Sparkles
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
-import { getAnalytics, getMyResumes } from '../../services/api';
+import { getAnalytics, getMyResumes, toggleRoadmapPhase } from '../../services/api';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 const SkillInsights = () => {
   const navigate = useNavigate();
@@ -33,6 +32,8 @@ const SkillInsights = () => {
   const [analytics, setAnalytics] = useState(null);
   const [loading, setLoading] = useState(true);
   const [resumes, setResumes] = useState([]);
+  const [completedPhases, setCompletedPhases] = useState([]);
+  const [toggling, setToggling] = useState(null);
 
   const handleFileSelect = (e) => {
     const file = e.target.files[0];
@@ -50,6 +51,7 @@ const SkillInsights = () => {
 
         const analyticsData = await getAnalytics();
         setAnalytics(analyticsData || null);
+        setCompletedPhases(analyticsData?.analytics?.completedPhases || []);
       } catch (error) {
         console.error('Failed to fetch skill insights:', error);
       } finally {
@@ -58,6 +60,35 @@ const SkillInsights = () => {
     };
     fetchData();
   }, []);
+
+  const handleTogglePhase = async (idx) => {
+    try {
+      setToggling(idx);
+      // Optimistic Update
+      const isAlreadyCompleted = completedPhases.includes(idx);
+      const newCompleted = isAlreadyCompleted
+        ? completedPhases.filter(i => i !== idx)
+        : [...completedPhases, idx];
+
+      setCompletedPhases(newCompleted);
+
+      await toggleRoadmapPhase(idx);
+      toast.success(isAlreadyCompleted ? "Phase reset" : "Phase completed!");
+    } catch (error) {
+      console.error('Failed to toggle phase:', error);
+      toast.error('Failed to update progress');
+      // Revert on error
+      const analyticsData = await getAnalytics();
+      setCompletedPhases(analyticsData?.analytics?.completedPhases || []);
+    } finally {
+      setToggling(null);
+    }
+  };
+
+  // Logic for Active Indicator: The first index not in completedPhases
+  const roadmapPhases = analytics?.analytics?.roadmap?.phases || [];
+  const activePhaseIndex = roadmapPhases.findIndex((_, index) => !completedPhases.includes(index));
+  const finalActiveIndex = activePhaseIndex === -1 && roadmapPhases.length > 0 ? roadmapPhases.length : activePhaseIndex;
 
   // Use real data from analytics or fallbacks
   const inDemandSkills = analytics?.analytics?.inDemandSkills || [
@@ -188,112 +219,98 @@ const SkillInsights = () => {
           </div>
 
           <div className="relative space-y-4 lg:space-y-6 before:absolute before:inset-0 before:left-[17px] lg:before:left-[27px] before:top-8 before:bottom-0 before:w-px lg:before:w-1 before:bg-slate-200 before:z-0">
-            {analytics?.analytics?.roadmap?.phases ? analytics.analytics.roadmap.phases.map((phase, idx) => (
-              <div key={idx} className="relative z-10 flex gap-3 lg:gap-8 group">
-                {/* Step Indicator */}
-                <div className="w-9 h-9 lg:w-14 lg:h-14 bg-white border border-slate-200 rounded-lg lg:rounded-2xl flex items-center justify-center shadow-sm group-hover:border-blue-500/50 transition-all shrink-0">
-                  <div className={cn(
-                    "w-6 h-6 lg:w-8 lg:h-8 rounded-lg flex items-center justify-center font-black text-[10px] lg:text-xs ring-4 ring-white transition-all duration-500",
-                    idx === 0 ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20" : "bg-slate-100 text-slate-400"
-                  )}>
-                    {idx + 1}
-                  </div>
-                </div>
+            {analytics?.analytics?.roadmap?.phases ? analytics.analytics.roadmap.phases.map((phase, idx) => {
+              const isCompleted = completedPhases.includes(idx);
+              const isActive = idx === finalActiveIndex;
 
-                {/* Step Content */}
-                <div className="flex-1">
-                  <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-1.5 mb-2.5">
-                    <h4 className="text-base lg:text-xl font-bold text-slate-800 tracking-tight leading-tight uppercase">{phase.title}</h4>
-                    <div className="flex items-center gap-2">
-                      <span className={cn(
-                        "text-[8px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest border",
-                        phase.difficulty === 'Advanced' ? "border-purple-200 text-purple-600 bg-purple-50" :
-                          (phase.difficulty === 'Intermediate' ? "border-blue-200 text-blue-600 bg-blue-50" : "border-emerald-200 text-emerald-600 bg-emerald-50")
-                      )}>
-                        {phase.difficulty || 'Intermediate'}
-                      </span>
-                      <span className="text-[8px] font-black text-slate-400 bg-slate-50 px-2 py-0.5 rounded-full uppercase tracking-widest border border-slate-100">
-                        {phase.estimatedDays || (idx + 1) * 14} Days
-                      </span>
+              return (
+                <div key={idx} className={cn(
+                  "relative z-10 flex gap-3 lg:gap-8 group transition-all duration-500",
+                  isCompleted ? "opacity-75" : "opacity-100"
+                )}>
+                  {/* Step Indicator */}
+                  <div className={cn(
+                    "w-9 h-9 lg:w-14 lg:h-14 bg-white border rounded-lg lg:rounded-2xl flex items-center justify-center shadow-sm transition-all shrink-0",
+                    isCompleted ? "border-emerald-500/30" : (isActive ? "border-blue-500/50" : "border-slate-200")
+                  )}>
+                    <div className={cn(
+                      "w-6 h-6 lg:w-8 lg:h-8 rounded-lg flex items-center justify-center font-black text-[10px] lg:text-xs ring-4 ring-white transition-all duration-700",
+                      isCompleted ? "bg-emerald-500 text-white rotate-[360deg]" :
+                        (isActive ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20 scale-110" : "bg-slate-100 text-slate-400")
+                    )}>
+                      {isCompleted ? <CheckCircle2 className="w-4 h-4" /> : idx + 1}
                     </div>
                   </div>
 
-                  <div className="bg-slate-50/50 border border-slate-100 rounded-none md:rounded-[1rem] lg:rounded-[2rem] p-3 lg:p-6 hover:bg-white hover:shadow-md transition-all duration-500 border-x-0 md:border-x">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                      <div>
-                        <h5 className="text-[8px] font-black text-blue-600 uppercase tracking-[0.2em] mb-3 flex items-center gap-2">
-                          <Target className="w-3 h-3" /> Core Objective
-                        </h5>
-                        <p className="text-slate-600 text-[12px] lg:text-sm font-medium leading-relaxed">
-                          {phase.objective}
-                        </p>
-
-                        {phase.steps && (
-                          <div className="mt-4 flex flex-wrap gap-1.5">
-                            {phase.steps.map((step, sIdx) => (
-                              <div key={sIdx} className="px-2 py-1 bg-white border border-slate-100 rounded-lg text-[9px] text-slate-500 font-bold uppercase tracking-tight flex items-center gap-1.5 hover:border-blue-500/30 hover:text-blue-600 transition-all">
-                                <CheckCircle2 className="w-2.5 h-2.5 text-blue-500" />
-                                {step}
-                              </div>
-                            ))}
-                          </div>
+                  {/* Step Content */}
+                  <div className="flex-1">
+                    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-1.5 mb-2.5">
+                      <h4 className={cn(
+                        "text-base lg:text-xl font-bold tracking-tight leading-tight uppercase transition-colors",
+                        isCompleted ? "text-emerald-600 line-through opacity-60" : "text-slate-800"
+                      )}>{phase.title}</h4>
+                      <div className="flex items-center gap-2">
+                        {isCompleted && (
+                          <span className="text-[8px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest bg-emerald-50 text-emerald-600 border border-emerald-100 shadow-sm">
+                            Completed
+                          </span>
                         )}
                       </div>
+                    </div>
 
-                      <div className="bg-slate-50 border border-slate-100 rounded-none md:rounded-2xl p-4 lg:p-6 relative overflow-hidden group/project shadow-sm">
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-100/50 blur-[80px] rounded-full -translate-y-1/2 translate-x-1/2" />
-
-                        <div className="relative z-10">
-                          <div className="flex items-center gap-3 mb-6">
-                            <div className="w-10 h-10 bg-blue-600/10 rounded-xl flex items-center justify-center text-blue-600 border border-blue-200 shadow-sm">
-                              <Rocket className="w-5 h-5 animate-bounce-slow" />
-                            </div>
-                            <div>
-                              <h5 className="text-[9px] font-black text-blue-600 uppercase tracking-[0.2em] mb-0.5">Capstone Experience</h5>
-                              <h6 className="text-lg lg:text-xl font-black text-slate-900 tracking-tight uppercase leading-tight line-clamp-1">{phase.project?.title || "Enterprise Prototype"}</h6>
-                            </div>
+                    <div className={cn(
+                      "bg-slate-50/50 border rounded-none md:rounded-[1rem] lg:rounded-[2rem] p-3 lg:p-6 transition-all duration-500 border-x-0 md:border-x group-hover:bg-white",
+                      isCompleted ? "border-emerald-100/50" : (isActive ? "border-blue-100 scale-[1.01] shadow-xl shadow-blue-500/5 bg-white" : "border-slate-100")
+                    )}>
+                      <div className="grid grid-cols-1 gap-6">
+                        <div>
+                          <div className="flex items-start justify-between gap-4 mb-3">
+                            <h5 className={cn(
+                              "text-[8px] font-black uppercase tracking-[0.2em] flex items-center gap-2",
+                              isCompleted ? "text-emerald-500" : "text-blue-600"
+                            )}>
+                              <Target className="w-3 h-3" /> Core Objective
+                            </h5>
+                            <button
+                              onClick={() => handleTogglePhase(idx)}
+                              disabled={toggling === idx}
+                              className={cn(
+                                "text-[9px] font-black px-3 py-1.5 rounded-lg uppercase tracking-widest transition-all",
+                                isCompleted
+                                  ? "bg-slate-100 text-slate-500 hover:bg-rose-50 hover:text-rose-600"
+                                  : "bg-blue-600 text-white shadow-lg shadow-blue-500/20 hover:bg-blue-700 active:scale-95"
+                              )}
+                            >
+                              {toggling === idx ? "Saving..." : (isCompleted ? "Mark Incomplete" : "Mark as Complete")}
+                            </button>
                           </div>
-
-                          <p className="text-sm text-slate-800 leading-relaxed font-semibold mb-8 max-w-[500px]">
-                            {phase.project?.description || "Build a production-grade application to validate your mastery of this phase's core architecture and deployment patterns."}
+                          <p className={cn(
+                            "text-[12px] lg:text-sm font-medium leading-relaxed transition-all",
+                            isCompleted ? "text-slate-400 italic" : "text-slate-600"
+                          )}>
+                            {phase.objective}
                           </p>
 
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-                            <div>
-                              <h6 className="text-[8px] font-black text-slate-700 uppercase tracking-[0.3em] mb-4 flex items-center gap-2">
-                                <Package className="w-3 h-3" /> Tech Stack Radar
-                              </h6>
-                              <div className="flex flex-wrap gap-2">
-                                {(phase.skills || ["React", "Node.js", "MongoDB", "Auth0"]).map((s, i) => (
-                                  <span key={i} className="px-3 py-1 bg-white border border-slate-200 rounded-lg text-[9px] text-slate-800 font-bold uppercase tracking-tight shadow-sm">
-                                    {s}
-                                  </span>
-                                ))}
-                              </div>
+                          {phase.steps && (
+                            <div className="mt-4 flex flex-wrap gap-1.5">
+                              {phase.steps.map((step, sIdx) => (
+                                <div key={sIdx} className={cn(
+                                  "px-2 py-1 border rounded-lg text-[9px] font-bold uppercase tracking-tight flex items-center gap-1.5 transition-all",
+                                  isCompleted ? "bg-emerald-50/50 border-emerald-100 text-emerald-600/70" : "bg-white border-slate-100 text-slate-500 hover:border-blue-500/30 hover:text-blue-600"
+                                )}>
+                                  <CheckCircle2 className={cn("w-2.5 h-2.5", isCompleted ? "text-emerald-500" : "text-blue-500")} />
+                                  {step}
+                                </div>
+                              ))}
                             </div>
-                            <div>
-                              <h6 className="text-[8px] font-black text-slate-700 uppercase tracking-[0.3em] mb-4 flex items-center gap-2">
-                                <CheckCircle2 className="w-3 h-3 text-emerald-500" /> Key Masteries
-                              </h6>
-                              <ul className="space-y-2.5">
-                                {["Clean Architecture", "API Orchestration", "Security Headers"].map((item, i) => (
-                                  <li key={i} className="text-[10px] text-slate-800 font-semibold flex items-center gap-2.5">
-                                    <div className="w-1 h-1 rounded-full bg-blue-500" />
-                                    {item}
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          </div>
-
+                          )}
                         </div>
                       </div>
                     </div>
-
                   </div>
                 </div>
-              </div>
-            )) : missingSkills.length > 0 ? missingSkills.map((skill, idx) => (
+              );
+            }) : missingSkills.length > 0 ? missingSkills.map((skill, idx) => (
               <div key={idx} className="relative z-10 flex gap-4 lg:gap-8 group">
                 <div className="w-10 h-10 lg:w-14 lg:h-14 bg-slate-50 border border-slate-100 rounded-xl lg:rounded-2xl flex items-center justify-center shadow-sm shrink-0">
                   <div className="w-6 h-6 lg:w-8 lg:h-8 rounded-lg bg-white flex items-center justify-center text-slate-400 font-black text-[10px] lg:text-xs italic border border-slate-100">

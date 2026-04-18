@@ -103,6 +103,7 @@ exports.getAnalytics = async (req, res) => {
           inDemandSkills,
           courses,
           roadmap: latestAnalysis?.roadmap || null,
+          completedPhases: latestAnalysis?.completedPhases || [],
           topStrengths: latestAnalysis?.topStrengths || [],
           weaknesses: latestAnalysis?.weaknesses || []
         }
@@ -410,6 +411,52 @@ exports.getDashboard = async (req, res) => {
     }
 
     res.status(403).json({ message: "Invalid role" });
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+//   TOGGLE ROADMAP PHASE
+exports.completeRoadmapPhase = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const { phaseIndex } = req.body;
+
+    if (phaseIndex === undefined) {
+      return res.status(400).json({ message: "phaseIndex is required" });
+    }
+
+    // Find the latest analysis for the user
+    const latestAnalysis = await prisma.analysis.findFirst({
+      where: { resume: { userId } },
+      orderBy: { updatedAt: "desc" }
+    });
+
+    if (!latestAnalysis) {
+      return res.status(404).json({ message: "No analysis found" });
+    }
+
+    let currentPhases = latestAnalysis.completedPhases || [];
+    const indexStr = parseInt(phaseIndex);
+
+    if (currentPhases.includes(indexStr)) {
+      // Toggle off if already completed
+      currentPhases = currentPhases.filter(idx => idx !== indexStr);
+    } else {
+      // Toggle on
+      currentPhases.push(indexStr);
+    }
+
+    const updated = await prisma.analysis.update({
+      where: { id: latestAnalysis.id },
+      data: { completedPhases: currentPhases }
+    });
+
+    res.json({
+      message: "Roadmap progress updated",
+      completedPhases: updated.completedPhases
+    });
 
   } catch (err) {
     res.status(500).json({ error: err.message });

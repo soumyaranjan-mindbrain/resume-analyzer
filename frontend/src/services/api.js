@@ -124,6 +124,11 @@ export const getAnalytics = async (range = '') => {
   return response.data;
 };
 
+export const toggleRoadmapPhase = async (phaseIndex) => {
+  const response = await apiClient.patch('/dashboard/roadmap/complete', { phaseIndex });
+  return response.data;
+};
+
 export const getAdminReports = async () => {
   const response = await apiClient.get('/reports/all');
   return response.data;

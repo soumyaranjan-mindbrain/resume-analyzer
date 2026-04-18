@@ -25,6 +25,7 @@ import { cn } from '../../utils/cn';
 import { useAuth } from '../../context/AuthContext';
 import Logo from '../common/Logo';
 import NeuralAnalysisOverlay from '../ui/NeuralAnalysisOverlay';
+import SlimFooter from './SlimFooter';
 
 const AppLayout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -307,6 +308,7 @@ const AppLayout = ({ children }) => {
               children
             )}
           </div>
+          <SlimFooter />
         </div>
       </main>
 
