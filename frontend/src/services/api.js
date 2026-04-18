@@ -176,6 +176,11 @@ export const deleteJob = async (id) => {
   return response.data;
 };
 
+export const toggleJobHiredStatus = async (id) => {
+  const response = await apiClient.patch(`/jobs/${id}/hired`);
+  return response.data;
+};
+
 // Student APIs
 export const getAdminStudents = async () => {
   const response = await apiClient.get('/students');

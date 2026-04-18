@@ -9,7 +9,8 @@ const {
   getJobById,
   updateJob,
   deleteJob,
-  getMyJobs
+  getMyJobs,
+  toggleJobHiredStatus
 } = require("../../controllers/Jobs/job.controller");
 
 // Public
@@ -20,6 +21,7 @@ router.get("/:id", getJobById);
 // Protected
 router.post("/", authMiddleware, createJob);
 router.put("/:id", authMiddleware, updateJob);
+router.patch("/:id/hired", authMiddleware, toggleJobHiredStatus);
 router.delete("/:id", authMiddleware, deleteJob);
 
 module.exports = router;

@@ -143,3 +143,22 @@ exports.getMyJobs = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+// Toggle Hired Status
+exports.toggleJobHiredStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const job = await prisma.job.findUnique({ where: { id } });
+
+    if (!job) return res.status(404).json({ message: "Job not found" });
+
+    const updatedJob = await prisma.job.update({
+      where: { id },
+      data: { isHired: !job.isHired }
+    });
+
+    res.json({ success: true, job: updatedJob });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};

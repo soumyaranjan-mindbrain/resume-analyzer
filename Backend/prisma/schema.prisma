@@ -83,6 +83,7 @@ model Job {
   responsibilities String?
   skillsRequired   String[] // Maps to 'tags' in frontend
   salary           String?
+  isHired          Boolean  @default(false)
   userId           String   @db.ObjectId
   createdAt        DateTime @default(now())
 

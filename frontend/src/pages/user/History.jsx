@@ -70,8 +70,9 @@ const ReportModal = ({ isOpen, onClose, resume }) => {
     };
   }, [isOpen]);
 
-  return (
-    <div className="fixed inset-0 lg:left-64 z-[100] flex flex-col bg-slate-50 overflow-hidden print:overflow-visible print:h-auto animate-in slide-in-from-right duration-500 shadow-2xl font-sans">
+  return createPortal(
+    <div className="fixed inset-0 z-[9999] flex flex-col bg-slate-50 overflow-hidden print:overflow-visible print:h-auto animate-in fade-in duration-500 font-sans">
+      <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xl z-0 print:hidden" onClick={onClose} />
       <div className="relative z-20 px-4 lg:px-8 py-3 lg:py-5 flex items-center justify-between bg-white border-b border-slate-100 print:hidden">
         <div className="max-w-[1280px] mx-auto w-full flex items-center justify-between gap-8">
           <div className="flex items-center gap-5">
@@ -253,7 +254,8 @@ const ReportModal = ({ isOpen, onClose, resume }) => {
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 

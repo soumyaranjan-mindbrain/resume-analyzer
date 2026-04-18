@@ -13,6 +13,12 @@ const applyToJob = async (req, res) => {
             return res.status(401).json({ error: "User unauthorized" });
         }
 
+        // Step 0: Check if job is hired
+        const job = await prisma.job.findUnique({ where: { id: jobId } });
+        if (job?.isHired) {
+            return res.status(400).json({ error: "This job is no longer accepting applications." });
+        }
+
         // Step 1: Check if already applied
         const existing = await prisma.application.findFirst({
             where: {

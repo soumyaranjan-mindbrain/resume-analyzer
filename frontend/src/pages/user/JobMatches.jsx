@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import {
   Briefcase,
   MapPin,
@@ -21,12 +22,15 @@ import {
   Target,
   Lightbulb,
   ArrowRight,
-  Sparkles
+  Sparkles,
+  Ban,
+  Lock
 } from 'lucide-react';
+import toast from 'react-hot-toast';
 import { cn } from '../../utils/cn';
 import { getAllJobs, getJobById, getResumes, reanalyzeResume, uploadResume, applyToJob } from '../../services/api';
 import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-hot-toast';
+
 
 const APPLY_CONTEXT_KEY = 'apply_job_context_v1';
 const GLOBAL_CACHE_KEY = 'MBI_GLOBAL_RESUME_CONTEXT';
@@ -331,6 +335,11 @@ const JobMatches = () => {
                               {job.category}
                             </span>
                           )}
+                          {job.isHired && (
+                            <span className="px-2.5 py-1 bg-rose-50 text-rose-600 rounded-lg font-black text-[9px] uppercase tracking-widest border border-rose-200 flex items-center gap-1.5 shadow-sm">
+                              <Ban className="w-3.5 h-3.5" /> Hired
+                            </span>
+                          )}
                         </div>
                       </div>
 
@@ -381,10 +390,17 @@ const JobMatches = () => {
                       </button>
 
                       <button
-                        onClick={() => openApply(job)}
-                        className="flex items-center justify-center gap-2 px-3 lg:px-4 py-3 lg:py-3.5 bg-slate-900 text-white rounded-xl font-bold text-[10px] lg:text-[11px] uppercase tracking-widest shadow-md hover:bg-slate-800 active:scale-95 transition-all"
+                        onClick={() => job.isHired ? toast.error('This role is no longer accepting applications') : openApply(job)}
+                        disabled={job.isHired}
+                        className={cn(
+                          "flex items-center justify-center gap-2 px-3 lg:px-4 py-3 lg:py-3.5 rounded-xl font-bold text-[10px] lg:text-[11px] uppercase tracking-widest shadow-md transition-all",
+                          job.isHired
+                            ? "bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200"
+                            : "bg-slate-900 text-white hover:bg-slate-800 active:scale-95 shadow-slate-900/10"
+                        )}
                       >
-                        Apply
+                        {job.isHired ? <Lock className="w-3.5 h-3.5" /> : null}
+                        {job.isHired ? 'Closed' : 'Apply'}
                       </button>
                     </div>
                   </div>
@@ -396,11 +412,11 @@ const JobMatches = () => {
       </div>
 
       {/* Details Modal */}
-      {detailsOpen && selectedJob && (
+      {detailsOpen && selectedJob && createPortal(
         <>
-          <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-40" onClick={closeModals} />
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div className="w-full max-w-4xl bg-white rounded-3xl lg:rounded-[2.5rem] border border-slate-200 shadow-[0_30px_100px_-25px_rgba(15,23,42,0.5)] overflow-hidden flex flex-col max-h-[90vh]">
+          <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xl z-[9990]" onClick={closeModals} />
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+            <div className="w-full max-w-4xl bg-white rounded-3xl lg:rounded-[2.5rem] border border-slate-200 shadow-[0_30px_100px_-25px_rgba(15,23,42,0.5)] overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-300">
               <div className="p-5 lg:p-8 flex items-start justify-between gap-4 lg:gap-6 border-b border-slate-100 bg-slate-50/50">
                 <div className="flex items-center gap-4 lg:gap-6">
                   <div className="w-16 h-16 lg:w-20 lg:h-20 bg-white border border-slate-200 rounded-2xl lg:rounded-3xl flex items-center justify-center p-3 lg:p-4 shadow-sm shrink-0">
@@ -488,23 +504,30 @@ const JobMatches = () => {
                   Close
                 </button>
                 <button
-                  onClick={() => { setDetailsOpen(false); openApply(selectedJob); }}
-                  className="px-10 py-3.5 lg:py-4 rounded-xl lg:rounded-2xl bg-slate-900 text-white font-bold text-[10px] lg:text-xs uppercase tracking-widest hover:bg-slate-800 transition-all shadow-xl shadow-slate-900/10 active:scale-95"
+                  onClick={() => selectedJob.isHired ? toast.error('This role is no longer accepting applications') : (setDetailsOpen(false) || openApply(selectedJob))}
+                  disabled={selectedJob.isHired}
+                  className={cn(
+                    "px-10 py-3.5 lg:py-4 rounded-xl lg:rounded-2xl font-bold text-[10px] lg:text-xs uppercase tracking-widest transition-all shadow-xl",
+                    selectedJob.isHired
+                      ? "bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200"
+                      : "bg-slate-900 text-white hover:bg-slate-800 shadow-slate-900/10 active:scale-95"
+                  )}
                 >
-                  Apply Now
+                  {selectedJob.isHired ? 'Role Closed' : 'Apply Now'}
                 </button>
               </div>
             </div>
           </div>
-        </>
+        </>,
+        document.body
       )}
 
       {/* Apply & Analysis Modal */}
-      {applyOpen && selectedJob && (
+      {applyOpen && selectedJob && createPortal(
         <>
-          <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-40" onClick={closeModals} />
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div className="w-full max-w-2xl bg-white rounded-3xl lg:rounded-[2.5rem] border border-slate-200 shadow-[0_30px_100px_-25px_rgba(15,23,42,0.5)] overflow-hidden flex flex-col max-h-[95vh]">
+          <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xl z-[9990]" onClick={closeModals} />
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+            <div className="w-full max-w-2xl bg-white rounded-3xl lg:rounded-[2.5rem] border border-slate-200 shadow-[0_30px_100px_-25px_rgba(15,23,42,0.5)] overflow-hidden flex flex-col max-h-[95vh] animate-in zoom-in-95 duration-300">
               <div className="p-6 lg:p-8 flex items-start justify-between gap-4 border-b border-slate-100 bg-slate-50/50">
                 <div className="flex items-center gap-5">
                   <div className="w-14 h-14 bg-white border border-slate-200 rounded-2xl flex items-center justify-center p-3 shadow-sm shrink-0">
@@ -862,7 +885,8 @@ const JobMatches = () => {
               </div>
             </div>
           </div>
-        </>
+        </>,
+        document.body
       )}
 
       {/* Styles for progress loop */}
@@ -905,7 +929,7 @@ const JobMatches = () => {
           animation: fade-in 0.6s ease-out forwards;
         }
       `}</style>
-    </div>
+    </div >
   );
 };
 

@@ -10,9 +10,13 @@ import {
   Users,
   Loader2,
   Layers,
-  ChevronRight
+  ChevronRight,
+  RotateCcw,
+  UserCheck,
+  CheckCircle2,
+  XCircle
 } from 'lucide-react';
-import { getAllJobs, deleteJob } from '../../services/api';
+import { getAllJobs, deleteJob, toggleJobHiredStatus } from '../../services/api';
 import { cn } from '../../utils/cn';
 import toast from 'react-hot-toast';
 import ConfirmModal from '../../components/ui/ConfirmModal';
@@ -66,6 +70,17 @@ const JobDescriptions = () => {
       // Rollback on error
       setJobs(originalJobs);
       toast.error('Failed to delete job role');
+    }
+  };
+
+  const handleToggleHired = async (id) => {
+    try {
+      await toggleJobHiredStatus(id);
+      toast.success('Job status updated');
+      fetchJobs(true);
+    } catch (error) {
+      console.error('Error toggling hired status:', error);
+      toast.error('Failed to update job status');
     }
   };
 
@@ -207,8 +222,10 @@ const JobDescriptions = () => {
                       <div className="space-y-2">
                         <div className="flex items-center gap-3">
                           <p className="text-base font-black text-slate-900 tracking-tight group-hover:text-blue-600 transition-colors">{job.title}</p>
-                          {job.status === 'Draft' && (
-                            <span className="bg-slate-900 text-white text-[9px] px-2 py-0.5 rounded-full font-black uppercase tracking-tighter">Draft</span>
+                          {job.isHired && (
+                            <span className="bg-emerald-500 text-white text-[9px] px-2 py-0.5 rounded-full font-black uppercase tracking-widest flex items-center gap-1 shadow-sm">
+                              <CheckCircle2 className="w-2.5 h-2.5" /> Hired
+                            </span>
                           )}
                         </div>
                         <div className="flex flex-wrap gap-2">
@@ -241,6 +258,18 @@ const JobDescriptions = () => {
                     </td>
                     <td className="py-6 px-8 text-right">
                       <div className="flex items-center justify-end gap-2 lg:opacity-40 group-hover:opacity-100 transition-opacity duration-300">
+                        <button
+                          onClick={() => handleToggleHired(job.id)}
+                          className={cn(
+                            "p-2.5 border rounded-xl transition-all transform hover:-translate-y-0.5 shadow-sm hover:shadow-lg",
+                            job.isHired
+                              ? "bg-emerald-50 border-emerald-200 text-emerald-600 hover:bg-emerald-100"
+                              : "bg-white border-slate-200 text-slate-600 hover:text-blue-600 hover:border-blue-200"
+                          )}
+                          title={job.isHired ? "Reopen Job" : "Mark as Hired"}
+                        >
+                          {job.isHired ? <RotateCcw className="w-4 h-4" /> : <UserCheck className="w-4 h-4" />}
+                        </button>
                         <button
                           onClick={() => navigate(`/admin/jobs/edit/${job.id}`)}
                           className="p-2.5 bg-white border border-slate-200 text-slate-600 hover:text-blue-600 hover:border-blue-200 rounded-xl hover:shadow-lg hover:shadow-blue-500/10 transition-all transform hover:-translate-y-0.5"
