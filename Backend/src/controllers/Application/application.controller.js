@@ -70,7 +70,30 @@ const getMyApplications = async (req, res) => {
     }
 };
 
+const getJobApplicants = async (req, res) => {
+    try {
+        const { jobId } = req.params;
+        const applications = await prisma.application.findMany({
+            where: { jobId },
+            include: {
+                user: {
+                    select: { name: true, email: true, phone: true }
+                },
+                resume: {
+                    include: { analysis: true }
+                }
+            },
+            orderBy: { createdAt: "desc" }
+        });
+
+        res.json({ success: true, applications });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
 module.exports = {
     applyToJob,
-    getMyApplications
+    getMyApplications,
+    getJobApplicants
 };

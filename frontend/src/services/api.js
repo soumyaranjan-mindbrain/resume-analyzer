@@ -181,6 +181,11 @@ export const toggleJobHiredStatus = async (id) => {
   return response.data;
 };
 
+export const getJobApplicants = async (jobId) => {
+  const response = await apiClient.get(`/applications/job/${jobId}`);
+  return response.data;
+};
+
 // Student APIs
 export const getAdminStudents = async () => {
   const response = await apiClient.get('/students');

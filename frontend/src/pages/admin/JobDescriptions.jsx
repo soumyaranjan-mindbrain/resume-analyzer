@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { createPortal } from 'react-dom';
 import {
   Plus,
   Search,
@@ -14,19 +15,25 @@ import {
   RotateCcw,
   UserCheck,
   CheckCircle2,
-  XCircle
+  XCircle,
+  BarChart3,
+  X,
+  Calendar,
+  Mail,
+  Phone,
+  ArrowUpRight,
+  User
 } from 'lucide-react';
-import { getAllJobs, deleteJob, toggleJobHiredStatus } from '../../services/api';
+import { getAllJobs, deleteJob, toggleJobHiredStatus, getJobApplicants } from '../../services/api';
 import { cn } from '../../utils/cn';
 import toast from 'react-hot-toast';
 import ConfirmModal from '../../components/ui/ConfirmModal';
 
 const JobDescriptions = () => {
   const navigate = useNavigate();
-  const [jobs, setJobs] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [deleteModal, setDeleteModal] = useState({ isOpen: false, jobId: null });
+  const [statsModal, setStatsModal] = useState({ isOpen: false, job: null, applicants: [], loading: false });
 
   const fetchJobs = async (silent = false) => {
     try {
@@ -74,13 +81,34 @@ const JobDescriptions = () => {
   };
 
   const handleToggleHired = async (id) => {
+    // Optimistic update
+    const originalJobs = [...jobs];
+    setJobs(prev => prev.map(job =>
+      job.id === id ? { ...job, isHired: !job.isHired } : job
+    ));
+
     try {
       await toggleJobHiredStatus(id);
       toast.success('Job status updated');
+      // Refresh silently in background to keep data in sync
       fetchJobs(true);
     } catch (error) {
+      // Rollback on error
+      setJobs(originalJobs);
       console.error('Error toggling hired status:', error);
       toast.error('Failed to update job status');
+    }
+  };
+
+  const handleViewStats = async (job) => {
+    setStatsModal({ isOpen: true, job, applicants: [], loading: true });
+    try {
+      const response = await getJobApplicants(job.id);
+      setStatsModal(prev => ({ ...prev, applicants: response.applications || [], loading: false }));
+    } catch (error) {
+      console.error('Error fetching applicants:', error);
+      toast.error('Failed to fetch applicant stats');
+      setStatsModal(prev => ({ ...prev, loading: false }));
     }
   };
 
@@ -143,10 +171,6 @@ const JobDescriptions = () => {
                 </div>
               </div>
 
-              <div className="relative mt-4 flex items-center gap-1.5 text-[11px] font-bold text-slate-400">
-                <span className={cn("flex items-center gap-0.5", stat.color)}>Live from Database</span>
-                <ChevronRight className="w-3 h-3 opacity-30" />
-              </div>
             </div>
           ))}
         </div>
@@ -259,6 +283,13 @@ const JobDescriptions = () => {
                     <td className="py-6 px-8 text-right">
                       <div className="flex items-center justify-end gap-2 lg:opacity-40 group-hover:opacity-100 transition-opacity duration-300">
                         <button
+                          onClick={() => handleViewStats(job)}
+                          className="p-2.5 bg-white border border-slate-200 text-slate-600 hover:text-purple-600 hover:border-purple-200 rounded-xl hover:shadow-lg hover:shadow-purple-500/10 transition-all transform hover:-translate-y-0.5"
+                          title="View Applicant Stats"
+                        >
+                          <BarChart3 className="w-4 h-4" />
+                        </button>
+                        <button
                           onClick={() => handleToggleHired(job.id)}
                           className={cn(
                             "p-2.5 border rounded-xl transition-all transform hover:-translate-y-0.5 shadow-sm hover:shadow-lg",
@@ -304,6 +335,139 @@ const JobDescriptions = () => {
         cancelText="Cancel"
         type="danger"
       />
+
+      {/* Applicants Stats Modal */}
+      {statsModal.isOpen && createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 md:p-8">
+          <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-xl animate-in fade-in duration-300" onClick={() => setStatsModal({ ...statsModal, isOpen: false })} />
+
+          <div className="relative w-full max-w-5xl bg-white rounded-[2.5rem] shadow-2xl border border-white/20 overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col max-h-[90vh]">
+            {/* Modal Header */}
+            <div className="px-8 py-8 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between shrink-0">
+              <div className="space-y-1">
+                <div className="flex items-center gap-3">
+                  <h2 className="text-2xl font-black text-slate-900 tracking-tight">{statsModal.job?.title}</h2>
+                  <span className="px-3 py-1 bg-purple-50 text-purple-600 rounded-lg text-[10px] font-black uppercase tracking-widest border border-purple-100">Stats View</span>
+                </div>
+                <p className="text-xs font-bold text-slate-400 flex items-center gap-2 uppercase tracking-widest">
+                  <Building2 className="w-3.5 h-3.5" /> {statsModal.job?.company}
+                </p>
+              </div>
+              <button
+                onClick={() => setStatsModal({ ...statsModal, isOpen: false })}
+                className="w-12 h-12 rounded-2xl bg-white border border-slate-200 flex items-center justify-center text-slate-400 hover:text-slate-900 hover:border-slate-900 transition-all shadow-sm"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            {/* Modal Content */}
+            <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
+              {statsModal.loading ? (
+                <div className="h-64 flex flex-col items-center justify-center gap-4">
+                  <Loader2 className="w-12 h-12 text-purple-500 animate-spin" />
+                  <p className="text-sm font-black text-slate-400 uppercase tracking-[0.2em]">Analyzing application data...</p>
+                </div>
+              ) : statsModal.applicants.length === 0 ? (
+                <div className="h-64 flex flex-col items-center justify-center gap-4 opacity-40">
+                  <div className="w-20 h-20 rounded-full bg-slate-100 flex items-center justify-center border-4 border-white shadow-inner">
+                    <Users className="w-10 h-10 text-slate-300" />
+                  </div>
+                  <p className="text-sm font-black text-slate-400 uppercase tracking-[0.2em]">No applications yet</p>
+                </div>
+              ) : (
+                <div className="space-y-10">
+                  {/* Summary row */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="bg-slate-50 border border-slate-100 rounded-3xl p-6 space-y-2">
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Total Candidates</p>
+                      <h4 className="text-3xl font-black text-slate-900">{statsModal.applicants.length}</h4>
+                    </div>
+                    <div className="bg-emerald-50/50 border border-emerald-100 rounded-3xl p-6 space-y-2">
+                      <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Average ATS Score</p>
+                      <h4 className="text-3xl font-black text-emerald-700">
+                        {Math.round(statsModal.applicants.reduce((acc, curr) => acc + (curr.resume?.analysis?.atsScore || 0), 0) / statsModal.applicants.length)}%
+                      </h4>
+                    </div>
+                    <div className="bg-purple-50/50 border border-purple-100 rounded-3xl p-6 space-y-2">
+                      <p className="text-[10px] font-black text-purple-600 uppercase tracking-widest">Top Candidate Score</p>
+                      <h4 className="text-3xl font-black text-purple-700">
+                        {Math.max(...statsModal.applicants.map(a => a.resume?.analysis?.atsScore || 0))}%
+                      </h4>
+                    </div>
+                  </div>
+
+                  {/* Applicants Table */}
+                  <div className="bg-white rounded-3xl border border-slate-100 overflow-hidden shadow-sm">
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="bg-slate-50/50 border-b border-slate-100">
+                          <th className="py-4 px-8 text-[10px] font-black uppercase tracking-widest text-slate-400">Candidate</th>
+                          <th className="py-4 px-6 text-[10px] font-black uppercase tracking-widest text-slate-400">Contact</th>
+                          <th className="py-4 px-6 text-[10px] font-black uppercase tracking-widest text-slate-400">Applied Date</th>
+                          <th className="py-4 px-8 text-right text-[10px] font-black uppercase tracking-widest text-slate-400">ATS Score</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-50">
+                        {statsModal.applicants.map((app) => (
+                          <tr key={app.id} className="group hover:bg-slate-50/30 transition-colors">
+                            <td className="py-5 px-8">
+                              <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center border-2 border-white shadow-sm font-black text-slate-500 uppercase">
+                                  {app.user?.name ? app.user.name[0] : <User className="w-5 h-5" />}
+                                </div>
+                                <div>
+                                  <p className="text-sm font-black text-slate-900 tracking-tight">{app.user?.name || 'Unknown Candidate'}</p>
+                                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Candidate ID: {app.id.slice(-6).toUpperCase()}</p>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="py-5 px-6">
+                              <div className="space-y-1">
+                                <div className="flex items-center gap-2 text-xs font-bold text-slate-600">
+                                  <Mail className="w-3 h-3 opacity-40" />
+                                  {app.user?.email}
+                                </div>
+                                {app.user?.phone && (
+                                  <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                                    <Phone className="w-2.5 h-2.5 opacity-40" />
+                                    {app.user.phone}
+                                  </div>
+                                )}
+                              </div>
+                            </td>
+                            <td className="py-5 px-6">
+                              <div className="flex items-center gap-2 text-xs font-black text-slate-400 uppercase tracking-tighter">
+                                <Calendar className="w-3.5 h-3.5 opacity-40" />
+                                {new Date(app.createdAt).toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' })}
+                              </div>
+                            </td>
+                            <td className="py-5 px-8 text-right">
+                              <div className="inline-flex items-center gap-2 bg-slate-50 px-4 py-2 rounded-2xl border border-slate-100">
+                                <span className={cn(
+                                  "text-lg font-black tracking-tighter",
+                                  (app.resume?.analysis?.atsScore || 0) >= 80 ? "text-emerald-600" :
+                                    (app.resume?.analysis?.atsScore || 0) >= 60 ? "text-blue-600" : "text-slate-600"
+                                )}>
+                                  {app.resume?.analysis?.atsScore || 0}%
+                                </span>
+                                <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center border border-slate-100 text-slate-400 group-hover:text-slate-900 group-hover:scale-110 transition-all cursor-pointer">
+                                  <ArrowUpRight className="w-4 h-4" />
+                                </div>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
     </div>
   );
 };
