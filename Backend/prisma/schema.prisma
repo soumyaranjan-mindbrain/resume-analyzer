@@ -21,7 +21,6 @@ model User {
   lastActive DateTime? @default(now())
   createdAt DateTime? @default(now())
   github    String?
-  twitter   String?
   linkedin  String?
   updatedAt DateTime? @updatedAt
 

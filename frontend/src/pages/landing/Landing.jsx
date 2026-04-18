@@ -299,7 +299,7 @@ const CTA = () => {
               Join 10,000+ candidates who have optimized their resumes to land roles at the world's most innovative firms.
             </p>
             <div className="flex flex-col sm:flex-row justify-center items-center gap-4 md:gap-6">
-              <button onClick={() => navigate('/auth')} className="btn-mindvista !px-10 md:!px-14 !py-5 md:!py-7 text-xs md:text-sm w-full sm:w-auto">
+              <button onClick={() => navigate('/auth?mode=signup')} className="btn-mindvista !px-10 md:!px-14 !py-5 md:!py-7 text-xs md:text-sm w-full sm:w-auto">
                 Analyze My Resume Today {'->'}
               </button>
               <button className="px-8 md:px-10 py-5 md:py-7 rounded-2xl border-2 border-slate-100 bg-white/10 backdrop-blur-md text-[10px] md:text-sm font-bold text-slate-800 uppercase tracking-widest hover:bg-white/30 transition-all w-full sm:w-auto">

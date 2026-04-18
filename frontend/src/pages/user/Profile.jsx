@@ -18,12 +18,6 @@ import { useAuth } from '../../context/AuthContext';
 import { updateProfile } from '../../services/api';
 import { cn } from '../../utils/cn';
 
-const TwitterIcon = ({ className }) => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-    <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z" />
-  </svg>
-);
-
 const GithubIcon = ({ className }) => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
     <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" />
@@ -42,41 +36,25 @@ const LinkedinIcon = ({ className }) => (
 const Profile = () => {
   const { user, checkAuth } = useAuth();
   const [loading, setLoading] = useState(false);
-  const [editingSocial, setEditingSocial] = useState(null); // 'github' | 'twitter' | 'linkedin' | null
+  const [editingSocial, setEditingSocial] = useState(null); // 'github' | 'linkedin' | null
   const [socialValue, setSocialValue] = useState('');
 
-  // Split user.name into firstName and lastName
-  const getNameParts = (fullName) => {
-    if (!fullName) return { first: '', last: '' };
-    const parts = fullName.trim().split(/\s+/);
-    if (parts.length <= 1) return { first: parts[0] || '', last: '' };
-    return {
-      first: parts[0],
-      last: parts.slice(1).join(' ')
-    };
-  };
-
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
+    name: '',
     email: '',
     phone: '',
     github: '',
-    twitter: '',
     linkedin: ''
   });
 
   // Sync formData when user context changes
   React.useEffect(() => {
     if (user) {
-      const nameParts = getNameParts(user.name);
       setFormData({
-        firstName: nameParts.first,
-        lastName: nameParts.last,
+        name: user.name || '',
         email: user.email || '',
         phone: user.phone || '',
         github: user.github || '',
-        twitter: user.twitter || '',
         linkedin: user.linkedin || ''
       });
     }
@@ -91,26 +69,36 @@ const Profile = () => {
 
     try {
       setLoading(true);
-      const fullName = `${formData.firstName} ${formData.lastName}`.trim();
+
+      // Validation
+      if (!manualData) {
+        if (formData.phone && !/^\d{10,15}$/.test(formData.phone)) {
+          toast.error('Please enter a valid phone number (digits only)');
+          return;
+        }
+        if (!formData.name.trim()) {
+          toast.error('Name cannot be empty');
+          return;
+        }
+      }
+
       const payload = manualData || {
-        name: fullName,
+        name: formData.name,
         phone: formData.phone,
         github: formData.github,
-        twitter: formData.twitter,
         linkedin: formData.linkedin
       };
 
       const userId = user._id || user.id;
-      console.log('[Profile] Sending update for ID:', userId, 'Payload:', payload);
-
       await updateProfile(userId, payload);
       await checkAuth();
 
       if (manualData) {
         setEditingSocial(null);
-        toast.success('Social link updated!');
+        const label = editingSocial.charAt(0).toUpperCase() + editingSocial.slice(1);
+        toast.success(`${label} link updated successfully`);
       } else {
-        toast.success('Profile updated successfully!');
+        toast.success('Profile updated successfully');
       }
     } catch (error) {
       console.error('[Profile Update] Error:', error);
@@ -203,9 +191,8 @@ const Profile = () => {
 
               <div className="w-full space-y-3">
                 {[
-                  { id: 'github', icon: GithubIcon, color: 'hover:bg-slate-900', label: 'GitHub' },
-                  { id: 'twitter', icon: TwitterIcon, color: 'hover:bg-[#1DA1F2]', label: 'Twitter' },
-                  { id: 'linkedin', icon: LinkedinIcon, color: 'hover:bg-[#0077B5]', label: 'LinkedIn' }
+                  { id: 'github', icon: GithubIcon, color: 'bg-slate-900', label: 'GitHub' },
+                  { id: 'linkedin', icon: LinkedinIcon, color: 'bg-[#0077B5]', label: 'LinkedIn' }
                 ].map((social) => (
                   <div key={social.id} className="w-full">
                     {editingSocial === social.id ? (
@@ -231,7 +218,12 @@ const Profile = () => {
                         className={cn("flex items-center justify-between gap-3 p-2 rounded-xl group hover:bg-slate-50 transition-all border border-transparent hover:border-slate-100", !user?.[social.id] && "cursor-pointer")}
                       >
                         <div className="flex items-center gap-3">
-                          <div className={cn("w-9 h-9 bg-slate-50 rounded-lg flex items-center justify-center border border-slate-100 text-slate-400 group-hover:text-white transition-all", user?.[social.id] && social.color && social.color.replace('hover:', ''))}>
+                          <div className={cn(
+                            "w-9 h-9 rounded-lg flex items-center justify-center border transition-all",
+                            user?.[social.id]
+                              ? `${social.color} text-white border-transparent shadow-sm`
+                              : "bg-slate-50 text-slate-400 border-slate-100"
+                          )}>
                             <social.icon className="w-4 h-4" />
                           </div>
                           <span className="text-xs font-bold text-slate-600 truncate max-w-[120px]">
@@ -260,21 +252,12 @@ const Profile = () => {
             <h3 className="text-2xl font-bold text-slate-800 mb-8 tracking-tight">Account Settings</h3>
 
             <div className="grid sm:grid-cols-2 gap-6 flex-1">
-              <div className="space-y-2">
-                <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest px-1">First Name</label>
+              <div className="sm:col-span-2 space-y-2">
+                <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest px-1">Full Name</label>
                 <input
                   type="text"
-                  value={formData.firstName}
-                  onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-5 py-4 text-sm font-medium text-slate-700 focus:outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-400 focus:bg-white transition-all shadow-sm"
-                />
-              </div>
-              <div className="space-y-2">
-                <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest px-1">Last Name</label>
-                <input
-                  type="text"
-                  value={formData.lastName}
-                  onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl px-5 py-4 text-sm font-medium text-slate-700 focus:outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-400 focus:bg-white transition-all shadow-sm"
                 />
               </div>
@@ -283,7 +266,8 @@ const Profile = () => {
                 <input
                   type="text"
                   value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value.replace(/\D/g, '') })}
+                  placeholder="Enter digits only"
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl px-5 py-4 text-sm font-medium text-slate-700 focus:outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-400 focus:bg-white transition-all shadow-sm"
                 />
               </div>

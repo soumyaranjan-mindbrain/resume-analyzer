@@ -38,7 +38,6 @@ const sendTokens = async (res, user, message = "Login successful", status = 200)
         phone: user.phone || "",
         profilePic: user.profilePic || "",
         github: user.github || "",
-        twitter: user.twitter || "",
         linkedin: user.linkedin || "",
       },
     });
@@ -47,7 +46,7 @@ const sendTokens = async (res, user, message = "Login successful", status = 200)
 // Registration
 const register = async (req, res) => {
   try {
-    const { name, email, password, role } = req.body;
+    const { name, email, password, role, phone } = req.body;
     const allowedRoles = ["admin", "student"];
     if (!name || !email || !password || !role) {
       return res.status(400).json({ error: "Name, email, password and role are required" });
@@ -58,7 +57,7 @@ const register = async (req, res) => {
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({ error: "Email is already registered" });
+      return res.status(400).json({ error: "Email already exists" });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -68,6 +67,7 @@ const register = async (req, res) => {
       email,
       password: hashedPassword,
       role,
+      phone: phone || "",
     });
 
     await newUser.save();
@@ -185,7 +185,6 @@ const logout = async (req, res) => {
             phone: user.phone || "",
             profilePic: user.profilePic || "",
             github: user.github || "",
-            twitter: user.twitter || "",
             linkedin: user.linkedin || "",
           }
           : null,
@@ -201,7 +200,7 @@ const getMe = async (req, res) => {
   }
 
   try {
-    const user = await User.findById(req.user.id).select("name email role phone profilePic github twitter linkedin");
+    const user = await User.findById(req.user.id).select("name email role phone profilePic github linkedin");
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
@@ -216,7 +215,6 @@ const getMe = async (req, res) => {
         phone: user.phone || "",
         profilePic: user.profilePic || "",
         github: user.github || "",
-        twitter: user.twitter || "",
         linkedin: user.linkedin || "",
       },
     });

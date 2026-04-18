@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import gsap from 'gsap';
 import {
   Mail,
@@ -7,19 +7,28 @@ import {
   Eye,
   EyeOff,
   User,
-  ArrowRight
+  ArrowRight,
+  Phone
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
 import { useAuth } from '../../context/AuthContext';
 
 const Auth = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { login, register, user } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
+
+  useEffect(() => {
+    const mode = searchParams.get('mode');
+    if (mode === 'signup') setIsLogin(false);
+    else if (mode === 'login') setIsLogin(true);
+  }, [searchParams]);
 
   const [showPassword, setShowPassword] = useState(false);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -42,19 +51,55 @@ const Auth = () => {
     return () => ctx.revert();
   }, []);
 
+  const validateForm = () => {
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError('Please enter a valid email address');
+      return false;
+    }
+
+    // Password validation
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters long');
+      return false;
+    }
+    const passRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]{6,}$/;
+    if (!passRegex.test(password)) {
+      setError('Password must contain both letters and numbers');
+      return false;
+    }
+
+    // Phone validation for signup
+    if (!isLogin) {
+      const phoneRegex = /^\d{10,15}$/;
+      if (!phoneRegex.test(phone)) {
+        setError('Please enter a valid mobile number (10-15 digits only)');
+        return false;
+      }
+      if (!name.trim()) {
+        setError('Please enter your full name');
+        return false;
+      }
+    }
+
+    return true;
+  };
+
   const handleAuth = async (e) => {
     e.preventDefault();
-
-    setLoading(true);
     setError('');
 
+    if (!validateForm()) return;
+
+    setLoading(true);
     try {
       if (isLogin) {
         const userData = await login(email, password);
         const redirectPath = userData.role === 'admin' ? '/admin' : '/dashboard';
         navigate(redirectPath, { replace: true });
       } else {
-        const userData = await register({ name, email, password, role: 'student' });
+        const userData = await register({ name, email, password, phone, role: 'student' });
         const redirectPath = userData.role === 'admin' ? '/admin' : '/dashboard';
         navigate(redirectPath, { replace: true });
       }
@@ -132,12 +177,29 @@ const Auth = () => {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Enter your mail id"
+                    placeholder="Enter your email"
                     className="input-clay !pl-14 !bg-slate-50 !border-slate-200 focus:!bg-white transition-all shadow-sm"
                     required
                   />
                 </div>
               </div>
+
+              {!isLogin && (
+                <div className="space-y-2">
+                  <label className="text-xs font-bold uppercase tracking-widest text-slate-600 ml-1">Mobile Number</label>
+                  <div className="relative">
+                    <Phone className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                    <input
+                      type="tel"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
+                      placeholder="Enter mobile number"
+                      className="input-clay !pl-14 !bg-slate-50 !border-slate-200 focus:!bg-white transition-all shadow-sm"
+                      required={!isLogin}
+                    />
+                  </div>
+                </div>
+              )}
 
               <div className="space-y-2">
                 <div className="flex items-center justify-between">

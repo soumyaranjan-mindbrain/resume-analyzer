@@ -15,7 +15,6 @@ const userSchema = new mongoose.Schema({
   course: { type: String, default: "" },
   status: { type: String, default: "Active" },
   github: { type: String, default: "" },
-  twitter: { type: String, default: "" },
   linkedin: { type: String, default: "" },
   refreshToken: { type: String, default: "" },
 }, {

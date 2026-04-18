@@ -53,13 +53,13 @@ const Navbar = () => {
 
         <div className="hidden md:flex items-center gap-6">
           <button
-            onClick={() => navigate('/auth')}
+            onClick={() => navigate('/auth?mode=login')}
             className="text-sm font-bold text-[var(--neutral-600)] hover:text-[var(--neutral-900)] transition-colors"
           >
             Log in
           </button>
           <button
-            onClick={() => navigate('/auth')}
+            onClick={() => navigate('/auth?mode=signup')}
             className="btn-mindvista !py-2.5 !px-6 !text-xs !rounded-xl"
           >
             Get Started
@@ -70,7 +70,7 @@ const Navbar = () => {
 
         <div className="md:hidden flex items-center justify-center">
           <button
-            onClick={() => navigate('/auth')}
+            onClick={() => navigate('/auth?mode=signup')}
             className="btn-mindvista !py-1.5 !px-4 !text-[9px] !rounded-lg"
           >
             Get Started
@@ -102,13 +102,13 @@ const Navbar = () => {
               ))}
               <div className="pt-4 flex flex-col gap-4">
                 <button
-                  onClick={() => { navigate('/auth'); setMobileOpen(false); }}
+                  onClick={() => { navigate('/auth?mode=login'); setMobileOpen(false); }}
                   className="w-full py-4 rounded-2xl border border-[var(--neutral-200)] text-neutral-600 font-bold"
                 >
                   Log in
                 </button>
                 <button
-                  onClick={() => { navigate('/auth'); setMobileOpen(false); }}
+                  onClick={() => { navigate('/auth?mode=signup'); setMobileOpen(false); }}
                   className="btn-mindvista w-full"
                 >
                   Get Started
