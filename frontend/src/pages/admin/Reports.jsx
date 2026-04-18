@@ -5,14 +5,17 @@ import {
   Calendar,
   Loader2,
   Mail,
+  ChevronDown
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
 import { useAdmin } from '../../context/AdminContext';
+import PremiumSelect from '../../components/ui/PremiumSelect';
 
 const Reports = () => {
   const { reports, loading, fetchReports } = useAdmin();
   const [searchQuery, setSearchQuery] = useState('');
   const [scoreFilter, setScoreFilter] = useState('all');
+  const [timeFilter, setTimeFilter] = useState('30d');
   const [filterOpen, setFilterOpen] = useState(false);
 
   useEffect(() => {
@@ -111,51 +114,26 @@ const Reports = () => {
               className="w-full pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-lg shadow-sm outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm font-medium transition-all"
             />
           </div>
-          <div className="bg-white border border-slate-200 rounded-lg px-3 py-2 shadow-sm flex items-center gap-2 min-w-[160px]">
-            <Calendar className="w-4 h-4 text-slate-400" />
-            <select className="bg-transparent border-none outline-none text-sm font-medium text-slate-600 w-full cursor-pointer">
-              <option>Last 30 Days</option>
-              <option>Last 7 Days</option>
-              <option>Last 24 Hours</option>
-              <option>All Time</option>
-            </select>
-          </div>
-          <div className="relative">
-            <button
-              onClick={() => setFilterOpen(!filterOpen)}
-              className={cn(
-                "flex items-center gap-2 px-3 py-2 border rounded-lg text-sm font-medium transition-all shadow-sm",
-                scoreFilter !== 'all' ? "bg-blue-600 border-transparent text-white ring-2 ring-blue-500/20" : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50"
-              )}
-            >
-              <Filter className="w-4 h-4" />
-              {scoreFilter === 'all' ? 'Filters' : scoreOptions.find(o => o.value === scoreFilter)?.label}
-            </button>
 
-            {filterOpen && (
-              <>
-                <div className="fixed inset-0 z-40" onClick={() => setFilterOpen(false)} />
-                <div className="absolute right-0 mt-2 w-56 bg-white border border-slate-100 rounded-xl shadow-xl z-50 py-2 animate-in fade-in slide-in-from-top-2 duration-200">
-                  <div className="px-4 py-2 border-b border-slate-50 mb-1">
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Filter by Score</span>
-                  </div>
-                  {scoreOptions.map(opt => (
-                    <button
-                      key={opt.value}
-                      onClick={() => { setScoreFilter(opt.value); setFilterOpen(false); }}
-                      className={cn(
-                        "w-full flex items-center justify-between px-4 py-2 text-sm font-bold transition-all",
-                        scoreFilter === opt.value ? "text-blue-600 bg-blue-50" : "text-slate-600 hover:bg-slate-50"
-                      )}
-                    >
-                      {opt.label}
-                      {scoreFilter === opt.value && <div className="w-1.5 h-1.5 rounded-full bg-blue-600" />}
-                    </button>
-                  ))}
-                </div>
-              </>
-            )}
-          </div>
+          <PremiumSelect
+            options={[
+              { label: 'Last 30 Days', value: '30d' },
+              { label: 'Last 7 Days', value: '7d' },
+              { label: 'Last 24 Hours', value: '24h' },
+              { label: 'All Time', value: 'all' }
+            ]}
+            value={timeFilter}
+            onChange={setTimeFilter}
+            icon={Calendar}
+          />
+
+          <PremiumSelect
+            options={scoreOptions}
+            value={scoreFilter}
+            onChange={setScoreFilter}
+            icon={Filter}
+            placeholder="Score Filter"
+          />
         </div>
       </div>
 
