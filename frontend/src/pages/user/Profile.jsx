@@ -72,8 +72,8 @@ const Profile = () => {
 
       // Validation
       if (!manualData) {
-        if (formData.phone && !/^\d{10,15}$/.test(formData.phone)) {
-          toast.error('Please enter a valid phone number (digits only)');
+        if (formData.phone && !/^\d{10}$/.test(formData.phone)) {
+          toast.error('Please enter a valid 10-digit mobile number');
           return;
         }
         if (!formData.name.trim()) {

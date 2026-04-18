@@ -72,9 +72,9 @@ const Auth = () => {
 
     // Phone validation for signup
     if (!isLogin) {
-      const phoneRegex = /^\d{10,15}$/;
+      const phoneRegex = /^\d{10}$/;
       if (!phoneRegex.test(phone)) {
-        setError('Please enter a valid mobile number (10-15 digits only)');
+        setError('Please enter a valid 10-digit mobile number');
         return false;
       }
       if (!name.trim()) {
