@@ -31,6 +31,8 @@ import ConfirmModal from '../../components/ui/ConfirmModal';
 
 const JobDescriptions = () => {
   const navigate = useNavigate();
+  const [jobs, setJobs] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [deleteModal, setDeleteModal] = useState({ isOpen: false, jobId: null });
   const [statsModal, setStatsModal] = useState({ isOpen: false, job: null, applicants: [], loading: false });
