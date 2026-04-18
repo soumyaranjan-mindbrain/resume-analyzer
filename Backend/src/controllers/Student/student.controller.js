@@ -39,6 +39,8 @@ exports.getStudents = async (req, res) => {
         phone: true,
         course: true,
         status: true,
+        github: true,
+        linkedin: true,
         lastActive: true,
         updatedAt: true,
         resumes: {
@@ -70,6 +72,8 @@ exports.getStudents = async (req, res) => {
         phone: student.phone,
         course: student.course,
         status: student.status,
+        github: student.github || null,
+        linkedin: student.linkedin || null,
         score: avgScore,
         lastActive: student.lastActive || null,
         updatedAt: student.updatedAt || null,
@@ -94,6 +98,8 @@ exports.getStudentById = async (req, res) => {
         phone: true,
         course: true,
         status: true,
+        github: true,
+        linkedin: true,
         lastActive: true,
         updatedAt: true,
         resumes: {

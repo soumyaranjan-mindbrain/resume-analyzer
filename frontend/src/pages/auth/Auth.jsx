@@ -259,7 +259,7 @@ const Auth = () => {
                   onClick={() => setIsLogin(!isLogin)}
                   className="ml-2 text-indigo-600 hover:text-indigo-700 transition-colors hover:underline"
                 >
-                  {isLogin ? "Sign up" : "Log in"}
+                  {isLogin ? "Sign up" : "Sign in"}
                 </button>
               </p>
             </div>
