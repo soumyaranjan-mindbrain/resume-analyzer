@@ -11,7 +11,6 @@ import {
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
 import { useAuth } from '../../context/AuthContext';
-import Logo from '../../components/common/Logo';
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -73,7 +72,6 @@ const Auth = () => {
 
 
         <div ref={leftPanelRef} className="hidden lg:block space-y-12">
-          <Logo size="lg" onClick={() => navigate('/')} />
           <div className="space-y-6">
             <h1 className="text-5xl md:text-6xl font-bold tracking-tight text-[var(--neutral-900)] leading-[1.1]">
               Elevate your <br />
@@ -92,10 +90,6 @@ const Auth = () => {
           <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--primary-200)] blur-[120px] rounded-full opacity-40 -translate-y-1/2 translate-x-1/4 pointer-events-none" />
 
           <div className="relative z-10 space-y-8">
-            <div className="lg:hidden mb-6">
-              <Logo size="lg" onClick={() => navigate('/')} />
-            </div>
-
             <div className="space-y-2">
               <h2 className="text-3xl font-bold tracking-tight text-[#1e293b]">
                 {isLogin ? 'Sign In' : 'Create Account'}
@@ -204,7 +198,6 @@ const Auth = () => {
             </div>
           </div>
         </div>
-
       </div>
     </div>
   );
