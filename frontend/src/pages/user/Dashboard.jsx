@@ -166,13 +166,6 @@ const Dashboard = () => {
         ? `Missing: ${stats.keywordsMissing.slice(0, 2).join(', ')}...`
         : 'Optimize your impact keywords.',
       action: 'View Analysis'
-    },
-    {
-      label: 'Matches',
-      value: stats?.jobsMatched !== undefined ? String(stats.jobsMatched).padStart(2, '0') : '00',
-      tone: 'purple',
-      icon: Briefcase,
-      detail: 'Relevant matches found in your field.'
     }
   ];
 
@@ -241,7 +234,7 @@ const Dashboard = () => {
           </div>
         </div>
       ) : (
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-8">
           {summaryCards.map((card) => {
             const Icon = card.icon;
             const tone = toneStyles[card.tone] || toneStyles.blue;
@@ -327,6 +320,7 @@ const Dashboard = () => {
               </svg>
               <div className="absolute inset-0 flex items-center justify-center flex-col bg-white m-5 rounded-full shadow-sm border border-slate-200">
                 <span className="text-3xl font-bold text-slate-800 tracking-tighter">{breakdownAveragePercent ? `${breakdownAveragePercent}%` : '0%'}</span>
+                <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-0.5 opacity-60">out of 100</span>
               </div>
             </div>
           </div>
