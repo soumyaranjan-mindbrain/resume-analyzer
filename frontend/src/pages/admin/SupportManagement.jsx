@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import {
     MessageSquare,
     Clock,
@@ -27,6 +28,7 @@ import {
 } from '../../services/api';
 import { cn } from '../../utils/cn';
 import toast from 'react-hot-toast';
+import ConfirmModal from '../../components/ui/ConfirmModal';
 
 const SupportManagement = () => {
     const [activeTab, setActiveTab] = useState('TICKETS');
@@ -46,6 +48,7 @@ const SupportManagement = () => {
         question: '',
         answer: ''
     });
+    const [deleteModal, setDeleteModal] = useState({ isOpen: false, faqId: null });
 
     const fetchData = async () => {
         try {
@@ -110,9 +113,12 @@ const SupportManagement = () => {
         }
     };
 
-    const handleDeleteFaq = async (id) => {
-        if (!window.confirm('Are you sure you want to delete this FAQ?')) return;
+    const handleDeleteFaq = (id) => {
+        setDeleteModal({ isOpen: true, faqId: id });
+    };
 
+    const confirmDeleteFaq = async () => {
+        const id = deleteModal.faqId;
         try {
             await deleteFaq(id);
             toast.success('FAQ deleted');
@@ -392,62 +398,97 @@ const SupportManagement = () => {
             )}
 
             {/* Ticket Response Modal */}
-            {selectedTicket && activeTab === 'TICKETS' && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 animate-in fade-in duration-300">
-                    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md" onClick={() => setSelectedTicket(null)} />
-                    <div className="relative w-full max-w-2xl bg-white rounded-2xl lg:rounded-[3rem] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.3)] border border-white/20 overflow-hidden animate-in zoom-in-95 duration-300 mx-4">
-                        <div className="px-6 lg:px-10 py-6 lg:py-8 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
-                            <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 lg:w-14 lg:h-14 bg-slate-900 rounded-2xl flex items-center justify-center text-white shadow-xl">
-                                    <MessageCircle className="w-6 h-6 lg:w-7 lg:h-7" />
+            {selectedTicket && activeTab === 'TICKETS' && createPortal(
+                <div className="fixed inset-0 z-[9999] flex items-center justify-center p-6 animate-in fade-in duration-300">
+                    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xl" onClick={() => setSelectedTicket(null)} />
+                    <div className="relative w-full max-w-2xl bg-white rounded-[2.5rem] lg:rounded-[3.5rem] shadow-[0_40px_100px_-20px_rgba(0,0,0,0.25)] border border-slate-100 overflow-hidden animate-in zoom-in-95 duration-300 mx-4">
+                        <div className="px-8 lg:px-12 py-6 lg:py-7 border-b border-slate-50 bg-gradient-to-r from-slate-50 to-white flex items-center justify-between">
+                            <div className="flex items-center gap-5">
+                                <div className="w-14 h-14 lg:w-16 lg:h-16 bg-slate-900 rounded-[1.5rem] flex items-center justify-center text-white shadow-2xl relative overflow-hidden group">
+                                    <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                                    <MessageCircle className="w-7 h-7 lg:w-8 lg:h-8 relative z-10" />
                                 </div>
                                 <div>
-                                    <h3 className="text-xl lg:text-2xl font-black text-slate-900 tracking-tight">Manage Ticket</h3>
-                                    <p className="text-slate-400 font-bold text-[9px] lg:text-[10px] uppercase tracking-widest mt-1">ID: {selectedTicket.id?.slice(-8).toUpperCase()}</p>
+                                    <h3 className="text-2xl lg:text-3xl font-black text-slate-900 tracking-tight leading-none">Manage Ticket</h3>
+                                    <div className="flex items-center gap-2 mt-2">
+                                        <Hash className="w-3.5 h-3.5 text-blue-500" />
+                                        <p className="text-slate-400 font-bold text-[10px] lg:text-[11px] uppercase tracking-[0.2em]">{selectedTicket.id?.slice(-8).toUpperCase()}</p>
+                                    </div>
                                 </div>
                             </div>
-                            <button onClick={() => setSelectedTicket(null)} className="w-10 h-10 rounded-full border border-slate-200 flex items-center justify-center hover:bg-slate-50 transition-all">
-                                <X className="w-5 h-5 text-slate-500" />
+                            <button onClick={() => setSelectedTicket(null)} className="w-12 h-12 rounded-full border border-slate-100 flex items-center justify-center hover:bg-slate-900 hover:text-white hover:border-slate-900 transition-all duration-300 shadow-sm">
+                                <X className="w-6 h-6" />
                             </button>
                         </div>
-                        <div className="p-6 lg:p-10 space-y-6 lg:space-y-8">
-                            <div className="bg-slate-50 rounded-[2rem] p-6 border border-slate-100 space-y-3 relative overflow-hidden">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center font-black text-slate-400">
-                                        {selectedTicket.user?.name?.charAt(0)}
+
+                        <div className="p-6 lg:p-8 space-y-6 lg:space-y-7">
+                            <div className="relative group">
+                                <div className="absolute -inset-4 bg-slate-50/50 rounded-[2.5rem] -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                                <div className="bg-white rounded-[2rem] p-6 border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-4 relative overflow-hidden text-sm">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-12 h-12 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center font-black text-blue-600 text-lg shadow-sm">
+                                                {selectedTicket.user?.name?.charAt(0)}
+                                            </div>
+                                            <div>
+                                                <p className="text-base font-black text-slate-900 tracking-tight">{selectedTicket.user?.name}</p>
+                                                <div className="flex items-center gap-1.5 text-slate-400 mt-0.5">
+                                                    <Mail className="w-3.5 h-3.5" />
+                                                    <span className="text-xs font-bold">{selectedTicket.user?.email}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <span className="text-[10px] font-black px-3 py-1.5 bg-blue-50 text-blue-600 rounded-full border border-blue-100 uppercase tracking-widest">{selectedTicket.subject}</span>
                                     </div>
-                                    <div>
-                                        <p className="text-sm font-black text-slate-900 tracking-tight">{selectedTicket.user?.name}</p>
-                                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{selectedTicket.subject}</p>
+                                    <div className="relative pl-6 py-2">
+                                        <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-blue-500/20 via-blue-500/40 to-blue-500/20 rounded-full" />
+                                        <p className="text-lg font-bold text-slate-700 leading-relaxed tracking-tight italic">
+                                            "{selectedTicket.message}"
+                                        </p>
                                     </div>
                                 </div>
-                                <p className="text-base font-bold text-slate-700 leading-relaxed italic">"{selectedTicket.message}"</p>
                             </div>
-                            <div className="space-y-3">
-                                <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-2">Official Admin Response</label>
+
+                            <div className="space-y-4">
+                                <div className="flex items-center justify-between px-2">
+                                    <label className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Official Admin Response</label>
+                                    <span className="text-[10px] font-bold text-blue-500 bg-blue-50 px-2 py-0.5 rounded uppercase tracking-tighter italic">Personalized Feedback</span>
+                                </div>
                                 <textarea
                                     value={replyText}
                                     onChange={(e) => setReplyText(e.target.value)}
-                                    placeholder="Enter your response..."
-                                    className="w-full px-8 py-6 bg-slate-50/50 border border-slate-200 rounded-[2.5rem] outline-none focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500 focus:bg-white transition-all font-bold text-slate-700 min-h-[160px] resize-none shadow-inner"
+                                    placeholder="Type your resolution here..."
+                                    className="w-full px-10 py-6 bg-slate-50/30 border border-slate-200 rounded-[2.5rem] outline-none focus:ring-[12px] focus:ring-blue-500/5 focus:border-blue-500 focus:bg-white transition-all duration-500 font-bold text-slate-700 min-h-[130px] resize-none shadow-inner text-base leading-relaxed placeholder:text-slate-300"
                                 />
                             </div>
+
                             <button
                                 onClick={handleReply}
                                 disabled={submittingReply}
-                                className="w-full py-6 bg-blue-600 text-white rounded-[2rem] font-black text-lg tracking-tight shadow-2xl shadow-blue-500/30 hover:bg-blue-700 transition-all"
+                                className="group relative w-full py-5 bg-slate-900 text-white rounded-[2rem] font-black text-lg tracking-tight overflow-hidden transition-all duration-500 hover:shadow-[0_20px_40px_-10px_rgba(15,23,42,0.3)] hover:-translate-y-1 active:scale-[0.98] disabled:opacity-50"
                             >
-                                {submittingReply ? <Loader2 className="w-6 h-6 animate-spin" /> : <>Send Response & Resolve <Send className="w-5 h-5" /></>}
+                                <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                                <div className="relative z-10 flex items-center justify-center gap-4">
+                                    {submittingReply ? (
+                                        <Loader2 className="w-7 h-7 animate-spin" />
+                                    ) : (
+                                        <>
+                                            <span>Send Response & Resolve</span>
+                                            <Send className="w-6 h-6 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300" />
+                                        </>
+                                    )}
+                                </div>
                             </button>
                         </div>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
 
             {/* Add FAQ Modal */}
-            {isFaqModalOpen && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 animate-in fade-in duration-300">
-                    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md" onClick={() => setIsFaqModalOpen(false)} />
+            {isFaqModalOpen && createPortal(
+                <div className="fixed inset-0 z-[9999] flex items-center justify-center p-6 animate-in fade-in duration-300">
+                    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xl" onClick={() => setIsFaqModalOpen(false)} />
                     <div className="relative w-full max-w-2xl bg-white rounded-[3rem] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.3)] border border-white/20 overflow-hidden animate-in zoom-in-95 duration-300">
                         <div className="px-10 py-8 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
                             <div className="flex items-center gap-4">
@@ -494,8 +535,19 @@ const SupportManagement = () => {
                             </button>
                         </form>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
+            <ConfirmModal
+                isOpen={deleteModal.isOpen}
+                onClose={() => setDeleteModal({ isOpen: false, faqId: null })}
+                onConfirm={confirmDeleteFaq}
+                title="Delete FAQ"
+                message="Are you sure you want to remove this FAQ from the knowledge base? This action cannot be undone."
+                confirmText="Yes, Delete FAQ"
+                cancelText="Cancel"
+                type="danger"
+            />
         </div>
     );
 };

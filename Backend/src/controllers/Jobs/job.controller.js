@@ -109,11 +109,18 @@ exports.updateJob = async (req, res) => {
 //   Delete Job
 exports.deleteJob = async (req, res) => {
   try {
-    await prisma.job.delete({
-      where: { id: req.params.id }
+    const { id } = req.params;
+
+    // Manual Cascade: Delete related applications first
+    await prisma.application.deleteMany({
+      where: { jobId: id }
     });
 
-    res.json({ message: "Job deleted successfully" });
+    await prisma.job.delete({
+      where: { id: id }
+    });
+
+    res.json({ message: "Job and related applications deleted successfully" });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

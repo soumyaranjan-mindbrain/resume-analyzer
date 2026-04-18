@@ -96,7 +96,7 @@ const Reports = () => {
   };
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-500">
+    <div className="h-[calc(100vh-120px)] flex flex-col space-y-6 animate-in fade-in duration-500">
 
       {/* Filters Row */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -159,12 +159,11 @@ const Reports = () => {
         </div>
       </div>
 
-      {/* List View */}
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden min-h-[450px]">
-        <div className="overflow-x-auto">
+      <div className="flex-1 bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+        <div className="overflow-x-auto overflow-y-auto flex-1">
           <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-slate-50 border-b border-slate-200">
+            <thead className="sticky top-0 z-10 bg-slate-50">
+              <tr className="border-b border-slate-200">
                 <th className="py-4 px-6 text-xs font-semibold uppercase tracking-wider text-slate-500">Student & Contact</th>
                 <th className="py-4 px-6 text-xs font-semibold uppercase tracking-wider text-slate-500">Analysis Date</th>
                 <th className="py-4 px-6 text-xs font-semibold uppercase tracking-wider text-slate-500 text-center">ATS Score</th>

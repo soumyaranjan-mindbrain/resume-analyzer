@@ -17,6 +17,8 @@ import {
 import { cn } from '../../utils/cn';
 import { deleteAdminStudent } from '../../services/api';
 import toast from 'react-hot-toast';
+import ConfirmModal from '../../components/ui/ConfirmModal';
+import { createPortal } from 'react-dom';
 import { useAdmin } from '../../context/AdminContext';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
@@ -29,6 +31,7 @@ const Students = () => {
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [exportOpen, setExportOpen] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
+  const [deleteModal, setDeleteModal] = useState({ isOpen: false, studentId: null });
 
   useEffect(() => {
     fetchStudents();
@@ -94,15 +97,18 @@ const Students = () => {
     { label: 'Higher than 90%', value: 'gt90' },
   ];
 
-  const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this student?')) {
-      try {
-        await deleteAdminStudent(id);
-        toast.success('Student deleted successfully');
-        fetchStudents();
-      } catch (error) {
-        toast.error('Failed to delete student');
-      }
+  const handleDelete = (id) => {
+    setDeleteModal({ isOpen: true, studentId: id });
+  };
+
+  const confirmDelete = async () => {
+    const id = deleteModal.studentId;
+    try {
+      await deleteAdminStudent(id);
+      toast.success('Student deleted successfully');
+      fetchStudents();
+    } catch (error) {
+      toast.error('Failed to delete student');
     }
   };
 
@@ -330,61 +336,81 @@ const Students = () => {
         </div>
       </div>
 
-      {selectedStudent && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
-            <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-white">
-              <h3 className="text-xl font-bold text-slate-900">Student Details</h3>
-              <button
-                onClick={() => setSelectedStudent(null)}
-                className="p-2 hover:bg-slate-50 rounded-lg transition-colors"
-                title="Close"
-              >
-                <X className="w-5 h-5 text-slate-400" />
-              </button>
-            </div>
-            <div className="p-6 space-y-4">
-              <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-xl mb-4">
-                <div className="w-16 h-16 rounded-full bg-blue-100 border-2 border-white flex items-center justify-center font-bold text-blue-600 text-2xl shadow-sm">
-                  {selectedStudent.name?.charAt(0)}
+      {selectedStudent && createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-6 animate-in fade-in duration-300">
+          <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xl" onClick={() => setSelectedStudent(null)} />
+          <div className="relative w-full max-w-lg bg-white rounded-[2.5rem] lg:rounded-[3rem] shadow-[0_40px_100px_-20px_rgba(0,0,0,0.25)] border border-slate-100 overflow-hidden animate-in zoom-in-95 duration-300">
+            {/* Modal Header */}
+            <div className="px-10 py-8 border-b border-slate-50 bg-gradient-to-r from-slate-50 to-white flex items-center justify-between">
+              <div className="flex items-center gap-5">
+                <div className="w-14 h-14 bg-slate-900 rounded-2xl flex items-center justify-center text-white shadow-xl">
+                  <User className="w-7 h-7" />
                 </div>
                 <div>
-                  <h4 className="text-lg font-bold text-slate-900">{selectedStudent.name}</h4>
-                  <p className="text-sm font-medium text-slate-500">{selectedStudent.email}</p>
+                  <h3 className="text-2xl font-black text-slate-900 tracking-tight leading-none">Student Profile</h3>
+                  <p className="text-slate-400 font-bold text-[10px] uppercase tracking-[0.2em] mt-2">Administrative View</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setSelectedStudent(null)}
+                className="w-12 h-12 rounded-full border border-slate-100 flex items-center justify-center hover:bg-slate-900 hover:text-white transition-all shadow-sm"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-10 space-y-8">
+              <div className="flex items-center gap-6 p-6 bg-slate-50/50 rounded-[2rem] border border-slate-100 shadow-inner">
+                <div className="w-20 h-20 rounded-[1.8rem] bg-white border-2 border-blue-100 flex items-center justify-center font-black text-blue-600 text-3xl shadow-sm">
+                  {selectedStudent.name?.charAt(0)}
+                </div>
+                <div className="space-y-1">
+                  <h4 className="text-xl font-black text-slate-900 tracking-tight">{selectedStudent.name}</h4>
+                  <div className="flex items-center gap-2 text-slate-500 font-bold text-sm">
+                    <Mail className="w-4 h-4" />
+                    {selectedStudent.email}
+                  </div>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Course / Branch</p>
-                  <p className="text-sm font-semibold text-slate-700">{selectedStudent.course || selectedStudent.branch || 'N/A'}</p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Phone Number</p>
-                  <p className="text-sm font-semibold text-slate-700">{selectedStudent.phone || 'N/A'}</p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Enrollment Status</p>
-                  <p className="text-sm font-semibold text-slate-700">{selectedStudent.status || 'Active'}</p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Average ATS Score</p>
-                  <p className="text-sm font-bold text-blue-600">{selectedStudent.score || 0}%</p>
-                </div>
+              <div className="grid grid-cols-2 gap-6">
+                {[
+                  { label: "Course / Branch", value: selectedStudent.course || selectedStudent.branch || 'N/A' },
+                  { label: "Phone Number", value: selectedStudent.phone || 'N/A' },
+                  { label: "Enrollment Status", value: selectedStudent.status || 'Active' },
+                  { label: "Average ATS Score", value: `${selectedStudent.score || 0}%`, highlight: true }
+                ].map((info, i) => (
+                  <div key={i} className="space-y-2 px-2">
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{info.label}</p>
+                    <p className={cn("text-[15px] font-black tracking-tight", info.highlight ? "text-blue-600" : "text-slate-700")}>{info.value}</p>
+                  </div>
+                ))}
               </div>
 
-              <div className="pt-4 border-t border-slate-100">
-                <button
-                  onClick={() => setSelectedStudent(null)}
-                  className="w-full py-2.5 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-all shadow-lg shadow-slate-200"
-                >
-                  Close Profile
-                </button>
-              </div>
+              <button
+                onClick={() => setSelectedStudent(null)}
+                className="group relative w-full py-6 bg-slate-900 text-white rounded-[1.8rem] font-black text-lg tracking-tight overflow-hidden transition-all duration-300 hover:shadow-2xl active:scale-95"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <span className="relative z-10">Return to Directory</span>
+              </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
+
+      <ConfirmModal
+        isOpen={deleteModal.isOpen}
+        onClose={() => setDeleteModal({ isOpen: false, studentId: null })}
+        onConfirm={confirmDelete}
+        title="Delete Student"
+        message="Are you sure you want to delete this student record? This action will remove all associated performance data."
+        confirmText="Yes, Delete Record"
+        cancelText="Cancel"
+        type="danger"
+      />
     </div>
   );
 };

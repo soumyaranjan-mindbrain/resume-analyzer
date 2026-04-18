@@ -15,16 +15,19 @@ import {
 import { getAllJobs, deleteJob } from '../../services/api';
 import { cn } from '../../utils/cn';
 import toast from 'react-hot-toast';
+import ConfirmModal from '../../components/ui/ConfirmModal';
 
 const JobDescriptions = () => {
   const navigate = useNavigate();
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [deleteModal, setDeleteModal] = useState({ isOpen: false, jobId: null });
 
-  const fetchJobs = async () => {
+  const fetchJobs = async (silent = false) => {
     try {
-      setLoading(true);
+      // Only show loader if we have no data yet
+      if (!silent && jobs.length === 0) setLoading(true);
       const data = await getAllJobs();
       const mappedJobs = data.map(job => ({
         ...job,
@@ -34,9 +37,9 @@ const JobDescriptions = () => {
       setJobs(mappedJobs);
     } catch (error) {
       console.error('Error fetching jobs:', error);
-      toast.error('Failed to fetch jobs');
+      if (!silent) toast.error('Failed to fetch jobs');
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
   };
 
@@ -44,15 +47,25 @@ const JobDescriptions = () => {
     fetchJobs();
   }, []);
 
-  const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this job role?')) {
-      try {
-        await deleteJob(id);
-        toast.success('Job role deleted successfully');
-        fetchJobs();
-      } catch (error) {
-        toast.error('Failed to delete job role');
-      }
+  const handleDelete = (id) => {
+    setDeleteModal({ isOpen: true, jobId: id });
+  };
+
+  const confirmDelete = async () => {
+    const id = deleteModal.jobId;
+    // Optimistic update
+    const originalJobs = [...jobs];
+    setJobs(prev => prev.filter(job => job.id !== id));
+
+    try {
+      await deleteJob(id);
+      toast.success('Job role deleted successfully');
+      // Refresh silently in background to keep data in sync
+      fetchJobs(true);
+    } catch (error) {
+      // Rollback on error
+      setJobs(originalJobs);
+      toast.error('Failed to delete job role');
     }
   };
 
@@ -251,6 +264,17 @@ const JobDescriptions = () => {
           </table>
         </div>
       </div>
+
+      <ConfirmModal
+        isOpen={deleteModal.isOpen}
+        onClose={() => setDeleteModal({ isOpen: false, jobId: null })}
+        onConfirm={confirmDelete}
+        title="Delete Job Role"
+        message="Are you sure you want to delete this job role? This action cannot be undone."
+        confirmText="Yes, Delete Role"
+        cancelText="Cancel"
+        type="danger"
+      />
     </div>
   );
 };

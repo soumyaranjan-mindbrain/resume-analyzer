@@ -31,6 +31,8 @@ import {
 import { cn } from '../../utils/cn';
 import { getResumes, deleteResume, analyzeResume } from '../../services/api';
 import { useAnalysis } from '../../context/AnalysisContext';
+import toast from 'react-hot-toast';
+import ConfirmModal from '../../components/ui/ConfirmModal';
 
 const getNameFromPath = (resume) => {
   if (!resume) return 'Untitled Resume';
@@ -264,6 +266,7 @@ const History = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [hasAutoOpened, setHasAutoOpened] = useState(false);
   const { startAnalysis, isAnalyzing } = useAnalysis();
+  const [deleteModal, setDeleteModal] = useState({ isOpen: false, resumeId: null });
 
   const fetchResumes = async () => {
     try {
@@ -314,15 +317,20 @@ const History = () => {
     }
   }, [resumes, loading, location.state, hasAutoOpened, isAnalyzing]);
 
-  const handleDelete = async (resumeId) => {
-    if (!window.confirm('Delete this resume and all AI analysis permanently?')) return;
+  const handleDelete = (resumeId) => {
+    setDeleteModal({ isOpen: true, resumeId });
+  };
+
+  const confirmDelete = async () => {
+    const resumeId = deleteModal.resumeId;
     try {
       setLoading(true);
       await deleteResume(resumeId);
       setResumes(prev => prev.filter(r => (r._id || r.id) !== resumeId));
+      toast.success('Resume deleted successfully');
     } catch (error) {
       console.error('Delete Error:', error);
-      alert(error.response?.data?.error || 'Could not delete resume.');
+      toast.error(error.response?.data?.error || 'Could not delete resume.');
     } finally {
       setLoading(false);
     }
@@ -503,6 +511,17 @@ const History = () => {
       </div>
 
       <ReportModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} resume={selectedResume} />
+
+      <ConfirmModal
+        isOpen={deleteModal.isOpen}
+        onClose={() => setDeleteModal({ isOpen: false, resumeId: null })}
+        onConfirm={confirmDelete}
+        title="Delete Resume"
+        message="Are you sure you want to delete this resume and all AI analysis permanently? This action cannot be undone."
+        confirmText="Yes, Delete Permanently"
+        cancelText="Cancel"
+        type="danger"
+      />
     </div>
   );
 };

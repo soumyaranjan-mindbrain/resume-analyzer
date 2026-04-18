@@ -169,6 +169,10 @@ exports.deleteStudent = async (req, res) => {
       where: { userId: id }
     });
 
+    await prisma.application.deleteMany({
+      where: { userId: id }
+    });
+
     await prisma.user.delete({
       where: { id },
     });
