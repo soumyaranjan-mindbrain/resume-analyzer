@@ -79,6 +79,15 @@ app.use("/api/reports", reportsRoutes);
 app.use("/api/applications", applicationRoutes);
 app.use("/api/config", configRoutes);
 
+// Root and API entry points for verification
+app.get("/", (req, res) => {
+  res.status(200).json({ msg: "Resume AI API is online", status: "Healthy" });
+});
+
+app.get("/api", (req, res) => {
+  res.status(200).json({ msg: "API entry point reachable", health: "/api/health" });
+});
+
 // Health check endpoint
 app.get("/api/health", (req, res) => {
   res.status(200).json({ msg: "Server is running" });

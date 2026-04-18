@@ -132,11 +132,13 @@
 @layer components {
 
   .glass-card {
-    background: rgba(255, 255, 255, 0.45);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow:
+      0 10px 40px -5px rgba(0, 0, 0, 0.08),
+      0 0 0 1px rgba(255, 255, 255, 0.5);
   }
 
   .glass-nav {
@@ -233,14 +235,12 @@
   /* Professional Admin Card with Depth */
   .admin-card {
     background: #ffffff;
-    border: 1px solid rgba(226, 232, 240, 0.8);
-    border-radius: 1rem;
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    border-radius: 1.25rem;
     box-shadow:
-      0 1px 3px 0 rgba(0, 0, 0, 0.05),
-      0 1px 2px 0 rgba(0, 0, 0, 0.03),
-      0 4px 6px -1px rgba(0, 0, 0, 0.02),
-      0 2px 4px -1px rgba(0, 0, 0, 0.02);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      0 4px 20px -5px rgba(0, 0, 0, 0.1),
+      0 2px 10px -2px rgba(0, 0, 0, 0.05);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .admin-card:hover {
