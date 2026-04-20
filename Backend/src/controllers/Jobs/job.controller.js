@@ -1,5 +1,6 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
+const { emitEvent } = require("../../utils/socket");
 
 //   Create Job
 exports.createJob = async (req, res) => {
@@ -23,6 +24,7 @@ exports.createJob = async (req, res) => {
     });
 
     res.status(201).json(job);
+    emitEvent("job_updated", { action: "create", id: job.id });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -101,6 +103,7 @@ exports.updateJob = async (req, res) => {
     });
 
     res.json(job);
+    emitEvent("job_updated", { action: "update", id: job.id });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -121,6 +124,7 @@ exports.deleteJob = async (req, res) => {
     });
 
     res.json({ message: "Job and related applications deleted successfully" });
+    emitEvent("job_updated", { action: "delete", id });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -158,6 +162,7 @@ exports.toggleJobHiredStatus = async (req, res) => {
     });
 
     res.json({ success: true, job: updatedJob });
+    emitEvent("job_updated", { action: "toggle_hired", id: updatedJob.id });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

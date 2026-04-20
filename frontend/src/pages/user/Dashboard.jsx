@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   BarChart3,
   ShieldCheck,
@@ -15,7 +16,7 @@ import {
   FileCheck2,
   ListChecks
 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import dashboardBanner from '../../assets/dashboard-banner-seamless.png';
 import { useAuth } from '../../context/AuthContext';
 import { useAnalysis } from '../../context/AnalysisContext';
@@ -74,42 +75,18 @@ const Dashboard = () => {
   const fileInputRef = useRef(null);
   const { user } = useAuth();
   const { socket } = useSocket();
-  const { startAnalysis, isAnalyzing } = useAnalysis();
-  const [stats, setStats] = useState(null);
-  const [resumes, setResumes] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { startAnalysis, isAnalyzing, dashboardStats, loading: analysisLoading, fetchDashboardData } = useAnalysis();
 
-  const fetchDashboardData = async () => {
-    try {
-      const [statsData, resumeData] = await Promise.all([
-        getDashboardStats(),
-        getMyResumes()
-      ]);
-      setStats(statsData || null);
-      setResumes(resumeData.resumes || []);
-    } catch (error) {
-      console.error('Failed to fetch dashboard data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const stats = dashboardStats?.stats;
+  const resumes = dashboardStats?.resumes || [];
+  const loading = analysisLoading.dashboard;
+
 
   useEffect(() => {
     fetchDashboardData();
   }, []);
 
-  useEffect(() => {
-    if (socket) {
-      socket.on('analysis_completed', (data) => {
-        console.log('[Socket] Analysis completed, refreshing data...');
-        fetchDashboardData();
-      });
-
-      return () => {
-        socket.off('analysis_completed');
-      };
-    }
-  }, [socket]);
+  // Real-time automatic background refresh disabled as per user request
 
   const handleFileSelect = (e) => {
     const file = e.target.files[0];
@@ -161,37 +138,35 @@ const Dashboard = () => {
     {
       label: 'ATS Score',
       value: stats?.atsScore !== undefined ? `${stats.atsScore}%` : '0%',
-      tone: 'blue',
       icon: BarChart3,
-      note: (stats?.atsScore || 0) > 0 ? '+ 2% since last scan' : 'Upload to see score',
-      noteTone: 'text-[#10b981]',
-      noteIcon: ArrowUp
+      color: 'text-blue-600',
+      bg: 'bg-blue-50',
+      unit: '%'
     },
     {
-      label: 'Job Ready',
-      value: stats?.atsScore !== undefined ? `${Math.round(stats.atsScore * 1.1 > 100 ? 100 : stats.atsScore * 1.1)}%` : 'Low',
-      tone: 'emerald',
+      label: 'Total Resumes',
+      value: resumes.length.toString().padStart(2, '0'),
       icon: ShieldCheck,
-      detail: 'Based on ATS score and overall skill matching algorithms.'
+      color: 'text-emerald-600',
+      bg: 'bg-emerald-50'
     },
     {
-      label: 'Gaps',
+      label: 'Skill Gaps',
       value: Array.isArray(stats?.keywordsMissing) ? String(stats.keywordsMissing.length).padStart(2, '0') : '00',
-      tone: 'orange',
       icon: AlertTriangle,
-      detail: (Array.isArray(stats?.keywordsMissing) && stats.keywordsMissing.length > 0)
-        ? `Missing: ${stats.keywordsMissing.slice(0, 2).join(', ')}...`
-        : 'Optimize your impact keywords.',
-      action: 'View Analysis'
+      color: 'text-orange-600',
+      bg: 'bg-orange-50'
     }
   ];
 
-  if (loading) {
+  const isLoading = loading && !stats;
+
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-transparent">
         <div className="flex flex-col items-center gap-4">
           <div className="w-16 h-16 border-4 border-blue-600/20 border-t-blue-600 rounded-full animate-spin" />
-          <p className="text-blue-600 font-bold uppercase tracking-widest text-xs animate-pulse">Syncing Dashboard...</p>
+          <p className="text-blue-600 font-bold uppercase tracking-widest text-xs animate-pulse">Synchronizing Session...</p>
         </div>
       </div>
     );
@@ -211,8 +186,8 @@ const Dashboard = () => {
 
         <div className="relative z-10 p-6 md:p-8 flex flex-col justify-center w-full max-w-2xl">
           <div className="mb-4 md:mb-6 space-y-1 md:space-y-2">
-            <h1 className="text-xl md:text-3xl font-bold text-slate-800 tracking-tight leading-tight">Your personal AI-powered resume dashboard is updated.</h1>
-            <p className="text-slate-600 font-medium text-xs md:text-base">Upload your latest version to stay ahead of industry trends.</p>
+            <h1 className="text-xl md:text-3xl font-black text-slate-900 tracking-tight leading-tight">Your personal AI-powered resume dashboard is updated.</h1>
+            <p className="text-slate-700 font-bold text-xs md:text-base">Upload your latest version to stay ahead of industry trends.</p>
           </div>
           <div className="pt-0">
             <button
@@ -246,53 +221,49 @@ const Dashboard = () => {
             >
               <Upload className="w-5 h-5" /> Initialize Analysis
             </button>
-            {/* Hidden file input removed from here */}
-
           </div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-8">
-          {summaryCards.map((card) => {
-            const Icon = card.icon;
-            const tone = toneStyles[card.tone] || toneStyles.blue;
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+          <AnimatePresence>
+            {summaryCards.map((card, i) => {
+              const Icon = card.icon;
 
-            return (
-              <div key={card.label} className="bg-white rounded-2xl p-4 md:p-5 border border-slate-200 relative overflow-hidden group shadow-[0_8px_30px_rgba(0,0,0,0.06)] hover:shadow-[0_20px_50px_rgba(0,0,0,0.1)] transition-all duration-300 flex flex-col justify-between h-full">
-                <div>
-                  <div className="flex items-center justify-between mb-2 md:mb-3">
-                    <div className="flex items-center gap-1.5 md:gap-2.5">
-                      <div className={cn("w-7 h-7 md:w-9 md:h-9 rounded-lg md:rounded-xl bg-slate-50 flex items-center justify-center", tone.icon)}>
-                        <Icon className="w-3.5 h-3.5 md:w-4.5 md:h-4.5" />
-                      </div>
-                      <span className="font-bold text-slate-500 text-[8px] md:text-[10px] uppercase tracking-widest leading-none truncate">{card.label}</span>
+              return (
+                <motion.div
+                  key={card.label}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.1, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                  className="relative group h-full cursor-pointer"
+                  onClick={() => card.label === 'Skill Gaps' ? navigate('/insights') : card.label === 'Total Resumes' ? navigate('/history') : null}
+                >
+                  <div className="admin-card glass-card relative h-full !p-5 flex items-center gap-5 overflow-hidden group-hover:translate-y-[-4px] transition-all duration-500 border-white/40 shadow-sm hover:shadow-md">
+                    <div className={cn(
+                      "absolute -right-8 -top-8 w-32 h-32 blur-[60px] rounded-full opacity-10 group-hover:opacity-20 transition-opacity duration-500",
+                      card.bg
+                    )} />
+
+                    <div className={cn(
+                      "w-12 h-12 rounded-xl flex items-center justify-center border border-white/80 shadow-sm relative overflow-hidden shrink-0 transition-transform duration-500 group-hover:scale-110",
+                      card.bg
+                    )}>
+                      <Icon className={cn("w-6 h-6 relative z-10 transition-colors duration-500", card.color)} />
+                      <div className="absolute inset-0 bg-white/20 backdrop-blur-md" />
+                    </div>
+
+                    <div className="relative z-10 space-y-0.5">
+                      <p className="text-slate-600 text-[10px] font-black uppercase tracking-widest leading-none mb-1">{card.label}</p>
+                      <h4 className="text-2xl md:text-3xl font-black text-slate-900 flex items-baseline gap-1 tabular-nums tracking-tighter leading-none">
+                        {card.value.replace('%', '')}
+                        {card.value.includes('%') && <span className="text-sm font-bold text-slate-400 ml-0.5">%</span>}
+                      </h4>
                     </div>
                   </div>
-
-                  <h2 className="text-2xl md:text-4xl font-black text-slate-900 tracking-tighter mb-1 md:mb-2">{card.value}</h2>
-
-                  {card.detail && (
-                    <p className="text-slate-500 text-[7px] md:text-[9px] font-bold leading-relaxed mb-3 md:mb-4 uppercase tracking-wider opacity-60 line-clamp-2 md:line-clamp-1">
-                      {card.detail}
-                    </p>
-                  )}
-                </div>
-
-                <div className="mt-auto">
-                  {card.note && (
-                    <div className={cn(
-                      "px-2 py-1 md:px-2.5 md:py-1.5 rounded-md md:rounded-lg inline-flex items-center gap-1 md:gap-1.5",
-                      card.noteTone === 'text-emerald-600' ? 'bg-emerald-50' : 'bg-slate-50'
-                    )}>
-                      {card.noteIcon && <card.noteIcon className={cn("w-2.5 h-2.5 md:w-3 md:h-3", card.noteTone)} />}
-                      <span className={cn("text-[7px] md:text-[8px] font-black uppercase tracking-widest", card.noteTone || 'text-slate-500')}>
-                        {card.note}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            );
-          })}
+                </motion.div>
+              );
+            })}
+          </AnimatePresence>
         </div>
       )}
 
@@ -312,7 +283,7 @@ const Dashboard = () => {
                     <div className={cn("w-3 h-3 rounded-full shadow-sm", item.colorClass)} />
                     <span className="text-slate-700 text-[13px] font-medium">{item.label}</span>
                   </div>
-                  <span className="text-slate-500 text-xs font-medium ml-auto">{item.percent}%</span>
+                  <span className="text-slate-700 text-xs font-black ml-auto">{item.percent}%</span>
                 </li>
               ))}
             </ul>

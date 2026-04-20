@@ -1,4 +1,5 @@
 const prisma = require("../../prisma/client");
+const { emitEvent } = require("../../utils/socket");
 
 // Add Student (Creates a User with role 'student')
 exports.createStudent = async (req, res) => {
@@ -6,8 +7,17 @@ exports.createStudent = async (req, res) => {
     const { name, email, phone, course, password } = req.body;
 
     // Check if user already exists
-    const existing = await prisma.user.findUnique({ where: { email } });
-    if (existing) return res.status(400).json({ message: "Email already in use" });
+    const existingEmail = await prisma.user.findUnique({ where: { email } });
+    if (existingEmail) return res.status(400).json({ message: "Email already in use" });
+
+    if (phone) {
+      console.log(`[Student] Checking phone uniqueness for: "${phone}"`);
+      const existingPhone = await prisma.user.findFirst({ where: { phone } });
+      if (existingPhone) {
+        console.log(`[Student] Phone collision detected for: ${phone}`);
+        return res.status(400).json({ message: "Mobile number already in use" });
+      }
+    }
 
     const student = await prisma.user.create({
       data: {
@@ -20,6 +30,8 @@ exports.createStudent = async (req, res) => {
         status: "Active"
       },
     });
+
+    emitEvent("student_registered", { id: student.id, name: student.name });
 
     res.status(201).json(student);
   } catch (error) {
@@ -133,6 +145,7 @@ exports.updateStudent = async (req, res) => {
     });
 
     res.json(student);
+    emitEvent("student_updated", { id: student.id });
   } catch (error) {
     if (error.code === "P2025") {
       return res.status(404).json({ message: "Student not found" });
@@ -182,6 +195,8 @@ exports.deleteStudent = async (req, res) => {
     await prisma.user.delete({
       where: { id },
     });
+
+    emitEvent("student_deleted", { id });
 
     res.json({ message: "Student and all related data deleted successfully" });
   } catch (error) {

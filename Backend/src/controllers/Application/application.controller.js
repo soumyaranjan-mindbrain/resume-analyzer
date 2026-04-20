@@ -1,4 +1,5 @@
 const prisma = require("../../prisma/client");
+const { emitEvent } = require("../../utils/socket");
 
 const applyToJob = async (req, res) => {
     try {
@@ -42,6 +43,7 @@ const applyToJob = async (req, res) => {
         });
 
         console.log(`[Apply] Success: User ${userId} applied to Job ${jobId} with Resume ${resumeId}`);
+        emitEvent("application_submitted", { jobId, userId, applicationId: application.id });
         res.json({ success: true, application });
 
     } catch (err) {

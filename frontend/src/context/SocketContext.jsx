@@ -16,10 +16,20 @@ export const SocketProvider = ({ children }) => {
     const [connected, setConnected] = useState(false);
 
     useEffect(() => {
-        const socketUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+        const socketUrl = apiUrl.replace(/\/api$/, '');
+
+        console.log('[Socket] Connecting to:', socketUrl);
+
         const newSocket = io(socketUrl, {
             withCredentials: true,
-            transports: ['websocket', 'polling']
+            transports: ['polling', 'websocket'], // Try polling first for better compatibility
+            reconnectionAttempts: 5,
+            timeout: 10000
+        });
+
+        newSocket.on('connect_error', (err) => {
+            console.error('[Socket] Connection error:', err.message);
         });
 
         newSocket.on('connect', () => {

@@ -321,6 +321,7 @@
 // };
 
 const prisma = require("../../prisma/client");
+const { emitEvent } = require("../../utils/socket");
 
 //  Upload Resume
 const uploadResume = async (req, res) => {
@@ -351,8 +352,7 @@ const uploadResume = async (req, res) => {
       },
     });
 
-    const { emitEvent } = require("../../utils/socket");
-    emitEvent("analysis_completed", { resumeId: resume.id, atsScore: 0 });
+    emitEvent("analysis_completed", { resumeId: resume.id, userId: req.userId, atsScore: 0 });
 
     res.json({ success: true, resume });
 
@@ -547,8 +547,7 @@ const reanalyzeResume = async (req, res) => {
       });
     }
 
-    const { emitEvent } = require("../../utils/socket");
-    emitEvent("analysis_completed", { resumeId, atsScore });
+    emitEvent("analysis_completed", { resumeId, userId: req.user.id, atsScore });
 
     res.json({
       success: true,
@@ -631,6 +630,8 @@ const deleteResume = async (req, res) => {
     await prisma.resume.delete({
       where: { id },
     });
+
+    emitEvent("resume_deleted", { id, userId: req.userId });
 
     res.json({
       success: true,

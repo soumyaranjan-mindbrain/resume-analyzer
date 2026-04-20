@@ -32,15 +32,15 @@ import { getAllJobs, getJobById, getResumes, reanalyzeResume, uploadResume, appl
 import { useNavigate } from 'react-router-dom';
 
 
+import { useAnalysis } from '../../context/AnalysisContext';
+
 const APPLY_CONTEXT_KEY = 'apply_job_context_v1';
 const GLOBAL_CACHE_KEY = 'MBI_GLOBAL_RESUME_CONTEXT';
 
 const JobMatches = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
-
-  const [jobs, setJobs] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { jobs, loading, fetchJobs } = useAnalysis();
 
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [selectedJob, setSelectedJob] = useState(null);
@@ -57,28 +57,12 @@ const JobMatches = () => {
   const [isApplying, setIsApplying] = useState(false);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const jobData = await getAllJobs();
-        const list = Array.isArray(jobData) ? jobData : (jobData?.jobs || []);
-        const normalized = list.map((job) => ({
-          ...job,
-          skills: Array.isArray(job.skillsRequired) ? job.skillsRequired : (Array.isArray(job.skills) ? job.skills : []),
-        }));
-        setJobs(normalized);
-      } catch (error) {
-        console.error('Failed to fetch jobs:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
+    fetchJobs();
+  }, [fetchJobs]);
 
   useEffect(() => {
     // Auto-continue apply flow after uploading a new resume
-    if (loading) return;
+    if (loading.jobs) return;
     try {
       const raw = sessionStorage.getItem(APPLY_CONTEXT_KEY);
       if (!raw) return;
@@ -94,7 +78,7 @@ const JobMatches = () => {
     } catch {
       // ignore
     }
-  }, [loading, jobs]);
+  }, [loading.jobs, jobs]);
 
   const filteredJobs = jobs; // Default to all jobs since filters are removed
 
@@ -291,7 +275,7 @@ const JobMatches = () => {
     }
   };
 
-  if (loading) {
+  if (loading.jobs && jobs.length === 0) {
     return (
       <div className="min-h-[400px] flex items-center justify-center">
         <div className="w-12 h-12 border-4 border-[#4b7bff]/20 border-t-[#4b7bff] rounded-full animate-spin" />

@@ -22,16 +22,21 @@ import {
   Sparkles
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
-import { getAnalytics, getMyResumes, toggleRoadmapPhase } from '../../services/api';
+import { useAnalysis } from '../../context/AnalysisContext';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
 const SkillInsights = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
-  const [analytics, setAnalytics] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [resumes, setResumes] = useState([]);
+  const {
+    skillInsights: analytics,
+    resumes,
+    loading,
+    fetchSkillInsights,
+    fetchHistory
+  } = useAnalysis();
+
   const [completedPhases, setCompletedPhases] = useState([]);
   const [toggling, setToggling] = useState(null);
 
@@ -43,23 +48,15 @@ const SkillInsights = () => {
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const resumeData = await getMyResumes();
-        setResumes(resumeData.resumes || []);
+    fetchHistory();
+    fetchSkillInsights();
+  }, [fetchHistory, fetchSkillInsights]);
 
-        const analyticsData = await getAnalytics();
-        setAnalytics(analyticsData || null);
-        setCompletedPhases(analyticsData?.analytics?.completedPhases || []);
-      } catch (error) {
-        console.error('Failed to fetch skill insights:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
+  useEffect(() => {
+    if (analytics?.analytics?.completedPhases) {
+      setCompletedPhases(analytics.analytics.completedPhases);
+    }
+  }, [analytics]);
 
   const handleTogglePhase = async (idx) => {
     try {
@@ -72,14 +69,14 @@ const SkillInsights = () => {
 
       setCompletedPhases(newCompleted);
 
+      const { toggleRoadmapPhase } = await import('../../services/api');
       await toggleRoadmapPhase(idx);
+      await fetchSkillInsights(true);
       toast.success(isAlreadyCompleted ? "Phase reset" : "Phase completed!");
     } catch (error) {
       console.error('Failed to toggle phase:', error);
       toast.error('Failed to update progress');
-      // Revert on error
-      const analyticsData = await getAnalytics();
-      setCompletedPhases(analyticsData?.analytics?.completedPhases || []);
+      fetchSkillInsights(true);
     } finally {
       setToggling(null);
     }
@@ -106,7 +103,7 @@ const SkillInsights = () => {
 
 
 
-  if (loading) {
+  if (loading.insights && !analytics) {
     return (
       <div className="min-h-[400px] flex items-center justify-center">
         <div className="w-12 h-12 border-4 border-[#4b7bff]/20 border-t-[#4b7bff] rounded-full animate-spin" />

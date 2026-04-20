@@ -21,36 +21,26 @@ const StatsCard = ({ stat, index }) => (
     transition={{ delay: index * 0.1, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
     className="relative group h-full"
   >
-    {/* Depth Shadow Layers */}
-    <div className="absolute inset-x-4 -bottom-2 h-8 bg-slate-900/[0.06] blur-xl rounded-[2rem] -z-10 group-hover:bg-slate-900/[0.1] transition-all duration-500" />
-
-    <div className="admin-card glass-card relative h-full !p-6 flex items-center gap-6 overflow-hidden group-hover:translate-y-[-6px] transition-all duration-500 min-h-[140px] border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)]">
-      {/* Background Accent Glow */}
+    <div className="admin-card glass-card relative h-full !p-4 flex items-center gap-4 overflow-hidden group-hover:translate-y-[-4px] transition-all duration-500 border-white/40 shadow-sm hover:shadow-md">
       <div className={cn(
-        "absolute -right-12 -top-12 w-40 h-40 blur-[80px] rounded-full opacity-20 group-hover:opacity-30 transition-opacity duration-500",
-        stat.bg.replace('bg-', 'bg-')
+        "absolute -right-8 -top-8 w-32 h-32 blur-[60px] rounded-full opacity-10 group-hover:opacity-20 transition-opacity duration-500",
+        stat.bg
       )} />
 
       <div className={cn(
-        "w-16 h-16 rounded-[1.25rem] flex items-center justify-center border border-white/80 shadow-sm relative overflow-hidden shrink-0 transition-transform duration-500 group-hover:scale-110",
+        "w-12 h-12 rounded-xl flex items-center justify-center border border-white/80 shadow-sm relative overflow-hidden shrink-0 transition-transform duration-500 group-hover:scale-110",
         stat.bg
       )}>
-        <stat.icon className={cn("w-8 h-8 relative z-10 transition-colors duration-500", stat.color)} />
-        <div className="absolute inset-0 bg-white/30 backdrop-blur-md" />
+        <stat.icon className={cn("w-6 h-6 relative z-10 transition-colors duration-500", stat.color)} />
+        <div className="absolute inset-0 bg-white/20 backdrop-blur-md" />
       </div>
 
-      <div className="relative z-10 space-y-1">
-        <p className="text-slate-500 text-[11px] font-black uppercase tracking-[0.2em] leading-none mb-1.5">{stat.label}</p>
-        <h4 className="text-4xl font-black text-slate-900 flex items-baseline gap-1 tabular-nums tracking-tighter leading-none">
+      <div className="relative z-10 space-y-0.5">
+        <p className="text-slate-600 text-[10px] font-black uppercase tracking-widest leading-none mb-1">{stat.label}</p>
+        <h4 className="text-2xl font-black text-slate-900 flex items-baseline gap-1 tabular-nums tracking-tighter leading-none">
           {stat.value}
-          {stat.unit && <span className="text-lg font-bold text-slate-400 ml-0.5">{stat.unit}</span>}
+          {stat.unit && <span className="text-sm font-bold text-slate-400 ml-0.5">{stat.unit}</span>}
         </h4>
-        {stat.trend && (
-          <div className="flex items-center gap-1 mt-2">
-            <TrendingUp className="w-3 h-3 text-emerald-500" />
-            <span className="text-[10px] font-bold text-emerald-600">{stat.trend} growth</span>
-          </div>
-        )}
       </div>
     </div>
   </motion.div>
@@ -59,26 +49,27 @@ const StatsCard = ({ stat, index }) => (
 const BarChart = ({ data, filter }) => {
   if (!data || data.length === 0) return null;
 
-  const width = 1000;
-  const height = 300;
-  const padding = 50;
-  const bottomPadding = 40;
+  // Dynamic scaling based on data volume
+  const width = Math.max(1000, data.length * 80);
+  const height = 400;
+  const padding = 40;
+  const bottomPadding = 80;
 
   const allValues = data.flatMap(d => [d.resumes, d.analyzed]);
-  const maxVal = Math.max(...allValues, 10) * 1.1;
+  const rawMax = Math.max(...allValues, 20);
+  const maxVal = Math.ceil(rawMax / 10) * 10;
   const getY = (val) => height - (val / maxVal) * (height - padding - bottomPadding) - bottomPadding;
 
-  // Responsive logic: Width adjusts based on data count
   const groupWidth = (width - padding * 2) / data.length;
-  const barWidth = Math.min(groupWidth * 0.35, 24);
-  const gap = barWidth * 0.2;
+  const barWidth = Math.min(groupWidth * 0.3, 30);
+  const gap = barWidth * 0.4;
 
   return (
     <div className="relative w-full h-full group/chart">
       <svg
         viewBox={`0 0 ${width} ${height}`}
         className="w-full h-full overflow-visible"
-        preserveAspectRatio="none"
+        preserveAspectRatio="xMidYMid meet"
       >
         <defs>
           <linearGradient id="barGradient1" x1="0" y1="0" x2="0" y2="1">
@@ -86,11 +77,11 @@ const BarChart = ({ data, filter }) => {
             <stop offset="100%" stopColor="#ffb97a" />
           </linearGradient>
           <linearGradient id="barGradient2" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#8b5cf6" />
+            <stop offset="0%" stopColor="#818cf8" />
             <stop offset="100%" stopColor="#c084fc" />
           </linearGradient>
           <filter id="barShadow">
-            <feDropShadow dx="0" dy="2" stdDeviation="2" floodOpacity="0.1" />
+            <feDropShadow dx="0" dy="4" stdDeviation="4" floodOpacity="0.1" />
           </filter>
         </defs>
 
@@ -105,9 +96,9 @@ const BarChart = ({ data, filter }) => {
               strokeDasharray="4 4"
             />
             <text
-              x={padding - 10} y={getY(maxVal * p)}
+              x={padding - 15} y={getY(maxVal * p)}
               textAnchor="end" alignmentBaseline="middle"
-              className="text-[10px] font-bold fill-slate-300"
+              className="text-[12px] font-black fill-slate-500"
             >
               {Math.round(maxVal * p)}
             </text>
@@ -121,16 +112,19 @@ const BarChart = ({ data, filter }) => {
           const bar2X = groupCenterX + gap / 2;
           const baseY = height - bottomPadding;
 
+          // Rotation logic for dense data
+          const isDense = data.length > 8;
+
           return (
             <g key={i} className="group/month">
               {/* Resumes Bar */}
               <motion.rect
                 initial={{ height: 0, y: baseY }}
                 animate={{ height: Math.max(baseY - getY(d.resumes), 2), y: getY(d.resumes) }}
-                transition={{ delay: i * 0.05, duration: 1, ease: "circOut" }}
+                transition={{ delay: i * 0.05, duration: 0.8, ease: "backOut" }}
                 x={bar1X}
                 width={barWidth}
-                rx={barWidth / 4}
+                rx={barWidth / 3}
                 fill="url(#barGradient1)"
                 filter="url(#barShadow)"
                 className="hover:brightness-110 cursor-pointer"
@@ -139,20 +133,24 @@ const BarChart = ({ data, filter }) => {
               <motion.rect
                 initial={{ height: 0, y: baseY }}
                 animate={{ height: Math.max(baseY - getY(d.analyzed), 2), y: getY(d.analyzed) }}
-                transition={{ delay: i * 0.05 + 0.1, duration: 1, ease: "circOut" }}
+                transition={{ delay: i * 0.05 + 0.1, duration: 0.8, ease: "backOut" }}
                 x={bar2X}
                 width={barWidth}
-                rx={barWidth / 4}
+                rx={barWidth / 3}
                 fill="url(#barGradient2)"
                 filter="url(#barShadow)"
                 className="hover:brightness-110 cursor-pointer"
               />
-              {/* X-Axis Label */}
+              {/* X-Axis Label with Smart Rotation */}
               <text
-                x={groupCenterX}
-                y={height - 10}
-                textAnchor="middle"
-                className="text-[12px] font-bold fill-slate-400"
+                x={isDense ? groupCenterX + 5 : groupCenterX}
+                y={baseY + 30}
+                textAnchor={isDense ? "end" : "middle"}
+                transform={isDense ? `rotate(-35, ${groupCenterX}, ${baseY + 30})` : ""}
+                className={cn(
+                  "text-[12px] font-black fill-slate-600 transition-colors group-hover/month:fill-indigo-700",
+                  isDense && "text-[10px]"
+                )}
               >
                 {d.month}
               </text>
@@ -170,62 +168,52 @@ const AdminDashboard = () => {
   const [stats, setStats] = useState([]);
   const [filter, setFilter] = useState('month');
 
-  const loadData = async () => {
+  const loadData = async (range = filter) => {
     try {
       await Promise.all([
         fetchDashboardStats(),
-        fetchAnalytics(filter)
+        fetchAnalytics(range)
       ]);
+
+      // Eagerly pre-fetch the other range in the background
+      const otherRange = range === 'month' ? 'week' : 'month';
+      fetchAnalytics(otherRange);
     } catch (error) {
       console.error('Error loading dashboard data:', error);
     }
   };
 
   useEffect(() => {
-    loadData();
-  }, [filter, fetchDashboardStats, fetchAnalytics]);
+    loadData(filter);
+  }, [filter]); // fetchDashboardStats and fetchAnalytics are stable from useCallback
 
-  useEffect(() => {
-    if (socket) {
-      socket.on('student_registered', () => {
-        console.log('[Socket] New student registered, refreshing stats...');
-        loadData();
-      });
-
-      socket.on('analysis_completed', () => {
-        console.log('[Socket] Analysis completed, refreshing analytics...');
-        loadData();
-      });
-
-      return () => {
-        socket.off('student_registered');
-        socket.off('analysis_completed');
-      };
-    }
-  }, [socket, filter]);
+  // Real-time background refresh disabled as per user request
   const analytics = analyticsMap[filter] || null;
 
   useEffect(() => {
     if (statsRaw && analytics) {
       setStats([
-        { label: 'Total Students', value: statsRaw.totalUsers?.toLocaleString() || '0', trend: analytics.userGrowth || '0%', icon: Users, color: 'text-blue-600', bg: 'bg-blue-50' },
-        { label: 'Resumes Analyzed', value: statsRaw.totalAnalyses?.toLocaleString() || '0', trend: analytics.resumeGrowth || '0%', icon: FileCheck, color: 'text-purple-600', bg: 'bg-purple-50' },
-        { label: 'Average Score', value: `${analytics.averageAtsScore || 0}`, unit: '%', trend: analytics.scoreGrowth || '0%', icon: Target, color: 'text-emerald-600', bg: 'bg-emerald-50' },
+        { label: 'Total Students', value: statsRaw.totalUsers?.toLocaleString() || '0', icon: Users, color: 'text-blue-600', bg: 'bg-blue-50' },
+        { label: 'Reports Generated', value: statsRaw.totalAnalyses?.toLocaleString() || '0', icon: FileCheck, color: 'text-purple-600', bg: 'bg-purple-50' },
+        { label: 'ATS Match Score', value: `${analytics.averageAtsScore || 0}`, unit: '%', icon: Target, color: 'text-emerald-600', bg: 'bg-emerald-50' },
       ]);
     }
   }, [statsRaw, analytics]);
 
-  const isLoading = loading.dashboard || loading.analytics;
+  const isLoading = (loading.dashboard && !statsRaw) || (loading.analytics && !analytics);
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-        >
-          <Loader2 className="w-8 h-8 text-indigo-500" />
-        </motion.div>
+        <div className="flex flex-col items-center gap-4">
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+          >
+            <Loader2 className="w-8 h-8 text-indigo-500" />
+          </motion.div>
+          <p className="text-xs font-bold text-slate-400 uppercase tracking-widest animate-pulse">Initializing Analytics...</p>
+        </div>
       </div>
     );
   }
@@ -254,8 +242,7 @@ const AdminDashboard = () => {
 
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
           <div className="flex flex-col">
-            <h3 className="text-xl font-bold text-slate-800 tracking-tight">Platform Analytics</h3>
-            <p className="text-slate-600 text-sm font-medium mt-1">Detailed monitoring of user engagement and resume processing trends.</p>
+            <h3 className="text-xl font-bold text-slate-900 tracking-tight">Platform Analytics</h3>
           </div>
 
           <div className="flex gap-2 bg-slate-50 backdrop-blur-sm p-1.5 rounded-2xl border border-slate-100 shadow-inner">
@@ -268,10 +255,10 @@ const AdminDashboard = () => {
                   setFilter(f);
                 }}
                 className={cn(
-                  "px-6 py-1.5 rounded-xl font-bold text-[10px] uppercase tracking-widest transition-all duration-300",
+                  "px-6 py-1.5 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all duration-300",
                   filter === f
-                    ? "bg-white text-indigo-600 shadow-sm border border-slate-200"
-                    : "text-slate-400 hover:text-slate-600"
+                    ? "bg-white text-indigo-700 shadow-sm border border-slate-300"
+                    : "text-slate-600 hover:text-slate-800"
                 )}
               >
                 {f}
@@ -280,31 +267,14 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        <div className="h-[350px] w-full mt-4">
+        <div className="h-[400px] w-full mt-4">
           <BarChart data={analytics?.chartData} filter={filter} />
         </div>
 
-        <div className="mt-12 flex flex-col md:flex-row items-center justify-between gap-6 pt-8 border-t border-slate-100/60">
-          <div className="flex items-center gap-3">
-            <div className="flex -space-x-2">
-              {[1, 2, 3].map(i => (
-                <div key={i} className="w-8 h-8 rounded-full border-2 border-white bg-slate-200 overflow-hidden shadow-sm">
-                  <div className="w-full h-full bg-gradient-to-br from-indigo-400 to-purple-400" />
-                </div>
-              ))}
-            </div>
-            <span className="text-slate-500 text-xs font-semibold">+ 12 active observers</span>
-          </div>
-
-          <div className="flex items-center gap-6">
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-indigo-500" />
-              <span className="text-xs font-bold text-slate-600">Metric Density</span>
-            </div>
-            <button className="px-6 py-2.5 rounded-xl bg-slate-900 text-white text-[10px] font-bold uppercase tracking-[0.2em] shadow-xl hover:bg-slate-800 transition-all flex items-center gap-2">
-              Full Spectrum <ArrowUpRight className="w-3 h-3" />
-            </button>
-          </div>
+        <div className="mt-12 flex flex-col md:flex-row items-center justify-end gap-6 pt-8 border-t border-slate-100/60">
+          <button className="px-8 py-3 rounded-2xl bg-slate-900 text-white text-[11px] font-black uppercase tracking-[0.2em] shadow-2xl hover:bg-black transition-all flex items-center gap-3">
+            Download Report <ArrowUpRight className="w-4 h-4" />
+          </button>
         </div>
       </motion.div>
     </div >

@@ -1,9 +1,13 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import { getAdminStudents, getDashboardStats, getAnalytics, getAdminReports } from '../services/api';
+import { useAuth } from './AuthContext';
+import { useSocket } from './SocketContext';
 
 const AdminContext = createContext();
 
 export const AdminProvider = ({ children }) => {
+    const { isAuthenticated } = useAuth();
+    const { socket } = useSocket();
     const [students, setStudents] = useState([]);
     const [stats, setStats] = useState(null);
     const [reports, setReports] = useState([]);
@@ -27,7 +31,7 @@ export const AdminProvider = ({ children }) => {
         } finally {
             setLoading(prev => ({ ...prev, students: false }));
         }
-    }, [students.length]);
+    }, []); // Removed students.length dependency to stop function re-generation loop
 
     const fetchReports = useCallback(async (force = false) => {
         if (reports.length > 0 && !force) return;
@@ -41,26 +45,32 @@ export const AdminProvider = ({ children }) => {
         } finally {
             setLoading(prev => ({ ...prev, reports: false }));
         }
-    }, [reports.length]);
+    }, []); // Removed reports.length dependency
 
     const fetchDashboardStats = useCallback(async (force = false) => {
-        if (stats && !force) return;
+        // If we have data and it's not a force refresh, don't show loading
+        const showLoading = !stats || force;
         try {
-            setLoading(prev => ({ ...prev, dashboard: true }));
+            if (showLoading) setLoading(prev => ({ ...prev, dashboard: true }));
             const data = await getDashboardStats();
             setStats(data);
         } catch (error) {
             console.error('Error fetching admin dashboard stats:', error);
             throw error;
         } finally {
-            setLoading(prev => ({ ...prev, dashboard: false }));
+            if (showLoading) setLoading(prev => ({ ...prev, dashboard: false }));
         }
-    }, [stats]);
+    }, []); // Removed stats dependency
 
     const fetchAnalytics = useCallback(async (range = 'month', force = false) => {
+        // If we already have this range and it's not forced, just return it
         if (analytics[range] && !force) return analytics[range];
+
+        // Only show loading if we don't have data for this range
+        const showLoading = !analytics[range] || force;
+
         try {
-            setLoading(prev => ({ ...prev, analytics: true }));
+            if (showLoading) setLoading(prev => ({ ...prev, analytics: true }));
             const data = await getAnalytics(range);
             setAnalytics(prev => ({ ...prev, [range]: data }));
             return data;
@@ -68,9 +78,29 @@ export const AdminProvider = ({ children }) => {
             console.error('Error fetching admin analytics:', error);
             throw error;
         } finally {
-            setLoading(prev => ({ ...prev, analytics: false }));
+            if (showLoading) setLoading(prev => ({ ...prev, analytics: false }));
         }
-    }, [analytics]);
+    }, []); // Removed analytics dependency
+
+    const { user } = useAuth();
+
+    // Real-Time Listeners
+    useEffect(() => {
+        // Real-time automatic background refresh disabled as per user request to minimize API calls
+        return () => { };
+    }, []);
+
+    // Eagerly pre-fetch all admin data when an admin logs in
+    useEffect(() => {
+        if (user && user.role === 'admin') {
+            console.log('[AdminContext] Admin detected, initial pre-fetch starting...');
+            fetchDashboardStats();
+            fetchAnalytics('month');
+            fetchAnalytics('week');
+            fetchStudents();
+            fetchReports();
+        }
+    }, [user?.id, user?.role, fetchDashboardStats, fetchAnalytics, fetchStudents, fetchReports]);
 
     const value = {
         students,

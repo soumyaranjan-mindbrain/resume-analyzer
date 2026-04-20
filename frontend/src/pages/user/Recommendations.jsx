@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Lightbulb,
   Search,
@@ -12,69 +13,18 @@ import {
   Upload
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
-import { getFeedback, getMyResumes } from '../../services/api';
-import { useNavigate } from 'react-router-dom';
-
-const GLOBAL_CACHE_KEY = 'MBI_GLOBAL_RESUME_CONTEXT';
+import { useAnalysis } from '../../context/AnalysisContext';
 
 const Recommendations = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
-  const [recommendations, setRecommendations] = useState(() => {
-    // Instant Cache Initialization
-    const cached = sessionStorage.getItem(GLOBAL_CACHE_KEY);
-    if (cached) {
-      try {
-        const parsed = JSON.parse(cached);
-        if (parsed.lastAnalysis) {
-          const feedbackData = parsed.lastAnalysis;
-          return [
-            ...(feedbackData.aiFeedback || []).map((text, idx) => ({
-              id: idx,
-              title: text,
-              description: text,
-              actionText: 'Apply Tip',
-              type: 'skill'
-            })),
-            ...(feedbackData.recommendations || []),
-            {
-              id: 'extra-1',
-              title: 'Industry Keyword Alignment',
-              description: 'Our AI detected that adding more cloud-native keywords (Docker, Kubernetes) would increase your visibility for modern DevOps roles.',
-              type: 'tip'
-            },
-            {
-              id: 'extra-2',
-              title: 'Impact Statement Optimization',
-              description: 'Try rephrasing your experience bullets to start with strong action verbs like "Spearheaded" or "Orchestrated" for better impact.',
-              type: 'skill'
-            },
-            {
-              id: 'extra-3',
-              title: 'Section Reordering',
-              description: 'Moving your "Skills" section above "Education" is recommended for roles with 2+ years of experience to highlight technical proficiency.',
-              type: 'tip'
-            }
-          ];
-        }
-      } catch (e) {
-        console.error('Initial cache parse error:', e);
-      }
-    }
-    return [];
-  });
-
-  const [loading, setLoading] = useState(() => {
-    const cached = sessionStorage.getItem(GLOBAL_CACHE_KEY);
-    if (cached) {
-      try {
-        const parsed = JSON.parse(cached);
-        if (parsed.lastAnalysis) return false; // Already have data
-      } catch (e) { }
-    }
-    return true;
-  });
-  const [resumes, setResumes] = useState([]);
+  const {
+    recommendations,
+    resumes,
+    loading,
+    fetchRecommendations,
+    fetchHistory
+  } = useAnalysis();
 
   const handleFileSelect = (e) => {
     const file = e.target.files[0];
@@ -84,57 +34,9 @@ const Recommendations = () => {
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const resumeData = await getMyResumes();
-        const list = resumeData.resumes || [];
-        setResumes(list);
-
-        // Only fetch feedback if we don't have it in state or if we want a fresh copy
-        if (recommendations.length === 0 && list.length > 0) {
-          setLoading(true);
-          const feedbackData = await getFeedback(list[0]._id || list[0].id);
-
-          if (feedbackData) {
-            const tips = [
-              ...(feedbackData.aiFeedback || []).map((text, idx) => ({
-                id: idx,
-                title: text,
-                description: text,
-                actionText: 'Apply Tip',
-                type: 'skill'
-              })),
-              ...(feedbackData.recommendations || []),
-              {
-                id: 'extra-1',
-                title: 'Industry Keyword Alignment',
-                description: 'Our AI detected that adding more cloud-native keywords (Docker, Kubernetes) would increase your visibility for modern DevOps roles.',
-                type: 'tip'
-              },
-              {
-                id: 'extra-2',
-                title: 'Impact Statement Optimization',
-                description: 'Try rephrasing your experience bullets to start with strong action verbs like "Spearheaded" or "Orchestrated" for better impact.',
-                type: 'skill'
-              },
-              {
-                id: 'extra-3',
-                title: 'Section Reordering',
-                description: 'Moving your "Skills" section above "Education" is recommended for roles with 2+ years of experience to highlight technical proficiency.',
-                type: 'tip'
-              }
-            ];
-            setRecommendations(tips);
-          }
-        }
-      } catch (error) {
-        console.error('Background fetch failed:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
+    fetchHistory();
+    fetchRecommendations();
+  }, [fetchHistory, fetchRecommendations]);
 
 
   const checklist = [
@@ -156,7 +58,7 @@ const Recommendations = () => {
 
   const tabs = ['Improvement Tips', 'Suggested Jobs'];
 
-  if (loading) {
+  if (loading.recommendations && recommendations.length === 0) {
     return (
       <div className="min-h-[400px] flex items-center justify-center">
         <div className="w-12 h-12 border-4 border-[#4b7bff]/20 border-t-[#4b7bff] rounded-full animate-spin" />

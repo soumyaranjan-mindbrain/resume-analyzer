@@ -3,15 +3,20 @@ const { Server } = require("socket.io");
 let io;
 
 const initSocket = (server) => {
+    const origins = [
+        "http://localhost:5173",
+        "http://localhost:3000",
+        "http://127.0.0.1:5173",
+        "http://127.0.0.1:3000",
+        process.env.CLIENT_URL,
+        process.env.CLIENT_URL?.replace(/\/$/, '') // Add version without trailing slash
+    ].filter(Boolean);
+
+    console.log(`[Socket] Initializing with allowed origins:`, origins);
+
     io = new Server(server, {
         cors: {
-            origin: [
-                "http://localhost:5173",
-                "http://localhost:3000",
-                "http://127.0.0.1:5173",
-                "http://127.0.0.1:3000",
-                process.env.CLIENT_URL
-            ].filter(Boolean),
+            origin: origins,
             methods: ["GET", "POST"],
             credentials: true
         }

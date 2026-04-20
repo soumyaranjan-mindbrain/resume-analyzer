@@ -2,6 +2,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../../models/User");
 const { generateAccessToken, generateRefreshToken } = require("../../utils/generateToken");
+const { emitEvent } = require("../../utils/socket");
 
 // Helper to send access and refresh tokens in HTTP-only cookies
 const sendTokens = async (res, user, message = "Login successful", status = 200) => {
@@ -55,9 +56,18 @@ const register = async (req, res) => {
       return res.status(400).json({ error: "Invalid role. Use 'admin' or 'student'" });
     }
 
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
+    const existingEmail = await User.findOne({ email });
+    if (existingEmail) {
       return res.status(400).json({ error: "Email already exists" });
+    }
+
+    if (phone) {
+      console.log(`[Auth] Checking phone uniqueness for: "${phone}"`);
+      const existingPhone = await User.findOne({ phone: phone.trim() });
+      if (existingPhone) {
+        console.log(`[Auth] Phone collision detected for: ${phone}`);
+        return res.status(400).json({ error: "Mobile number already exists" });
+      }
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -71,6 +81,11 @@ const register = async (req, res) => {
     });
 
     await newUser.save();
+
+    // Notify listeners about new registration (Admin dashboard needs refresh)
+    if (role === 'student') {
+      emitEvent('student_registered', { id: newUser._id, name: newUser.name });
+    }
 
     // Automatically log in the user after registration
     await sendTokens(res, newUser, "User registered and logged in successfully", 201);

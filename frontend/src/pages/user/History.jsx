@@ -53,6 +53,19 @@ const ReportModal = ({ isOpen, onClose, resume }) => {
     documentTitle: `Career_Report_${resume?.fileName || 'resume'}`,
   });
 
+
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, [isOpen]);
+
   if (!isOpen || !resume) return null;
 
   const analysis = resume.analysis || {};
@@ -67,17 +80,6 @@ const ReportModal = ({ isOpen, onClose, resume }) => {
   };
 
   const grade = getGrade(atsScore);
-
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'auto';
-    }
-    return () => {
-      document.body.style.overflow = 'auto';
-    };
-  }, [isOpen]);
 
   return createPortal(
     <div className="fixed inset-0 z-[9999] flex flex-col bg-slate-50 overflow-hidden print:overflow-visible print:h-auto animate-in fade-in duration-500 font-sans">
@@ -108,8 +110,20 @@ const ReportModal = ({ isOpen, onClose, resume }) => {
       </div>
 
       <div className="flex-1 overflow-y-auto custom-scrollbar relative z-10 py-6 lg:py-10 md:px-4 lg:px-8 px-0 print:p-0 print:overflow-visible print:h-auto print:bg-white">
-        <div ref={contentRef} className="max-w-[1280px] mx-auto space-y-0 md:space-y-6 lg:space-y-10 print:space-y-8 print:p-12 print:max-w-none">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 md:gap-5 lg:gap-6">
+        <div ref={contentRef} className="max-w-[1280px] mx-auto space-y-0 md:space-y-6 lg:space-y-10 print:space-y-4 print:p-8 print:max-w-none">
+          {/* Print Only Header */}
+          <div className="hidden print:flex items-center justify-between border-b-2 border-slate-900 pb-6 mb-8">
+            <div>
+              <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tighter">Career Strategy Report</h1>
+              <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">Ref: 2026-ASR | {getNameFromPath(resume)}</p>
+            </div>
+            <div className="text-right">
+              <p className="text-[10px] font-black text-slate-900 uppercase tracking-widest">MindVista AI</p>
+              <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Automated Talent Intelligence</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 md:gap-5 lg:gap-6 print:gap-4">
             <div className="lg:col-span-4 bg-white rounded-none md:rounded-xl p-3 lg:p-8 border-x-0 md:border-x border-y md:border-slate-100 shadow-sm flex flex-col items-center justify-center text-center">
               <div className="relative w-36 h-36 lg:w-44 lg:h-44 mb-6">
                 <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
@@ -153,14 +167,14 @@ const ReportModal = ({ isOpen, onClose, resume }) => {
           </div>
 
           {analysis.scoreBreakdown && (
-            <div className="bg-white rounded-none md:rounded-xl p-5 lg:p-6 border-x-0 md:border-x border-y md:border-slate-100 shadow-sm">
-              <div className="flex items-center gap-3 mb-6">
+            <div className="bg-white rounded-none md:rounded-xl p-5 lg:p-6 print:p-4 border-x-0 md:border-x border-y md:border-slate-100 shadow-sm print:hidden">
+              <div className="flex items-center gap-3 mb-6 print:mb-3">
                 <div className="w-8 h-8 bg-slate-50 rounded-lg flex items-center justify-center border border-slate-100">
                   <Filter className="w-3.5 h-3.5 text-slate-500" />
                 </div>
                 <h4 className="text-[11px] font-black text-slate-900 tracking-tight uppercase">Technical Matrix</h4>
               </div>
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-4 lg:gap-x-10 gap-y-6 lg:gap-y-8">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-4 lg:gap-x-10 gap-y-6 lg:gap-y-8 print:gap-y-4">
                 {Object.entries(analysis.scoreBreakdown).map(([key, value]) => {
                   const max = key === 'keywords' ? 20 : (key === 'achievements' || key === 'skillAlignment') ? 40 : 10;
                   const ratio = (value / max) * 100;
@@ -183,33 +197,33 @@ const ReportModal = ({ isOpen, onClose, resume }) => {
             </div>
           )}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-0 md:gap-5">
-            <div className="bg-white rounded-none md:rounded-xl p-3.5 lg:p-6 border-x-0 md:border-x border-y md:border-slate-100 shadow-sm group">
-              <div className="flex items-center gap-3 mb-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 print:grid-cols-2 gap-0 md:gap-5 print:gap-4">
+            <div className="bg-white rounded-none md:rounded-xl p-3.5 lg:p-6 print:p-4 border-x-0 md:border-x border-y md:border-slate-100 shadow-sm group">
+              <div className="flex items-center gap-3 mb-5 print:mb-3">
                 <div className="w-9 h-9 bg-emerald-50 rounded-lg flex items-center justify-center text-emerald-600 border border-emerald-100 shadow-sm group-hover:bg-emerald-500 group-hover:text-white transition-all">
                   <CheckCircle2 className="w-4 h-4" />
                 </div>
                 <h4 className="text-xs font-black text-slate-900 tracking-tight uppercase">Strengths</h4>
               </div>
-              <div className="space-y-3">
+              <div className="space-y-3 print:space-y-1">
                 {(analysis.topStrengths || ["Technical Depth", "Execution Focus", "Strategic Thinking", "Impact Orientation"]).map((s, i) => (
-                  <div key={i} className="flex items-center gap-3 p-3.5 bg-slate-50/50 rounded-xl border border-slate-100 group-hover/strengths:bg-white transition-all">
+                  <div key={i} className="flex items-center gap-3 p-3.5 print:p-2 bg-slate-50/50 rounded-xl border border-slate-100 group-hover/strengths:bg-white transition-all">
                     <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
                     <p className="text-slate-700 font-bold text-xs tracking-tight">{s}</p>
                   </div>
                 ))}
               </div>
             </div>
-            <div className="bg-white rounded-none md:rounded-xl p-3.5 lg:p-6 border-x-0 md:border-x border-y md:border-slate-100 shadow-sm group">
-              <div className="flex items-center gap-3 mb-5">
+            <div className="bg-white rounded-none md:rounded-xl p-3.5 lg:p-6 print:p-4 border-x-0 md:border-x border-y md:border-slate-100 shadow-sm group">
+              <div className="flex items-center gap-3 mb-5 print:mb-3">
                 <div className="w-9 h-9 bg-rose-50 rounded-lg flex items-center justify-center text-rose-600 border border-rose-100 shadow-sm group-hover:bg-rose-600 group-hover:text-white transition-all">
                   <AlertCircle className="w-4 h-4" />
                 </div>
                 <h4 className="text-xs font-black text-slate-900 tracking-tight uppercase">Critical Gaps</h4>
               </div>
-              <div className="space-y-3">
+              <div className="space-y-3 print:space-y-1">
                 {(analysis.weaknesses || ["Metric Precision", "Keywords Missing", "Quantified Impact", "Role Alignment"]).map((w, i) => (
-                  <div key={i} className="flex items-center gap-3 p-3.5 bg-slate-50/50 rounded-xl border border-slate-100 group-hover/weaknesses:bg-white transition-all">
+                  <div key={i} className="flex items-center gap-3 p-3.5 print:p-2 bg-slate-50/50 rounded-xl border border-slate-100 group-hover/weaknesses:bg-white transition-all">
                     <div className="w-1.5 h-1.5 rounded-full bg-rose-400 shrink-0" />
                     <p className="text-slate-700 font-bold text-xs tracking-tight">{w}</p>
                   </div>
@@ -219,8 +233,8 @@ const ReportModal = ({ isOpen, onClose, resume }) => {
           </div>
 
           {analysis.suggestions && analysis.suggestions.length > 0 && (
-            <div className="bg-white rounded-none md:rounded-xl p-3.5 lg:p-8 border-x-0 md:border-x border-y md:border-slate-100 shadow-sm">
-              <div className="flex items-center gap-3 mb-8">
+            <div className="bg-white rounded-none md:rounded-xl p-3.5 lg:p-8 print:p-4 border-x-0 md:border-x border-y md:border-slate-100 shadow-sm">
+              <div className="flex items-center gap-3 mb-8 print:mb-4">
                 <div className="w-9 h-9 bg-blue-600 rounded-lg flex items-center justify-center text-white shadow-lg shadow-blue-500/10">
                   <Zap className="w-4 h-4" />
                 </div>
@@ -230,7 +244,7 @@ const ReportModal = ({ isOpen, onClose, resume }) => {
                 {(analysis.suggestions || [])
                   .filter(step => !step.includes('⚠️ Platform Error') && !step.includes('Analysis failed'))
                   .map((step, i) => (
-                    <div key={i} className="flex gap-4 pb-4 last:pb-0 group/step">
+                    <div key={i} className="flex gap-4 pb-4 print:pb-2 last:pb-0 group/step">
                       <div className="flex flex-col items-center">
                         <div className="w-7 h-7 rounded-lg bg-white text-slate-900 flex items-center justify-center text-xs font-black border border-slate-200 group-hover/step:bg-blue-600 group-hover/step:text-white group-hover/step:border-blue-600 transition-all duration-300 relative z-10 shadow-xs">
                           {i + 1}
@@ -240,7 +254,7 @@ const ReportModal = ({ isOpen, onClose, resume }) => {
                         )}
                       </div>
                       <div className="flex-1">
-                        <div className="p-3 bg-slate-50/50 rounded-xl border border-slate-100 group-hover/step:bg-white transition-all">
+                        <div className="p-3 print:p-2 bg-slate-50/50 rounded-xl border border-slate-100 group-hover/step:bg-white transition-all">
                           <div className="flex items-start gap-2.5">
                             <div className="w-1 h-1 rounded-full bg-blue-400 mt-1.5 shrink-0" />
                             <p className="font-bold text-xs text-slate-800 leading-relaxed tracking-tight">{step}</p>
@@ -253,14 +267,6 @@ const ReportModal = ({ isOpen, onClose, resume }) => {
             </div>
           )}
 
-          <div className="pt-10 border-t border-slate-100 flex items-center justify-between text-slate-500 font-bold text-[9px] uppercase tracking-widest">
-            <div className="flex gap-8">
-              <span>Verified Analytics</span>
-              <span>Proprietary ATS Logic</span>
-              <span>Human-Optimized</span>
-            </div>
-            <div>&copy; 2026 Strategy Engine</div>
-          </div>
         </div>
       </div>
     </div>,
@@ -271,29 +277,16 @@ const ReportModal = ({ isOpen, onClose, resume }) => {
 const History = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [resumes, setResumes] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { resumes, loading, fetchHistory, startAnalysis, isAnalyzing } = useAnalysis();
+
   const [selectedResume, setSelectedResume] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [hasAutoOpened, setHasAutoOpened] = useState(false);
-  const { startAnalysis, isAnalyzing } = useAnalysis();
   const [deleteModal, setDeleteModal] = useState({ isOpen: false, resumeId: null });
 
-  const fetchResumes = async () => {
-    try {
-      setLoading(true);
-      const data = await getResumes();
-      setResumes(data.resumes || []);
-    } catch (error) {
-      console.error('Failed to fetch resumes:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    fetchResumes();
-  }, []);
+    fetchHistory();
+  }, [fetchHistory]);
 
   const handleViewReport = (resume) => {
     setSelectedResume(resume);
@@ -301,7 +294,7 @@ const History = () => {
   };
 
   const handleUploadSuccess = async (newResumeId) => {
-    await fetchResumes();
+    await fetchHistory(true);
     navigate('/history', { state: { openReportId: newResumeId }, replace: true });
     setHasAutoOpened(false);
   };
@@ -326,7 +319,7 @@ const History = () => {
       window.history.replaceState({}, document.title);
       handleDirectUpload(file);
     }
-  }, [resumes, loading, location.state, hasAutoOpened, isAnalyzing]);
+  }, [resumes, loading.resumes, location.state, hasAutoOpened, isAnalyzing]);
 
   const handleDelete = (resumeId) => {
     setDeleteModal({ isOpen: true, resumeId });
@@ -335,31 +328,26 @@ const History = () => {
   const confirmDelete = async () => {
     const resumeId = deleteModal.resumeId;
     try {
-      setLoading(true);
       await deleteResume(resumeId);
-      setResumes(prev => prev.filter(r => (r._id || r.id) !== resumeId));
+      await fetchHistory(true);
       toast.success('Resume deleted successfully');
     } catch (error) {
       console.error('Delete Error:', error);
       toast.error(error.response?.data?.error || 'Could not delete resume.');
-    } finally {
-      setLoading(false);
     }
   };
 
   const handleAnalyze = async (resumeId) => {
     try {
-      setLoading(true);
       await analyzeResume(resumeId);
-      await fetchResumes();
+      await fetchHistory(true);
     } catch (error) {
       console.error('Analysis Error:', error);
       alert('Analysis failed.');
-      setLoading(false);
     }
   };
 
-  if (loading && resumes.length === 0) {
+  if (loading.resumes && resumes.length === 0) {
     return (
       <div className="min-h-[400px] flex items-center justify-center">
         <div className="w-12 h-12 border-4 border-blue-600/20 border-t-blue-600 rounded-full animate-spin" />

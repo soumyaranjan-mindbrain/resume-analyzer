@@ -198,19 +198,19 @@ const Reports = () => {
           <table className="w-full text-left border-collapse">
             <thead className="sticky top-0 z-10 bg-slate-50">
               <tr className="border-b border-slate-200">
-                <th className="py-4 px-6 text-xs font-semibold uppercase tracking-wider text-slate-500">Student & Contact</th>
-                <th className="py-4 px-6 text-xs font-semibold uppercase tracking-wider text-slate-500">Analysis Date</th>
-                <th className="py-4 px-6 text-xs font-semibold uppercase tracking-wider text-slate-500 text-center">ATS Score</th>
-                <th className="py-4 px-6 text-xs font-semibold uppercase tracking-wider text-slate-500 text-center">Status</th>
+                <th className="py-4 px-6 text-xs font-bold uppercase tracking-wider text-slate-700">Student & Contact</th>
+                <th className="py-4 px-6 text-xs font-bold uppercase tracking-wider text-slate-700">Analysis Date</th>
+                <th className="py-4 px-6 text-xs font-bold uppercase tracking-wider text-slate-700 text-center">ATS Score</th>
+                <th className="py-4 px-6 text-xs font-bold uppercase tracking-wider text-slate-700 text-center">Status</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {loading.reports ? (
+              {loading.reports && filteredReports.length === 0 ? (
                 <tr>
                   <td colSpan="4" className="py-10 text-center">
                     <div className="flex flex-col items-center gap-2">
                       <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
-                      <p className="text-sm text-slate-500 font-medium">Loading reports...</p>
+                      <p className="text-sm text-slate-500 font-medium">Synchronizing Reports...</p>
                     </div>
                   </td>
                 </tr>
@@ -230,15 +230,15 @@ const Reports = () => {
                         </div>
                         <div>
                           <p className="text-sm font-bold text-slate-900 tracking-tight leading-tight">{report.studentName}</p>
-                          <div className="flex items-center gap-1 mt-0.5 text-slate-400 group">
+                          <div className="flex items-center gap-1 mt-0.5 text-slate-600 group">
                             <Mail className="w-3 h-3" />
-                            <span className="text-[11px] font-medium leading-tight">{report.studentEmail}</span>
+                            <span className="text-[11px] font-bold leading-tight">{report.studentEmail}</span>
                           </div>
                         </div>
                       </div>
                     </td>
                     <td className="py-4 px-6">
-                      <span className="text-sm font-medium text-slate-600">{formatDate(report.createdAt)}</span>
+                      <span className="text-sm font-bold text-slate-700">{formatDate(report.createdAt)}</span>
                     </td>
                     <td className="py-4 px-6">
                       <div className="flex flex-col items-center gap-1.5">
@@ -246,12 +246,6 @@ const Reports = () => {
                           "text-sm font-bold",
                           report.atsScore >= 80 ? "text-emerald-600" : report.atsScore >= 60 ? "text-blue-600" : "text-amber-600"
                         )}>{report.atsScore}%</span>
-                        <div className="w-16 h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                          <div
-                            className={cn("h-full", report.atsScore >= 80 ? "bg-emerald-500" : report.atsScore >= 60 ? "bg-blue-500" : "bg-amber-500")}
-                            style={{ width: `${report.atsScore}%` }}
-                          />
-                        </div>
                       </div>
                     </td>
                     <td className="py-4 px-6 text-center">

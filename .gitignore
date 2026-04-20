@@ -42,3 +42,4 @@ apis.md
 dev.js
 scratch/
 
+.env*.local

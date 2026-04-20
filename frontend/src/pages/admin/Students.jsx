@@ -244,12 +244,12 @@ const Students = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {loading.students ? (
+              {loading.students && filteredStudents.length === 0 ? (
                 <tr>
                   <td colSpan="4" className="py-10 text-center">
                     <div className="flex flex-col items-center gap-2">
                       <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
-                      <p className="text-sm text-slate-500 font-medium">Loading students...</p>
+                      <p className="text-sm text-slate-500 font-medium">Synchronizing Students...</p>
                     </div>
                   </td>
                 </tr>

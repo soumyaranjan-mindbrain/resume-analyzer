@@ -26,7 +26,7 @@ const PremiumSelect = ({
     const selectedOption = options.find(opt => opt.value === value);
 
     return (
-        <div className={cn("relative min-w-[180px]", className)} ref={containerRef}>
+        <div className={cn("relative min-w-[240px]", className)} ref={containerRef}>
             <button
                 onClick={() => setIsOpen(!isOpen)}
                 className={cn(

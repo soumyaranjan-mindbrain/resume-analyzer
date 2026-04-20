@@ -40,14 +40,14 @@ function App() {
                 <Route path="/auth" element={<PublicRoute><BaseLayout><Auth /></BaseLayout></PublicRoute>} />
                 <Route path="/maintenance" element={<Maintenance />} />
 
-                <Route path="/dashboard" element={<ProtectedRoute allowedRoles={['user']}><AppLayout><Dashboard /></AppLayout></ProtectedRoute>} />
-                <Route path="/history" element={<ProtectedRoute allowedRoles={['user']}><AppLayout><History /></AppLayout></ProtectedRoute>} />
-                <Route path="/resume-maker" element={<ProtectedRoute allowedRoles={['user']}><AppLayout><ResumeMaker /></AppLayout></ProtectedRoute>} />
-                <Route path="/matches" element={<ProtectedRoute allowedRoles={['user']}><AppLayout><JobMatches /></AppLayout></ProtectedRoute>} />
-                <Route path="/recommendations" element={<ProtectedRoute allowedRoles={['user']}><AppLayout><Recommendations /></AppLayout></ProtectedRoute>} />
-                <Route path="/insights" element={<ProtectedRoute allowedRoles={['user']}><AppLayout><SkillInsights /></AppLayout></ProtectedRoute>} />
-                <Route path="/support" element={<ProtectedRoute allowedRoles={['user']}><AppLayout><Support /></AppLayout></ProtectedRoute>} />
-                <Route path="/profile" element={<ProtectedRoute allowedRoles={['user', 'admin']}><AppLayout><Profile /></AppLayout></ProtectedRoute>} />
+                <Route path="/dashboard" element={<ProtectedRoute allowedRoles={['student']}><AppLayout><Dashboard /></AppLayout></ProtectedRoute>} />
+                <Route path="/history" element={<ProtectedRoute allowedRoles={['student']}><AppLayout><History /></AppLayout></ProtectedRoute>} />
+                <Route path="/resume-maker" element={<ProtectedRoute allowedRoles={['student']}><AppLayout><ResumeMaker /></AppLayout></ProtectedRoute>} />
+                <Route path="/matches" element={<ProtectedRoute allowedRoles={['student']}><AppLayout><JobMatches /></AppLayout></ProtectedRoute>} />
+                <Route path="/recommendations" element={<ProtectedRoute allowedRoles={['student']}><AppLayout><Recommendations /></AppLayout></ProtectedRoute>} />
+                <Route path="/insights" element={<ProtectedRoute allowedRoles={['student']}><AppLayout><SkillInsights /></AppLayout></ProtectedRoute>} />
+                <Route path="/support" element={<ProtectedRoute allowedRoles={['student']}><AppLayout><Support /></AppLayout></ProtectedRoute>} />
+                <Route path="/profile" element={<ProtectedRoute allowedRoles={['student', 'admin']}><AppLayout><Profile /></AppLayout></ProtectedRoute>} />
 
                 <Route path="/admin" element={<ProtectedRoute allowedRoles={['admin']}><AppLayout><AdminDashboard /></AppLayout></ProtectedRoute>} />
                 <Route path="/admin/students" element={<ProtectedRoute allowedRoles={['admin']}><AppLayout><Students /></AppLayout></ProtectedRoute>} />
