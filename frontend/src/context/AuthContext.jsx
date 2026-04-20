@@ -12,8 +12,6 @@ export const AuthProvider = ({ children }) => {
       const data = await authService.getMe();
       const userData = data.user;
 
-      // Map student to user role for frontend consistency
-      if (userData.role === 'student') userData.role = 'user';
       setUser(userData);
       localStorage.setItem('mindvista_user', JSON.stringify(userData));
     } catch (error) {
@@ -40,7 +38,6 @@ export const AuthProvider = ({ children }) => {
     if (savedUser) {
       try {
         const parsed = JSON.parse(savedUser);
-        if (parsed.role === 'student') parsed.role = 'user';
         setUser(parsed);
       } catch (e) {
         localStorage.removeItem('mindvista_user');
@@ -54,9 +51,14 @@ export const AuthProvider = ({ children }) => {
     try {
       const data = await authService.login(email, password);
       const userData = data.user;
-      if (userData.role === 'student') userData.role = 'user';
       setUser(userData);
       localStorage.setItem('mindvista_user', JSON.stringify(userData));
+
+      // Ensure token is set if backend returned it
+      if (data.token) {
+        localStorage.setItem('auth_token', data.token);
+      }
+
       return userData;
     } catch (error) {
       throw error;
@@ -67,9 +69,14 @@ export const AuthProvider = ({ children }) => {
     try {
       const data = await authService.register(userData);
       const userResData = data.user;
-      if (userResData.role === 'student') userResData.role = 'user';
       setUser(userResData);
       localStorage.setItem('mindvista_user', JSON.stringify(userResData));
+
+      // Ensure token is set if backend returned it
+      if (data.token) {
+        localStorage.setItem('auth_token', data.token);
+      }
+
       return userResData;
     } catch (error) {
       throw error;

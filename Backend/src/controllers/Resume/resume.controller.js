@@ -351,6 +351,9 @@ const uploadResume = async (req, res) => {
       },
     });
 
+    const { emitEvent } = require("../../utils/socket");
+    emitEvent("analysis_completed", { resumeId: resume.id, atsScore: 0 });
+
     res.json({ success: true, resume });
 
   } catch (err) {
@@ -543,6 +546,9 @@ const reanalyzeResume = async (req, res) => {
         },
       });
     }
+
+    const { emitEvent } = require("../../utils/socket");
+    emitEvent("analysis_completed", { resumeId, atsScore });
 
     res.json({
       success: true,

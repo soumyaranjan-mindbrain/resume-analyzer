@@ -24,6 +24,7 @@ import PublicRoute from './components/layout/PublicRoute.jsx';
 import { AdminProvider } from './context/AdminContext.jsx';
 import { ConfigProvider } from './context/ConfigContext.jsx';
 import { AnalysisProvider } from './context/AnalysisContext.jsx';
+import { SocketProvider } from './context/SocketContext.jsx';
 import Maintenance from './pages/Maintenance.jsx';
 
 function App() {
@@ -31,37 +32,35 @@ function App() {
     <Router>
       <Toaster position="top-right" />
       <ConfigProvider>
-        <AdminProvider>
-          <AnalysisProvider>
-            <Routes>
+        <SocketProvider>
+          <AdminProvider>
+            <AnalysisProvider>
+              <Routes>
+                <Route path="/" element={<PublicRoute><BaseLayout><Landing /></BaseLayout></PublicRoute>} />
+                <Route path="/auth" element={<PublicRoute><BaseLayout><Auth /></BaseLayout></PublicRoute>} />
+                <Route path="/maintenance" element={<Maintenance />} />
 
-              <Route path="/" element={<PublicRoute><BaseLayout><Landing /></BaseLayout></PublicRoute>} />
-              <Route path="/auth" element={<PublicRoute><BaseLayout><Auth /></BaseLayout></PublicRoute>} />
-              <Route path="/maintenance" element={<Maintenance />} />
+                <Route path="/dashboard" element={<ProtectedRoute allowedRoles={['user']}><AppLayout><Dashboard /></AppLayout></ProtectedRoute>} />
+                <Route path="/history" element={<ProtectedRoute allowedRoles={['user']}><AppLayout><History /></AppLayout></ProtectedRoute>} />
+                <Route path="/resume-maker" element={<ProtectedRoute allowedRoles={['user']}><AppLayout><ResumeMaker /></AppLayout></ProtectedRoute>} />
+                <Route path="/matches" element={<ProtectedRoute allowedRoles={['user']}><AppLayout><JobMatches /></AppLayout></ProtectedRoute>} />
+                <Route path="/recommendations" element={<ProtectedRoute allowedRoles={['user']}><AppLayout><Recommendations /></AppLayout></ProtectedRoute>} />
+                <Route path="/insights" element={<ProtectedRoute allowedRoles={['user']}><AppLayout><SkillInsights /></AppLayout></ProtectedRoute>} />
+                <Route path="/support" element={<ProtectedRoute allowedRoles={['user']}><AppLayout><Support /></AppLayout></ProtectedRoute>} />
+                <Route path="/profile" element={<ProtectedRoute allowedRoles={['user', 'admin']}><AppLayout><Profile /></AppLayout></ProtectedRoute>} />
 
-
-              <Route path="/dashboard" element={<ProtectedRoute allowedRoles={['user']}><AppLayout><Dashboard /></AppLayout></ProtectedRoute>} />
-              <Route path="/history" element={<ProtectedRoute allowedRoles={['user']}><AppLayout><History /></AppLayout></ProtectedRoute>} />
-              <Route path="/resume-maker" element={<ProtectedRoute allowedRoles={['user']}><AppLayout><ResumeMaker /></AppLayout></ProtectedRoute>} />
-              <Route path="/matches" element={<ProtectedRoute allowedRoles={['user']}><AppLayout><JobMatches /></AppLayout></ProtectedRoute>} />
-              <Route path="/recommendations" element={<ProtectedRoute allowedRoles={['user']}><AppLayout><Recommendations /></AppLayout></ProtectedRoute>} />
-              <Route path="/insights" element={<ProtectedRoute allowedRoles={['user']}><AppLayout><SkillInsights /></AppLayout></ProtectedRoute>} />
-              <Route path="/support" element={<ProtectedRoute allowedRoles={['user']}><AppLayout><Support /></AppLayout></ProtectedRoute>} />
-              <Route path="/profile" element={<ProtectedRoute allowedRoles={['user', 'admin']}><AppLayout><Profile /></AppLayout></ProtectedRoute>} />
-
-
-
-              <Route path="/admin" element={<ProtectedRoute allowedRoles={['admin']}><AppLayout><AdminDashboard /></AppLayout></ProtectedRoute>} />
-              <Route path="/admin/students" element={<ProtectedRoute allowedRoles={['admin']}><AppLayout><Students /></AppLayout></ProtectedRoute>} />
-              <Route path="/admin/reports" element={<ProtectedRoute allowedRoles={['admin']}><AppLayout><Reports /></AppLayout></ProtectedRoute>} />
-              <Route path="/admin/jobs" element={<ProtectedRoute allowedRoles={['admin']}><AppLayout><JobDescriptions /></AppLayout></ProtectedRoute>} />
-              <Route path="/admin/jobs/new" element={<ProtectedRoute allowedRoles={['admin']}><AppLayout><AddJobRole /></AppLayout></ProtectedRoute>} />
-              <Route path="/admin/jobs/edit/:id" element={<ProtectedRoute allowedRoles={['admin']}><AppLayout><AddJobRole /></AppLayout></ProtectedRoute>} />
-              <Route path="/admin/settings" element={<ProtectedRoute allowedRoles={['admin']}><AppLayout><SettingsAdmin /></AppLayout></ProtectedRoute>} />
-              <Route path="/admin/support" element={<ProtectedRoute allowedRoles={['admin']}><AppLayout><SupportManagement /></AppLayout></ProtectedRoute>} />
-            </Routes>
-          </AnalysisProvider>
-        </AdminProvider>
+                <Route path="/admin" element={<ProtectedRoute allowedRoles={['admin']}><AppLayout><AdminDashboard /></AppLayout></ProtectedRoute>} />
+                <Route path="/admin/students" element={<ProtectedRoute allowedRoles={['admin']}><AppLayout><Students /></AppLayout></ProtectedRoute>} />
+                <Route path="/admin/reports" element={<ProtectedRoute allowedRoles={['admin']}><AppLayout><Reports /></AppLayout></ProtectedRoute>} />
+                <Route path="/admin/jobs" element={<ProtectedRoute allowedRoles={['admin']}><AppLayout><JobDescriptions /></AppLayout></ProtectedRoute>} />
+                <Route path="/admin/jobs/new" element={<ProtectedRoute allowedRoles={['admin']}><AppLayout><AddJobRole /></AppLayout></ProtectedRoute>} />
+                <Route path="/admin/jobs/edit/:id" element={<ProtectedRoute allowedRoles={['admin']}><AppLayout><AddJobRole /></AppLayout></ProtectedRoute>} />
+                <Route path="/admin/settings" element={<ProtectedRoute allowedRoles={['admin']}><AppLayout><SettingsAdmin /></AppLayout></ProtectedRoute>} />
+                <Route path="/admin/support" element={<ProtectedRoute allowedRoles={['admin']}><AppLayout><SupportManagement /></AppLayout></ProtectedRoute>} />
+              </Routes>
+            </AnalysisProvider>
+          </AdminProvider>
+        </SocketProvider>
       </ConfigProvider>
     </Router>
   );

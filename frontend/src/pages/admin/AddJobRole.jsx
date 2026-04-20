@@ -72,6 +72,26 @@ const AddJobRole = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  const formatToBullets = (text) => {
+    if (!text) return '';
+    const lines = text.split('\n').filter(line => line.trim() !== '');
+    return lines.map(line => {
+      const trimmed = line.trim();
+      if (trimmed.startsWith('•') || trimmed.startsWith('-') || trimmed.startsWith('*')) {
+        return `• ${trimmed.substring(1).trim()}`;
+      }
+      return `• ${trimmed}`;
+    }).join('\n');
+  };
+
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    if (name === 'requirements' || name === 'responsibilities') {
+      const bulleted = formatToBullets(value);
+      setFormData(prev => ({ ...prev, [name]: bulleted }));
+    }
+  };
+
   const handleAddTag = () => {
     if (newTag.trim() && !formData.tags.includes(newTag.trim())) {
       setFormData(prev => ({
@@ -183,6 +203,7 @@ const AddJobRole = () => {
                     name="requirements"
                     value={formData.requirements}
                     onChange={handleChange}
+                    onBlur={handleBlur}
                     rows="4"
                     placeholder="List key requirements..."
                     className="input-clay !p-4 !bg-slate-50 !border-slate-200 focus:!bg-white transition-all shadow-sm min-h-[120px] w-full"
@@ -194,6 +215,7 @@ const AddJobRole = () => {
                     name="responsibilities"
                     value={formData.responsibilities}
                     onChange={handleChange}
+                    onBlur={handleBlur}
                     rows="4"
                     placeholder="List core responsibilities..."
                     className="input-clay !p-4 !bg-slate-50 !border-slate-200 focus:!bg-white transition-all shadow-sm min-h-[120px] w-full"

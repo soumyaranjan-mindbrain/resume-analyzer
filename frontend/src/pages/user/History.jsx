@@ -32,8 +32,10 @@ import {
 import { cn } from '../../utils/cn';
 import { getResumes, deleteResume, analyzeResume } from '../../services/api';
 import { useAnalysis } from '../../context/AnalysisContext';
+import { useReactToPrint } from 'react-to-print';
 import toast from 'react-hot-toast';
 import ConfirmModal from '../../components/ui/ConfirmModal';
+import { useRef } from 'react';
 
 const getNameFromPath = (resume) => {
   if (!resume) return 'Untitled Resume';
@@ -45,6 +47,12 @@ const getNameFromPath = (resume) => {
 };
 
 const ReportModal = ({ isOpen, onClose, resume }) => {
+  const contentRef = useRef(null);
+  const handlePrint = useReactToPrint({
+    contentRef,
+    documentTitle: `Career_Report_${resume?.fileName || 'resume'}`,
+  });
+
   if (!isOpen || !resume) return null;
 
   const analysis = resume.analysis || {};
@@ -92,15 +100,15 @@ const ReportModal = ({ isOpen, onClose, resume }) => {
             <button onClick={onClose} className="h-10 px-5 border border-slate-200 text-slate-600 rounded-xl hidden sm:flex items-center gap-2 hover:bg-slate-50 transition-all font-bold text-[10px] uppercase tracking-widest">
               <X className="w-4 h-4" /> Discard
             </button>
-            <button onClick={() => window.print()} className="h-10 px-6 bg-slate-900 text-white rounded-xl flex items-center gap-2 hover:bg-slate-800 transition-all shadow-xl shadow-slate-900/10 active:scale-95">
+            <button onClick={handlePrint} className="h-10 px-6 bg-slate-900 text-white rounded-xl flex items-center gap-2 hover:bg-slate-800 transition-all shadow-xl shadow-slate-900/10 active:scale-95">
               <Download className="w-4 h-4" /> <span className="font-bold text-[11px] uppercase tracking-widest">Export PDF</span>
             </button>
           </div>
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto custom-scrollbar relative z-10 py-6 lg:py-10 md:px-4 lg:px-8 px-0 print:p-12 print:overflow-visible print:h-auto">
-        <div className="max-w-[1280px] mx-auto space-y-0 md:space-y-6 lg:space-y-10">
+      <div className="flex-1 overflow-y-auto custom-scrollbar relative z-10 py-6 lg:py-10 md:px-4 lg:px-8 px-0 print:p-0 print:overflow-visible print:h-auto print:bg-white">
+        <div ref={contentRef} className="max-w-[1280px] mx-auto space-y-0 md:space-y-6 lg:space-y-10 print:space-y-8 print:p-12 print:max-w-none">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 md:gap-5 lg:gap-6">
             <div className="lg:col-span-4 bg-white rounded-none md:rounded-xl p-3 lg:p-8 border-x-0 md:border-x border-y md:border-slate-100 shadow-sm flex flex-col items-center justify-center text-center">
               <div className="relative w-36 h-36 lg:w-44 lg:h-44 mb-6">
@@ -119,7 +127,7 @@ const ReportModal = ({ isOpen, onClose, resume }) => {
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
                   <span className="text-4xl lg:text-5xl font-black text-slate-900 tracking-tighter leading-none">{atsScore}</span>
-                  <span className="text-[8px] lg:text-[9px] font-black uppercase tracking-[0.2em] text-slate-500 mt-2.5">Overall Match</span>
+                  <span className="text-[8px] lg:text-[9px] font-black uppercase tracking-[0.2em] text-slate-500 mt-2.5">ATS Score</span>
                 </div>
               </div>
               <div className={cn("px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border mb-3", grade.bg, grade.color, grade.border)}>

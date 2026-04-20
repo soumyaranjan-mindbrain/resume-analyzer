@@ -23,6 +23,9 @@ export const login = async (email, password) => {
 export const register = async (userData) => {
   try {
     const response = await authAxios.post('/register', userData);
+    if (response.data.token) {
+      localStorage.setItem('auth_token', response.data.token);
+    }
     return response.data;
   } catch (error) {
     throw error.response?.data || { error: 'Registration failed' };

@@ -9,7 +9,7 @@ const userSchema = new mongoose.Schema({
     enum: ["admin", "student"],
     default: "student"
   },
-  phone: { type: String, default: "" },
+  phone: { type: String, default: "", unique: true },
   bio: { type: String, default: "" },
   profilePic: { type: String, default: "" },
   course: { type: String, default: "" },

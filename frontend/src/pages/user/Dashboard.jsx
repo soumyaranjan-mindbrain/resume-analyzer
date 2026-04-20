@@ -67,14 +67,49 @@ const toneStyles = {
   }
 };
 
+import { useSocket } from '../../context/SocketContext';
+
 const Dashboard = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
   const { user } = useAuth();
+  const { socket } = useSocket();
   const { startAnalysis, isAnalyzing } = useAnalysis();
   const [stats, setStats] = useState(null);
   const [resumes, setResumes] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const fetchDashboardData = async () => {
+    try {
+      const [statsData, resumeData] = await Promise.all([
+        getDashboardStats(),
+        getMyResumes()
+      ]);
+      setStats(statsData || null);
+      setResumes(resumeData.resumes || []);
+    } catch (error) {
+      console.error('Failed to fetch dashboard data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
+
+  useEffect(() => {
+    if (socket) {
+      socket.on('analysis_completed', (data) => {
+        console.log('[Socket] Analysis completed, refreshing data...');
+        fetchDashboardData();
+      });
+
+      return () => {
+        socket.off('analysis_completed');
+      };
+    }
+  }, [socket]);
 
   const handleFileSelect = (e) => {
     const file = e.target.files[0];
@@ -83,24 +118,6 @@ const Dashboard = () => {
       e.target.value = ''; // Reset input value to allow re-uploading same file
     }
   };
-
-  useEffect(() => {
-    const fetchDashboardData = async () => {
-      try {
-        const [statsData, resumeData] = await Promise.all([
-          getDashboardStats(),
-          getMyResumes()
-        ]);
-        setStats(statsData || null);
-        setResumes(resumeData.resumes || []);
-      } catch (error) {
-        console.error('Failed to fetch dashboard data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchDashboardData();
-  }, []);
 
   const rawScoreBreakdown = safeParseJson(stats?.scoreBreakdown) || stats?.scoreBreakdown || {};
   const atsScore = clampNumber(stats?.atsScore ?? 0, 0, 100);

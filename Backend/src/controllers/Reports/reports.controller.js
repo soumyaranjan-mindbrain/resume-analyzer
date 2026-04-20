@@ -3,8 +3,29 @@ const prisma = new PrismaClient();
 
 exports.getAllReports = async (req, res) => {
     try {
-        // Fetch all analyses with only safe fields
+        const { startDate, endDate, range } = req.query;
+        let where = {};
+
+        if (startDate || endDate) {
+            where.createdAt = {};
+            if (startDate) where.createdAt.gte = new Date(startDate);
+            if (endDate) where.createdAt.lte = new Date(endDate);
+        } else if (range && range !== 'all') {
+            const now = new Date();
+            let start;
+            if (range === '24h') start = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+            else if (range === '7d') start = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+            else if (range === '30d') start = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+            else if (range === '1y') start = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate());
+
+            if (start) {
+                where.createdAt = { gte: start };
+            }
+        }
+
+        // Fetch all analyses with filtering
         const analyses = await prisma.analysis.findMany({
+            where,
             select: {
                 id: true,
                 resumeId: true,

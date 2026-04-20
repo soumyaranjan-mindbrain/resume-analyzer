@@ -9,18 +9,48 @@ import {
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
 import { useAdmin } from '../../context/AdminContext';
+import { useSocket } from '../../context/SocketContext';
 import PremiumSelect from '../../components/ui/PremiumSelect';
 
 const Reports = () => {
   const { reports, loading, fetchReports } = useAdmin();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [scoreFilter, setScoreFilter] = useState('all');
-  const [timeFilter, setTimeFilter] = useState('30d');
-  const [filterOpen, setFilterOpen] = useState(false);
+  const { socket } = useSocket();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [dateRange, setDateRange] = useState('all');
+  const [customDates, setCustomDates] = useState({ start: '', end: '' });
+  const [showCustom, setShowCustom] = useState(false);
 
   useEffect(() => {
-    fetchReports();
-  }, [fetchReports]);
+    const params = {};
+    if (dateRange !== 'all' && dateRange !== 'custom') {
+      params.range = dateRange;
+    } else if (dateRange === 'custom') {
+      if (customDates.start) params.startDate = customDates.start;
+      if (customDates.end) params.endDate = customDates.end;
+    }
+    fetchReports(params);
+  }, [dateRange, customDates, fetchReports]);
+
+  useEffect(() => {
+    if (socket) {
+      socket.on('analysis_completed', () => {
+        console.log('[Socket] New analysis reported, refreshing list...');
+        const params = {};
+        if (dateRange !== 'all' && dateRange !== 'custom') {
+          params.range = dateRange;
+        } else if (dateRange === 'custom') {
+          if (customDates.start) params.startDate = customDates.start;
+          if (customDates.end) params.endDate = customDates.end;
+        }
+        fetchReports(params);
+      });
+
+      return () => {
+        socket.off('analysis_completed');
+      };
+    }
+  }, [socket, dateRange, customDates, fetchReports]);
 
   const scoreOptions = [
     { label: 'All Scores', value: 'all' },
@@ -47,20 +77,21 @@ const Reports = () => {
   }));
 
   const filteredReports = mappedReports.filter(r => {
+    const searchLower = searchTerm.toLowerCase();
     const matchesSearch =
-      r.studentName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      r.studentEmail?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      r.fileName?.toLowerCase().includes(searchQuery.toLowerCase());
+      r.studentName?.toLowerCase().includes(searchLower) ||
+      r.studentEmail?.toLowerCase().includes(searchLower) ||
+      r.fileName?.toLowerCase().includes(searchLower);
 
     const score = r.atsScore || 0;
     let matchesScore = true;
-    if (scoreFilter === 'lt30') matchesScore = score < 30;
-    else if (scoreFilter === 'lt50') matchesScore = score < 50;
-    else if (scoreFilter === 'gt50') matchesScore = score >= 50;
-    else if (scoreFilter === 'gt60') matchesScore = score >= 60;
-    else if (scoreFilter === 'gt70') matchesScore = score >= 70;
-    else if (scoreFilter === 'gt80') matchesScore = score >= 80;
-    else if (scoreFilter === 'gt90') matchesScore = score >= 90;
+    if (statusFilter === 'lt30') matchesScore = score < 30;
+    else if (statusFilter === 'lt50') matchesScore = score < 50;
+    else if (statusFilter === 'gt50') matchesScore = score >= 50;
+    else if (statusFilter === 'gt60') matchesScore = score >= 60;
+    else if (statusFilter === 'gt70') matchesScore = score >= 70;
+    else if (statusFilter === 'gt80') matchesScore = score >= 80;
+    else if (statusFilter === 'gt90') matchesScore = score >= 90;
 
     return matchesSearch && matchesScore;
   });
@@ -103,37 +134,62 @@ const Reports = () => {
 
       {/* Filters Row */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="flex flex-1 items-center gap-3">
+        <div className="flex flex-1 flex-wrap items-center gap-3">
           <div className="relative flex-1 max-w-md group">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
             <input
               type="text"
               placeholder="Search reports by name, email or file..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-lg shadow-sm outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm font-medium transition-all"
             />
           </div>
 
           <PremiumSelect
             options={[
-              { label: 'Last 30 Days', value: '30d' },
-              { label: 'Last 7 Days', value: '7d' },
+              { label: 'All Time', value: 'all' },
               { label: 'Last 24 Hours', value: '24h' },
-              { label: 'All Time', value: 'all' }
+              { label: 'Last 7 Days', value: '7d' },
+              { label: 'Last 30 Days', value: '30d' },
+              { label: 'Last Year', value: '1y' },
+              { label: 'Custom Range', value: 'custom' }
             ]}
-            value={timeFilter}
-            onChange={setTimeFilter}
+            value={dateRange}
+            onChange={(val) => {
+              setDateRange(val);
+              setShowCustom(val === 'custom');
+            }}
             icon={Calendar}
           />
 
           <PremiumSelect
             options={scoreOptions}
-            value={scoreFilter}
-            onChange={setScoreFilter}
+            value={statusFilter}
+            onChange={setStatusFilter}
             icon={Filter}
             placeholder="Score Filter"
           />
+
+          {showCustom && (
+            <div className="flex items-center gap-2 animate-in slide-in-from-left-2 duration-300">
+              <input
+                type="date"
+                name="start"
+                value={customDates.start}
+                onChange={(e) => setCustomDates(prev => ({ ...prev, start: e.target.value }))}
+                className="px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs font-medium outline-none focus:ring-2 focus:ring-blue-500/20"
+              />
+              <span className="text-slate-400 font-bold">-</span>
+              <input
+                type="date"
+                name="end"
+                value={customDates.end}
+                onChange={(e) => setCustomDates(prev => ({ ...prev, end: e.target.value }))}
+                className="px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs font-medium outline-none focus:ring-2 focus:ring-blue-500/20"
+              />
+            </div>
+          )}
         </div>
       </div>
 

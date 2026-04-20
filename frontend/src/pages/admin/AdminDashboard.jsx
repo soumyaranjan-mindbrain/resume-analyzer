@@ -12,6 +12,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../../utils/cn';
 import { useAdmin } from '../../context/AdminContext';
+import { useSocket } from '../../context/SocketContext';
 
 const StatsCard = ({ stat, index }) => (
   <motion.div
@@ -23,27 +24,33 @@ const StatsCard = ({ stat, index }) => (
     {/* Depth Shadow Layers */}
     <div className="absolute inset-x-4 -bottom-2 h-8 bg-slate-900/[0.06] blur-xl rounded-[2rem] -z-10 group-hover:bg-slate-900/[0.1] transition-all duration-500" />
 
-    <div className="admin-card glass-card relative h-full !p-4 flex items-center gap-5 overflow-hidden group-hover:translate-y-[-4px] transition-all duration-500 min-h-[110px]">
+    <div className="admin-card glass-card relative h-full !p-6 flex items-center gap-6 overflow-hidden group-hover:translate-y-[-6px] transition-all duration-500 min-h-[140px] border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)]">
       {/* Background Accent Glow */}
       <div className={cn(
-        "absolute -right-10 -top-10 w-32 h-32 blur-[80px] rounded-full opacity-20 group-hover:opacity-30 transition-opacity duration-500",
+        "absolute -right-12 -top-12 w-40 h-40 blur-[80px] rounded-full opacity-20 group-hover:opacity-30 transition-opacity duration-500",
         stat.bg.replace('bg-', 'bg-')
       )} />
 
       <div className={cn(
-        "w-14 h-14 rounded-2xl flex items-center justify-center border border-white/60 shadow-sm relative overflow-hidden shrink-0",
+        "w-16 h-16 rounded-[1.25rem] flex items-center justify-center border border-white/80 shadow-sm relative overflow-hidden shrink-0 transition-transform duration-500 group-hover:scale-110",
         stat.bg
       )}>
-        <stat.icon className={cn("w-7 h-7 relative z-10", stat.color)} />
-        <div className="absolute inset-0 bg-white/20 backdrop-blur-sm" />
+        <stat.icon className={cn("w-8 h-8 relative z-10 transition-colors duration-500", stat.color)} />
+        <div className="absolute inset-0 bg-white/30 backdrop-blur-md" />
       </div>
 
-      <div className="relative z-10">
-        <p className="text-slate-600 text-[10px] font-bold uppercase tracking-widest leading-none mb-1.5">{stat.label}</p>
-        <h4 className="text-2xl font-bold text-slate-800 flex items-baseline gap-1 tabular-nums leading-none">
+      <div className="relative z-10 space-y-1">
+        <p className="text-slate-500 text-[11px] font-black uppercase tracking-[0.2em] leading-none mb-1.5">{stat.label}</p>
+        <h4 className="text-4xl font-black text-slate-900 flex items-baseline gap-1 tabular-nums tracking-tighter leading-none">
           {stat.value}
-          {stat.unit && <span className="text-sm font-semibold text-slate-500">{stat.unit}</span>}
+          {stat.unit && <span className="text-lg font-bold text-slate-400 ml-0.5">{stat.unit}</span>}
         </h4>
+        {stat.trend && (
+          <div className="flex items-center gap-1 mt-2">
+            <TrendingUp className="w-3 h-3 text-emerald-500" />
+            <span className="text-[10px] font-bold text-emerald-600">{stat.trend} growth</span>
+          </div>
+        )}
       </div>
     </div>
   </motion.div>
@@ -159,23 +166,43 @@ const BarChart = ({ data, filter }) => {
 
 const AdminDashboard = () => {
   const { stats: statsRaw, analytics: analyticsMap, loading, fetchDashboardStats, fetchAnalytics } = useAdmin();
+  const { socket } = useSocket();
   const [stats, setStats] = useState([]);
   const [filter, setFilter] = useState('month');
 
+  const loadData = async () => {
+    try {
+      await Promise.all([
+        fetchDashboardStats(),
+        fetchAnalytics(filter)
+      ]);
+    } catch (error) {
+      console.error('Error loading dashboard data:', error);
+    }
+  };
+
   useEffect(() => {
-    const loadData = async () => {
-      try {
-        await Promise.all([
-          fetchDashboardStats(),
-          fetchAnalytics(filter)
-        ]);
-      } catch (error) {
-        console.error('Error loading dashboard data:', error);
-      }
-    };
     loadData();
   }, [filter, fetchDashboardStats, fetchAnalytics]);
 
+  useEffect(() => {
+    if (socket) {
+      socket.on('student_registered', () => {
+        console.log('[Socket] New student registered, refreshing stats...');
+        loadData();
+      });
+
+      socket.on('analysis_completed', () => {
+        console.log('[Socket] Analysis completed, refreshing analytics...');
+        loadData();
+      });
+
+      return () => {
+        socket.off('student_registered');
+        socket.off('analysis_completed');
+      };
+    }
+  }, [socket, filter]);
   const analytics = analyticsMap[filter] || null;
 
   useEffect(() => {
