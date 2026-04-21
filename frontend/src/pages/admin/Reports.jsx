@@ -63,18 +63,23 @@ const Reports = () => {
     { label: 'Higher than 90%', value: 'gt90' },
   ];
 
-  const mappedReports = reports.map(report => ({
-    id: report.id,
-    resumeId: report.resumeId,
-    studentName: report.resume?.user?.name || 'Unknown',
-    studentEmail: report.resume?.user?.email || 'N/A',
-    fileName: report.resume?.fileName || 'resume',
-    atsScore: report.atsScore,
-    createdAt: report.createdAt,
-    status: report.atsScore >= 85 ? 'Exceptional' :
-      report.atsScore >= 70 ? 'High' :
-        report.atsScore >= 50 ? 'Medium' : 'Needs Improvement'
-  }));
+  const mappedReports = (reports || []).map(report => {
+    if (!report) return null;
+    return {
+      id: report.id,
+      resumeId: report.resumeId,
+      studentName: report.resume?.user?.name || 'Unknown User',
+      studentEmail: report.resume?.user?.email || 'N/A',
+      fileName: report.resume?.fileName || 'No File',
+      atsScore: report.atsScore || 0,
+      createdAt: report.createdAt,
+      status: report.atsScore >= 85 ? 'Exceptional' :
+        report.atsScore >= 70 ? 'High' :
+          report.atsScore >= 50 ? 'Medium' : 'Needs Improvement'
+    };
+  }).filter(Boolean);
+
+  console.log(`[Reports] Rendering ${mappedReports.length} reports.`);
 
   const filteredReports = mappedReports.filter(r => {
     const searchLower = searchTerm.toLowerCase();

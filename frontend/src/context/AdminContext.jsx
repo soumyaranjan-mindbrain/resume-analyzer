@@ -33,11 +33,24 @@ export const AdminProvider = ({ children }) => {
         }
     }, []); // Removed students.length dependency to stop function re-generation loop
 
-    const fetchReports = useCallback(async (force = false) => {
-        if (reports.length > 0 && !force) return;
+    const fetchReports = useCallback(async (params = {}, force = false) => {
+        // If params is a boolean (old style call), treat it as 'force'
+        if (typeof params === 'boolean') {
+            force = params;
+            params = {};
+        }
+
+        const hasParams = Object.keys(params).length > 0;
+        // Only skip if we already have data AND no specific filters are requested AND it's not a forced refresh
+        if (reports.length > 0 && !force && !hasParams) {
+            console.log('[AdminContext] Reports already available, skipping fetch.');
+            return;
+        }
+
         try {
             setLoading(prev => ({ ...prev, reports: true }));
-            const data = await getAdminReports();
+            const data = await getAdminReports(params);
+            console.log(`[AdminContext] Successfully fetched ${data?.length || 0} reports.`);
             setReports(data);
         } catch (error) {
             console.error('Error fetching admin reports:', error);
@@ -45,7 +58,7 @@ export const AdminProvider = ({ children }) => {
         } finally {
             setLoading(prev => ({ ...prev, reports: false }));
         }
-    }, []); // Removed reports.length dependency
+    }, []);
 
     const fetchDashboardStats = useCallback(async (force = false) => {
         // If we have data and it's not a force refresh, don't show loading

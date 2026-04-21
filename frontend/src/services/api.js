@@ -129,8 +129,8 @@ export const toggleRoadmapPhase = async (phaseIndex) => {
   return response.data;
 };
 
-export const getAdminReports = async () => {
-  const response = await apiClient.get('/reports/all');
+export const getAdminReports = async (params = {}) => {
+  const response = await apiClient.get('/reports/all', { params });
   return response.data;
 };
 
