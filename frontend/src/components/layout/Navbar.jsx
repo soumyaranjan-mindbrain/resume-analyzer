@@ -26,13 +26,13 @@ const Navbar = () => {
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-500",
         scrolled
-          ? "bg-[var(--neutral-50)]/80 backdrop-blur-xl py-3 shadow-md border-b border-white/40"
-          : "bg-transparent py-5"
+          ? "bg-[var(--neutral-50)]/80 backdrop-blur-xl py-1 shadow-md border-b border-white/40"
+          : "bg-transparent py-1.5"
       )}
     >
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
 
-        <Logo size="lg" onClick={() => navigate('/')} />
+        <Logo size="sm" onClick={() => navigate('/')} />
 
 
         {isLandingPage && (

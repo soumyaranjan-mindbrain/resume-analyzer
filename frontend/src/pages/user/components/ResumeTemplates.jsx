@@ -35,6 +35,9 @@ export const Template1 = ({ data }) => (
             </h1>
             <div style={{ fontSize: '9pt', color: '#666', marginBottom: '3mm' }}>
                 {data.location} • {data.phone} • {data.email}
+                {(data.linkedin || data.github) && (
+                    <> • {data.linkedin} {data.github && `• ${data.github}`}</>
+                )}
             </div>
             <div style={{ height: '0.5pt', backgroundColor: '#000', width: '100%' }} />
         </header>
@@ -117,12 +120,14 @@ export const Template2 = ({ data }) => (
             <p style={{ fontSize: '11pt', fontWeight: '600', color: '#3b82f6', margin: '0 0 4mm 0', textTransform: 'uppercase', letterSpacing: '1px' }}>
                 {data.targetRole}
             </p>
-            <div style={{ display: 'flex', gap: '4mm', fontSize: '9pt', color: '#64748b' }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4mm 2mm', fontSize: '9pt', color: '#64748b' }}>
                 <span>{data.email}</span>
                 <span>|</span>
                 <span>{data.phone}</span>
                 <span>|</span>
                 <span>{data.location}</span>
+                {data.linkedin && <><span>|</span><span>{data.linkedin}</span></>}
+                {data.github && <><span>|</span><span>{data.github}</span></>}
             </div>
         </header>
 
@@ -201,8 +206,14 @@ export const Template3 = ({ data }) => (
     >
         <header style={{ borderBottom: '2px solid #000', paddingBottom: '4mm', marginBottom: '6mm' }}>
             <h1 style={{ fontSize: '22pt', fontWeight: 'bold', margin: 0 }}>{data.fullName}</h1>
-            <div style={{ fontSize: '10pt', marginTop: '2mm' }}>
-                {data.location} | {data.phone} | {data.email}
+            <div style={{ fontSize: '10pt', marginTop: '2mm', display: 'flex', flexWrap: 'wrap', gap: '3mm' }}>
+                <span>{data.location}</span>
+                <span>|</span>
+                <span>{data.phone}</span>
+                <span>|</span>
+                <span>{data.email}</span>
+                {data.linkedin && <><span>|</span><span>{data.linkedin}</span></>}
+                {data.github && <><span>|</span><span>{data.github}</span></>}
             </div>
         </header>
 
@@ -268,6 +279,8 @@ export const Template4 = ({ data }) => (
                     <p>{data.email}</p>
                     <p>{data.phone}</p>
                     <p>{data.location}</p>
+                    {data.linkedin && <p style={{ wordBreak: 'break-all' }}>{data.linkedin}</p>}
+                    {data.github && <p style={{ wordBreak: 'break-all' }}>{data.github}</p>}
                 </div>
             </div>
 

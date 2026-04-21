@@ -77,32 +77,6 @@ const Students = () => {
     setExportOpen(false);
   };
 
-  const exportPDF = () => {
-    const doc = new jsPDF();
-    doc.text("Student Performance Report", 14, 15);
-    doc.setFontSize(10);
-    doc.text(`Generated on: ${new Date().toLocaleString()}`, 14, 22);
-
-    const tableColumn = ["Name", "Email", "ATS Score", "Status"];
-    const tableRows = filteredStudents.map(s => [
-      s.name,
-      s.email,
-      `${s.score || 0}%`,
-      s.status || 'Active'
-    ]);
-
-    doc.autoTable({
-      head: [tableColumn],
-      body: tableRows,
-      startY: 30,
-      theme: 'grid',
-      headStyles: { fillBox: [37, 99, 235], fillColor: [37, 99, 235] }
-    });
-
-    doc.save(`students_report_${new Date().toISOString().split('T')[0]}.pdf`);
-    setExportOpen(false);
-  };
-
   const scoreOptions = [
     { label: 'All Scores', value: 'all' },
     { label: 'Less than 30%', value: 'lt30' },
@@ -171,28 +145,12 @@ const Students = () => {
               />
             </div>
 
-            <div className="relative">
-              <button
-                onClick={() => setExportOpen(!exportOpen)}
-                className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-lg font-medium text-sm text-slate-700 hover:bg-slate-50 transition-colors shadow-sm whitespace-nowrap"
-              >
-                <Download className="w-4 h-4" /> Export
-              </button>
-
-              {exportOpen && (
-                <>
-                  <div className="fixed inset-0 z-40" onClick={() => setExportOpen(false)} />
-                  <div className="absolute right-0 mt-2 w-24 bg-white border border-slate-100 rounded-xl shadow-xl z-50 py-1 animate-in fade-in slide-in-from-top-2 duration-200">
-                    <button onClick={exportCSV} className="w-full flex items-center justify-center px-4 py-2.5 text-sm font-bold text-slate-600 hover:bg-blue-50 hover:text-blue-600 transition-all uppercase tracking-tight">
-                      .csv
-                    </button>
-                    <button onClick={exportPDF} className="w-full flex items-center justify-center px-4 py-2.5 text-sm font-bold text-slate-600 hover:bg-blue-50 hover:text-blue-600 transition-all uppercase tracking-tight">
-                      .pdf
-                    </button>
-                  </div>
-                </>
-              )}
-            </div>
+            <button
+              onClick={exportCSV}
+              className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-lg font-medium text-sm text-slate-700 hover:bg-slate-50 transition-colors shadow-sm whitespace-nowrap"
+            >
+              <Download className="w-4 h-4" /> Export CSV
+            </button>
 
             <div className="relative">
               <button

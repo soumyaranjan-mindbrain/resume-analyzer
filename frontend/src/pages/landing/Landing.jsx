@@ -52,13 +52,16 @@ const Hero = () => {
         opacity: 0,
         filter: 'blur(10px)',
         stagger: 0.2
-      })
-        .from(mockupRef.current, {
+      });
+
+      if (mockupRef.current) {
+        tl.from(mockupRef.current, {
           x: 100,
           opacity: 0,
           duration: 1.5,
           ease: 'expo.out'
         }, '-=1.2');
+      }
 
       // 3. Scroll Trigger - Only starts after hero is long gone
       gsap.to('.hero-animate', {
@@ -108,6 +111,12 @@ const Hero = () => {
           <p className="hero-animate text-base md:text-xl text-slate-600 max-w-xl mx-auto lg:mx-0 leading-relaxed font-medium">
             Optimize your professional identity against 240+ market variables. Our neural engine ensures your resume is visible to both Humans and ATS algorithms.
           </p>
+
+          <div className="hero-animate pt-4 flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
+            <button onClick={() => navigate('/auth?mode=signup')} className="btn-mindvista !px-10 !py-5 text-sm w-full sm:w-auto">
+              Analyze My Resume
+            </button>
+          </div>
         </div>
 
 
@@ -226,7 +235,7 @@ const Features = () => {
   ];
 
   return (
-    <section id="product" ref={containerRef} className="pt-20 lg:pt-60 pb-20 lg:pb-32 px-6 relative z-10">
+    <section id="product" ref={containerRef} className="pt-20 lg:pt-40 pb-12 lg:pb-20 px-6 relative z-10">
       <div className="container mx-auto max-w-7xl">
         <div className="mb-16 lg:mb-32 text-center max-w-4xl mx-auto reveal-animate">
           <div className="space-y-8 lg:space-y-16">
@@ -285,7 +294,7 @@ const Features = () => {
 const CTA = () => {
   const navigate = useNavigate();
   return (
-    <section className="py-12 lg:py-32 px-6 mb-8 lg:mb-20">
+    <section className="pt-12 lg:pt-24 pb-8 lg:pb-12 px-6">
       <div className="container mx-auto max-w-7xl">
         <div className="relative clay-card !p-6 md:!p-20 overflow-hidden text-center border-white/60 bg-white/40 backdrop-blur-md cta-animate opacity-0 translate-y-20 scale-95">
 
@@ -298,12 +307,9 @@ const CTA = () => {
             <p className="text-base md:text-lg text-slate-600 font-medium mb-8 md:mb-12 max-w-2xl mx-auto">
               Join 10,000+ candidates who have optimized their resumes to land roles at the world's most innovative firms.
             </p>
-            <div className="flex flex-col sm:flex-row justify-center items-center gap-4 md:gap-6">
+            <div className="flex justify-center items-center">
               <button onClick={() => navigate('/auth?mode=signup')} className="btn-mindvista !px-10 md:!px-14 !py-5 md:!py-7 text-xs md:text-sm w-full sm:w-auto">
-                Analyze My Resume Today {'->'}
-              </button>
-              <button className="px-8 md:px-10 py-5 md:py-7 rounded-2xl border-2 border-slate-100 bg-white/10 backdrop-blur-md text-[10px] md:text-sm font-bold text-slate-800 uppercase tracking-widest hover:bg-white/30 transition-all w-full sm:w-auto">
-                View Sample Results
+                Analyze My Resume
               </button>
             </div>
           </div>

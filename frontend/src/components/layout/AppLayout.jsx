@@ -35,6 +35,17 @@ const AppLayout = ({ children }) => {
   const { user, logout } = useAuth();
   const [isMobile, setIsMobile] = React.useState(window.innerWidth < 1024);
 
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/', { replace: true });
+    } catch (err) {
+      console.error('Logout failed:', err);
+      // Fallback navigate
+      navigate('/', { replace: true });
+    }
+  };
+
   React.useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 1024);
     window.addEventListener('resize', handleResize);
@@ -159,7 +170,7 @@ const AppLayout = ({ children }) => {
           )}
 
           <button
-            onClick={() => { logout(); navigate('/', { replace: true }); }}
+            onClick={handleLogout}
             className="flex items-center gap-3 w-full px-4 py-3 border border-red-50 bg-red-50/20 rounded-2xl font-bold text-xs text-red-600 hover:bg-red-600 hover:text-white transition-all group shadow-sm"
           >
             <LogOut className="w-5 h-5 transition-transform group-hover:-translate-x-1" />
@@ -238,7 +249,7 @@ const AppLayout = ({ children }) => {
                       </button>
                       <div className="h-[1px] bg-slate-100/50 mx-4 my-1" />
                       <button
-                        onClick={() => { logout(); navigate('/', { replace: true }); setProfileOpen(false); }}
+                        onClick={() => { handleLogout(); setProfileOpen(false); }}
                         className="w-full flex items-center gap-3 px-6 py-3.5 text-sm font-bold text-red-500 hover:bg-white transition-all"
                       >
                         <LogOut className="w-4 h-4" />
@@ -291,7 +302,7 @@ const AppLayout = ({ children }) => {
                   </div>
 
                   <button
-                    onClick={() => { logout(); navigate('/', { replace: true }); }}
+                    onClick={handleLogout}
                     className="w-full flex items-center justify-center gap-4 px-8 py-5 bg-slate-900 text-white rounded-[2rem] font-black text-[11px] uppercase tracking-[0.25em] hover:bg-blue-600 hover:shadow-[0_20px_40px_-10px_rgba(59,130,246,0.4)] transition-all duration-500 group relative overflow-hidden active:scale-95"
                   >
                     <div className="absolute inset-0 bg-gradient-to-r from-blue-400/0 via-white/20 to-blue-400/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />

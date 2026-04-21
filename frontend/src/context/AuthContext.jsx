@@ -91,6 +91,9 @@ export const AuthProvider = ({ children }) => {
     } finally {
       setUser(null);
       localStorage.removeItem('mindvista_user');
+      localStorage.removeItem('auth_token');
+      // Force a full reload to the landing page to break the redirect cycle
+      window.location.href = '/';
     }
   };
 

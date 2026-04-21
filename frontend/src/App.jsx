@@ -26,6 +26,8 @@ import { ConfigProvider } from './context/ConfigContext.jsx';
 import { AnalysisProvider } from './context/AnalysisContext.jsx';
 import { SocketProvider } from './context/SocketContext.jsx';
 import Maintenance from './pages/Maintenance.jsx';
+import PrivacyPolicy from './pages/legal/PrivacyPolicy.jsx';
+import Terms from './pages/legal/Terms.jsx';
 
 function App() {
   return (
@@ -39,6 +41,8 @@ function App() {
                 <Route path="/" element={<PublicRoute><BaseLayout><Landing /></BaseLayout></PublicRoute>} />
                 <Route path="/auth" element={<PublicRoute><BaseLayout><Auth /></BaseLayout></PublicRoute>} />
                 <Route path="/maintenance" element={<Maintenance />} />
+                <Route path="/privacy" element={<PublicRoute><BaseLayout><PrivacyPolicy /></BaseLayout></PublicRoute>} />
+                <Route path="/terms" element={<PublicRoute><BaseLayout><Terms /></BaseLayout></PublicRoute>} />
 
                 <Route path="/dashboard" element={<ProtectedRoute allowedRoles={['student']}><AppLayout><Dashboard /></AppLayout></ProtectedRoute>} />
                 <Route path="/history" element={<ProtectedRoute allowedRoles={['student']}><AppLayout><History /></AppLayout></ProtectedRoute>} />
