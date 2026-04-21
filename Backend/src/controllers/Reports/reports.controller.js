@@ -8,8 +8,16 @@ exports.getAllReports = async (req, res) => {
 
         if (startDate || endDate) {
             where.createdAt = {};
-            if (startDate) where.createdAt.gte = new Date(startDate);
-            if (endDate) where.createdAt.lte = new Date(endDate);
+            const start = startDate ? new Date(startDate) : null;
+            const end = endDate ? new Date(endDate) : null;
+
+            if (start && !isNaN(start.getTime())) where.createdAt.gte = start;
+            if (end && !isNaN(end.getTime())) where.createdAt.lte = end;
+
+            // If no valid dates were provided after all, remove the createdAt filter
+            if (Object.keys(where.createdAt).length === 0) {
+                delete where.createdAt;
+            }
         } else if (range && range !== 'all') {
             const now = new Date();
             let start;
@@ -40,38 +48,49 @@ exports.getAllReports = async (req, res) => {
             }
         });
 
-        // Get all unique resume IDs
-        const resumeIds = [...new Set(analyses.map(a => a.resumeId))];
+        // Get all unique resume IDs, filtering out any invalid ones
+        const resumeIds = [...new Set(analyses.map(a => a.resumeId).filter(Boolean))];
 
-        // Fetch all corresponding resumes including user info
-        const resumes = await prisma.resume.findMany({
-            where: {
-                id: { in: resumeIds }
-            },
-            include: {
-                user: {
-                    select: {
-                        id: true,
-                        name: true,
-                        email: true
-                    }
-                }
-            }
-        });
+        // 1. Fetch Resumes (Manual join to handle orphans gracefully)
+        const resumes = resumeIds.length > 0 ? await prisma.resume.findMany({
+            where: { id: { in: resumeIds } }
+        }) : [];
 
-        // Create a map for quick lookup
-        const resumeMap = resumes.reduce((acc, resume) => {
-            acc[resume.id] = resume;
+        // 2. Fetch Users associated with these resumes
+        const userIds = [...new Set(resumes.map(r => r.userId).filter(Boolean))];
+        const users = userIds.length > 0 ? await prisma.user.findMany({
+            where: { id: { in: userIds } },
+            select: { id: true, name: true, email: true }
+        }) : [];
+
+        // 3. Create maps for quick lookup
+        const userMap = users.reduce((acc, user) => {
+            acc[user.id.toString()] = user;
             return acc;
         }, {});
 
-        // Join data and filter out orphans
+        const resumeMap = resumes.reduce((acc, resume) => {
+            if (resume && resume.id) {
+                const user = resume.userId ? userMap[resume.userId.toString()] : null;
+                acc[resume.id.toString()] = {
+                    ...resume,
+                    user: user || { name: 'Unknown User', email: 'N/A' }
+                };
+            }
+            return acc;
+        }, {});
+
+        // 4. Join Analysis -> Resume -> User
         const reports = analyses
-            .map(analysis => ({
-                ...analysis,
-                resume: resumeMap[analysis.resumeId]
-            }))
-            .filter(report => report.resume); // Skip reports where resume was not found
+            .map(analysis => {
+                const resumeIdStr = analysis.resumeId ? analysis.resumeId.toString() : null;
+                const resume = resumeIdStr ? resumeMap[resumeIdStr] : null;
+                return {
+                    ...analysis,
+                    resume
+                };
+            })
+            .filter(report => report.resume); // Skip reports where resume was totally missing
 
         res.status(200).json(reports);
     } catch (error) {
