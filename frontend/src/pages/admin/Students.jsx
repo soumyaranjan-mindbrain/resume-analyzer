@@ -14,7 +14,9 @@ import {
   Clock,
   Loader2,
   User as UserIcon,
-  Mail as MailIcon
+  Mail as MailIcon,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 
 const GithubIcon = ({ className }) => (
@@ -41,7 +43,8 @@ import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 
 const Students = () => {
-  const [pageSize, setPageSize] = useState(5);
+  const [pageSize, setPageSize] = useState(25);
+  const [currentPage, setCurrentPage] = useState(1);
   const { students, loading, fetchStudents } = useAdmin();
   const [searchQuery, setSearchQuery] = useState('');
   const [scoreFilter, setScoreFilter] = useState('all');
@@ -53,6 +56,11 @@ const Students = () => {
   useEffect(() => {
     fetchStudents();
   }, [fetchStudents]);
+
+  // Reset to first page when search or filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, scoreFilter, pageSize]);
 
   const exportCSV = () => {
     const headers = ["Name", "Email", "ATS Score", "Status"];
@@ -121,6 +129,10 @@ const Students = () => {
     return matchesSearch && matchesScore;
   });
 
+  const startIndex = (currentPage - 1) * pageSize;
+  const paginatedStudents = filteredStudents.slice(startIndex, startIndex + pageSize);
+  const totalPages = Math.ceil(filteredStudents.length / pageSize);
+
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
 
@@ -129,22 +141,18 @@ const Students = () => {
 
         {/* Table Toolbar */}
         <div className="p-4 border-b border-slate-200 flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-white">
-          <div className="flex items-center gap-2 overflow-x-auto pb-2 lg:pb-0 hide-scrollbar">
-
+          <div className="relative group flex-1 max-w-md">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
+            <input
+              type="text"
+              placeholder="Search students..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 w-full transition-all shadow-sm"
+            />
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
-            <div className="relative group flex-1 min-w-[180px] lg:min-w-[240px]">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
-              <input
-                type="text"
-                placeholder="Search students..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 w-full transition-all shadow-sm"
-              />
-            </div>
-
             <button
               onClick={exportCSV}
               className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-lg font-medium text-sm text-slate-700 hover:bg-slate-50 transition-colors shadow-sm whitespace-nowrap"
@@ -218,7 +226,7 @@ const Students = () => {
                   </td>
                 </tr>
               ) : (
-                filteredStudents.slice(0, pageSize).map((student) => (
+                paginatedStudents.map((student) => (
                   <tr key={student.id} className="hover:bg-slate-50 transition-colors">
                     <td className="py-4 px-6">
                       <div className="flex items-center gap-3">
@@ -286,27 +294,57 @@ const Students = () => {
         </div>
 
         {/* Pagination */}
-        <div className="p-4 border-t border-slate-200 bg-slate-50 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <p className="text-sm text-slate-500">Showing <span className="font-medium text-slate-900">{filteredStudents.length > pageSize ? pageSize : filteredStudents.length}</span> of <span className="font-medium text-slate-900">{filteredStudents.length}</span> students</p>
+        <div className="p-4 border-t border-slate-200 bg-slate-50/50 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-6">
+            <p className="text-[11px] font-bold text-slate-500 uppercase tracking-tight">
+              Showing <span className="text-slate-900 font-black">{startIndex + 1}—{Math.min(startIndex + pageSize, filteredStudents.length)}</span>
+              <span className="mx-2 opacity-30">/</span>
+              Total <span className="text-slate-900 font-black">{filteredStudents.length}</span>
+            </p>
 
-            <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-sm">
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Show</span>
-              <select
-                value={pageSize}
-                onChange={(e) => setPageSize(Number(e.target.value))}
-                className="bg-transparent text-xs font-bold text-slate-700 outline-none cursor-pointer"
-              >
-                {[5, 15, 25, 50].map(size => (
-                  <option key={size} value={size}>{size}</option>
-                ))}
-              </select>
+            <div className="flex items-center bg-slate-200/40 p-1 rounded-xl border border-slate-200/60">
+              {[25, 50].map(size => (
+                <button
+                  key={size}
+                  onClick={() => setPageSize(size)}
+                  className={cn(
+                    "px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-300",
+                    pageSize === size
+                      ? "bg-white text-blue-600 shadow-md ring-1 ring-black/[0.02]"
+                      : "text-slate-400 hover:text-slate-600"
+                  )}
+                >
+                  {size}
+                </button>
+              ))}
             </div>
           </div>
 
           <div className="flex gap-2">
-            <button className="px-3 py-1.5 bg-white border border-slate-200 rounded-md text-sm font-medium text-slate-400 cursor-not-allowed shadow-sm">Previous</button>
-            <button className="px-3 py-1.5 bg-white border border-slate-200 rounded-md text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors shadow-sm">Next</button>
+            <button
+              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className={cn(
+                "group flex items-center justify-center w-10 h-10 rounded-xl border transition-all duration-300",
+                currentPage === 1
+                  ? "bg-slate-50 border-slate-100 text-slate-300 cursor-not-allowed opacity-50"
+                  : "bg-white border-slate-200 text-slate-600 hover:border-blue-600 hover:text-blue-600 hover:shadow-lg hover:shadow-blue-600/10 active:scale-95"
+              )}
+            >
+              <ChevronLeft className="w-5 h-5 transition-transform group-hover:-translate-x-0.5" />
+            </button>
+            <button
+              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages || totalPages === 0}
+              className={cn(
+                "group flex items-center justify-center w-10 h-10 rounded-xl border transition-all duration-300",
+                (currentPage === totalPages || totalPages === 0)
+                  ? "bg-slate-50 border-slate-100 text-slate-300 cursor-not-allowed opacity-50"
+                  : "bg-white border-slate-200 text-slate-600 hover:border-blue-600 hover:text-blue-600 hover:shadow-lg hover:shadow-blue-600/10 active:scale-95"
+              )}
+            >
+              <ChevronRight className="w-5 h-5 transition-transform group-hover:translate-x-0.5" />
+            </button>
           </div>
         </div>
       </div>
