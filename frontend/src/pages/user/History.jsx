@@ -147,7 +147,6 @@ const ReportModal = ({ isOpen, onClose, resume }) => {
               <div className={cn("px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border mb-3", grade.bg, grade.color, grade.border)}>
                 {grade.label}
               </div>
-              <p className="text-slate-500 text-[8px] font-bold uppercase tracking-[0.2em]">SaaS Benchmarked Verdict</p>
             </div>
             <div className="lg:col-span-8 bg-white border-x-0 md:border-x border-y md:border-slate-100 rounded-none md:rounded-xl p-3 lg:p-8 shadow-sm flex flex-col justify-between">
               <div className="space-y-6">
@@ -233,7 +232,7 @@ const ReportModal = ({ isOpen, onClose, resume }) => {
           </div>
 
           {analysis.suggestions && analysis.suggestions.length > 0 && (
-            <div className="bg-white rounded-none md:rounded-xl p-3.5 lg:p-8 print:p-4 border-x-0 md:border-x border-y md:border-slate-100 shadow-sm">
+            <div className="bg-white rounded-none md:rounded-xl p-3.5 lg:p-8 print:p-4 border-x-0 md:border-x border-y md:border-slate-100 shadow-sm print:break-before-page">
               <div className="flex items-center gap-3 mb-8 print:mb-4">
                 <div className="w-9 h-9 bg-blue-600 rounded-lg flex items-center justify-center text-white shadow-lg shadow-blue-500/10">
                   <Zap className="w-4 h-4" />
