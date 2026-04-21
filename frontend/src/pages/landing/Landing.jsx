@@ -92,7 +92,7 @@ const Hero = () => {
   }, []);
 
   return (
-    <section ref={heroRef} className="relative min-h-[100vh] flex flex-col justify-center pt-24 lg:pt-40 pb-16 lg:pb-20 overflow-hidden px-6">
+    <section ref={heroRef} className="relative min-h-[100vh] flex flex-col justify-center pt-12 lg:pt-20 pb-16 lg:pb-20 overflow-hidden px-6">
 
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div className="bg-parallax absolute -top-20 -left-20 w-[600px] h-[600px] bg-purple-200/40 blur-[120px] rounded-full" />
