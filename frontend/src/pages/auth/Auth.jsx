@@ -12,11 +12,13 @@ import {
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
 import { useAuth } from '../../context/AuthContext';
+import { useConfig } from '../../context/ConfigContext';
 
 const Auth = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { login, register, user } = useAuth();
+  const { login, register, logout } = useAuth();
+  const { maintenanceMode } = useConfig();
   const [isLogin, setIsLogin] = useState(true);
 
   useEffect(() => {
@@ -96,9 +98,23 @@ const Auth = () => {
     try {
       if (isLogin) {
         const userData = await login(email, password);
+
+        // Prevent student login during maintenance
+        if (maintenanceMode && userData.role !== 'admin') {
+          await logout('/?maintenance=true');
+          return;
+        }
+
         const redirectPath = userData.role === 'admin' ? '/admin' : '/dashboard';
         navigate(redirectPath, { replace: true });
       } else {
+        // Prevent student registration during maintenance
+        if (maintenanceMode) {
+          setError('System is under maintenance. New registrations are temporarily disabled.');
+          setLoading(false);
+          return;
+        }
+
         const userData = await register({ name, email, password, phone, role: 'student' });
         const redirectPath = userData.role === 'admin' ? '/admin' : '/dashboard';
         navigate(redirectPath, { replace: true });

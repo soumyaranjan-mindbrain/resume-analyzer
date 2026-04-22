@@ -14,7 +14,8 @@ export const AuthProvider = ({ children }) => {
 
       setUser(userData);
       localStorage.setItem('mindvista_user', JSON.stringify(userData));
-    } catch (error) {
+    } catch (_error) {
+      // Error is intentionally ignored as we just reset user state
       setUser(null);
       localStorage.removeItem('mindvista_user');
     } finally {
@@ -83,7 +84,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const logout = async () => {
+  const logout = async (redirectPath = '/') => {
     try {
       await authService.logout();
     } catch (error) {
@@ -92,8 +93,8 @@ export const AuthProvider = ({ children }) => {
       setUser(null);
       localStorage.removeItem('mindvista_user');
       localStorage.removeItem('auth_token');
-      // Force a full reload to the landing page to break the redirect cycle
-      window.location.href = '/';
+      // Force a full reload to the target page to break the redirect cycle
+      window.location.href = redirectPath;
     }
   };
 

@@ -24,6 +24,7 @@ import {
 import { cn } from '../../utils/cn';
 import { useAnalysis } from '../../context/AnalysisContext';
 import { useNavigate } from 'react-router-dom';
+import { toggleRoadmapPhase } from '../../services/api';
 import toast from 'react-hot-toast';
 
 const SkillInsights = () => {
@@ -69,7 +70,6 @@ const SkillInsights = () => {
 
       setCompletedPhases(newCompleted);
 
-      const { toggleRoadmapPhase } = await import('../../services/api');
       await toggleRoadmapPhase(idx);
       await fetchSkillInsights(true);
       toast.success(isAlreadyCompleted ? "Phase reset" : "Phase completed!");
@@ -87,13 +87,7 @@ const SkillInsights = () => {
   const activePhaseIndex = roadmapPhases.findIndex((_, index) => !completedPhases.includes(index));
   const finalActiveIndex = activePhaseIndex === -1 && roadmapPhases.length > 0 ? roadmapPhases.length : activePhaseIndex;
 
-  // Use real data from analytics or fallbacks
-  const inDemandSkills = analytics?.analytics?.inDemandSkills || [
-    { name: 'Data Science', percentage: 92, color: 'bg-blue-500' },
-    { name: 'Cloud Computing', percentage: 85, color: 'bg-emerald-500' },
-    { name: 'Product Management', percentage: 70, color: 'bg-purple-500' },
-    { name: 'Blockchain', percentage: 60, color: 'bg-orange-500' }
-  ];
+
 
   const missingSkills = analytics?.analytics?.missingSkills || [
     { name: 'System Design', value: 45, color: 'bg-blue-400' },

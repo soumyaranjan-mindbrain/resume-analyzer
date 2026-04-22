@@ -1,32 +1,20 @@
 import React from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useConfig } from '../../context/ConfigContext';
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const { user, loading: authLoading, logout } = useAuth();
   const { maintenanceMode, loading: configLoading } = useConfig();
-  const location = useLocation();
 
   const loading = authLoading || configLoading;
 
-  // Maintenance redirection logic - Only applies to standard users on dashboard/user routes
-  const isUserRoute = location.pathname.startsWith('/dashboard') ||
-    location.pathname.startsWith('/history') ||
-    location.pathname.startsWith('/resume-maker') ||
-    location.pathname.startsWith('/matches') ||
-    location.pathname.startsWith('/recommendations') ||
-    location.pathname.startsWith('/insights') ||
-    location.pathname.startsWith('/support');
-
-  const shouldMaintenanceRedirect = maintenanceMode && user?.role === 'user' && isUserRoute;
+  // Maintenance redirection logic - Only applies to standard users (non-admins)
+  const shouldMaintenanceRedirect = maintenanceMode && user?.role !== 'admin';
 
   React.useEffect(() => {
     if (shouldMaintenanceRedirect) {
-      logout().then(() => {
-        // Redirect to landing page after logout
-        window.location.href = '/?maintenance=true';
-      });
+      logout('/?maintenance=true');
     }
   }, [shouldMaintenanceRedirect, logout]);
 

@@ -26,8 +26,8 @@ export const ConfigProvider = ({ children }) => {
         // Initial fetch
         fetchConfig();
 
-        // Fallback to polling every 30 seconds
-        const pollInterval = setInterval(fetchConfig, 30000);
+        // Fallback to polling every 15 seconds to stay well within the 30s requirement
+        const pollInterval = setInterval(fetchConfig, 20000);
 
         return () => {
             clearInterval(pollInterval);
