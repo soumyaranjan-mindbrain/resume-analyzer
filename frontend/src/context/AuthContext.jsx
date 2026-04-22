@@ -14,7 +14,7 @@ export const AuthProvider = ({ children }) => {
 
       setUser(userData);
       localStorage.setItem('mindvista_user', JSON.stringify(userData));
-    } catch (_error) {
+    } catch {
       // Error is intentionally ignored as we just reset user state
       setUser(null);
       localStorage.removeItem('mindvista_user');
