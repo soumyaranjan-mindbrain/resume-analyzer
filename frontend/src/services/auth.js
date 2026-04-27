@@ -7,6 +7,21 @@ const authAxios = axios.create({
   withCredentials: true,
 });
 
+// Add a request interceptor to include the token
+authAxios.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('auth_token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+
 export const login = async (email, password) => {
   try {
     const response = await authAxios.post('/login', { email, password });
@@ -45,12 +60,10 @@ export const logout = async () => {
 
 export const getMe = async () => {
   try {
-    const token = localStorage.getItem('auth_token');
-    const response = await authAxios.get('/me', {
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
-    });
+    const response = await authAxios.get('/me');
     return response.data;
   } catch (error) {
+
     throw error.response?.data || { error: 'Not authenticated' };
   }
 };
