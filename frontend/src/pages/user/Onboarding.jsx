@@ -4,7 +4,7 @@ import { UserCircle, Briefcase, GraduationCap, ChevronRight, CheckCircle2 } from
 import { cn } from '../../utils/cn';
 import { useAuth } from '../../context/AuthContext';
 
-
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 const Onboarding = () => {
     const { user, completeOnboarding } = useAuth();
@@ -19,10 +19,9 @@ const Onboarding = () => {
     React.useEffect(() => {
         const fetchTracks = async () => {
             try {
-                const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/config/tracks`, {
-                    headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
-                    }
+                const token = localStorage.getItem('auth_token');
+                const response = await fetch(`${API_BASE}/config/tracks`, {
+                    headers: token ? { 'Authorization': `Bearer ${token}` } : {}
                 });
                 const data = await response.json();
                 if (data.success) {

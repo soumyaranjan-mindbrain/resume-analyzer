@@ -44,6 +44,9 @@ const sendTokens = async (res, user, message = "Login successful", status = 200)
         profilePic: user.profilePic || "",
         github: user.github || "",
         linkedin: user.linkedin || "",
+        userType: user.userType || null,
+        targetRole: user.targetRole || null,
+        yearsOfExperience: user.yearsOfExperience || null,
       },
     });
 };
@@ -244,7 +247,7 @@ const getMe = async (req, res) => {
   }
 
   try {
-    const user = await User.findById(req.user.id).select("name email role phone profilePic github linkedin");
+    const user = await User.findById(req.user.id).select("name email role phone profilePic github linkedin userType targetRole yearsOfExperience");
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
@@ -260,6 +263,9 @@ const getMe = async (req, res) => {
         profilePic: user.profilePic || "",
         github: user.github || "",
         linkedin: user.linkedin || "",
+        userType: user.userType || null,
+        targetRole: user.targetRole || null,
+        yearsOfExperience: user.yearsOfExperience || null,
       },
     });
   } catch (err) {
