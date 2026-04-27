@@ -26,6 +26,8 @@ import { ConfigProvider } from './context/ConfigContext.jsx';
 import { AnalysisProvider } from './context/AnalysisContext.jsx';
 import { SocketProvider } from './context/SocketContext.jsx';
 import Maintenance from './pages/Maintenance.jsx';
+import Onboarding from './pages/user/Onboarding.jsx';
+
 import PrivacyPolicy from './pages/legal/PrivacyPolicy.jsx';
 import Terms from './pages/legal/Terms.jsx';
 
@@ -44,7 +46,9 @@ function App() {
                 <Route path="/privacy" element={<PublicRoute><BaseLayout><PrivacyPolicy /></BaseLayout></PublicRoute>} />
                 <Route path="/terms" element={<PublicRoute><BaseLayout><Terms /></BaseLayout></PublicRoute>} />
 
+                <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
                 <Route path="/dashboard" element={<ProtectedRoute allowedRoles={['student']}><AppLayout><Dashboard /></AppLayout></ProtectedRoute>} />
+
                 <Route path="/history" element={<ProtectedRoute allowedRoles={['student']}><AppLayout><History /></AppLayout></ProtectedRoute>} />
                 <Route path="/resume-maker" element={<ProtectedRoute allowedRoles={['student']}><AppLayout><ResumeMaker /></AppLayout></ProtectedRoute>} />
                 <Route path="/matches" element={<ProtectedRoute allowedRoles={['student']}><AppLayout><JobMatches /></AppLayout></ProtectedRoute>} />

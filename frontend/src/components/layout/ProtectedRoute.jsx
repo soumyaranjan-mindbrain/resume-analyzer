@@ -30,7 +30,17 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
     return <Navigate to="/" replace />;
   }
 
+  // Onboarding redirection - Only for students
+  const isStudent = user.role === 'student';
+  const needsOnboarding = isStudent && !user.userType;
+  const isOnboardingPage = window.location.pathname === '/onboarding';
+
+  if (needsOnboarding && !isOnboardingPage) {
+    return <Navigate to="/onboarding" replace />;
+  }
+
   if (allowedRoles && !allowedRoles.includes(user.role)) {
+
     const redirectPath = user.role === 'admin' ? '/admin' : '/dashboard';
     return <Navigate to={redirectPath} replace />;
   }

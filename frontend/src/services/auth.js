@@ -63,3 +63,34 @@ export const changePassword = async (oldPassword, newPassword) => {
     throw error.response?.data || { error: 'Password change failed' };
   }
 };
+
+export const verifyOTP = async (email, otp) => {
+  try {
+    const response = await authAxios.post('/verify-otp', { email, otp });
+    if (response.data.token) {
+      localStorage.setItem('auth_token', response.data.token);
+    }
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { error: 'OTP verification failed' };
+  }
+};
+
+export const resendOTP = async (email) => {
+  try {
+    const response = await authAxios.post('/resend-otp', { email });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { error: 'Failed to resend OTP' };
+  }
+};
+
+export const completeOnboarding = async (onboardingData) => {
+  try {
+    const response = await authAxios.put('/onboarding', onboardingData);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { error: 'Onboarding failed' };
+  }
+};
+

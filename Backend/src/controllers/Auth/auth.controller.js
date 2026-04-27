@@ -1,8 +1,12 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../../models/User");
+const PendingUser = require("../../models/PendingUser");
 const { generateAccessToken, generateRefreshToken } = require("../../utils/generateToken");
 const { emitEvent } = require("../../utils/socket");
+const { sendOTP } = require("../../utils/mail");
+const crypto = require("crypto");
+
 
 // Helper to send access and refresh tokens in HTTP-only cookies
 const sendTokens = async (res, user, message = "Login successful", status = 200) => {
@@ -71,24 +75,47 @@ const register = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
+    const otp = crypto.randomInt(100000, 999999).toString();
+    const otpExpires = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
 
-    const newUser = new User({
+    // Check if there is an existing pending registration that is currently blocked
+    const existingPending = await PendingUser.findOne({ email });
+    if (existingPending && existingPending.blockedUntil && existingPending.blockedUntil > new Date()) {
+      const waitTime = Math.ceil((existingPending.blockedUntil - new Date()) / (60 * 1000));
+      return res.status(429).json({ error: `try after sometime` });
+    }
+
+    // Delete existing pending registration for this email if it exists
+    await PendingUser.deleteOne({ email });
+
+
+    // Store in PendingUser instead of User collection
+    const newPendingUser = new PendingUser({
       name,
       email,
       password: hashedPassword,
       role,
       phone: phone || "",
+      otp,
+      otpExpires,
     });
 
-    await newUser.save();
+    await newPendingUser.save();
 
-    // Notify listeners about new registration (Admin dashboard needs refresh)
-    if (role === 'student') {
-      emitEvent('student_registered', { id: newUser._id, name: newUser.name });
+
+
+    try {
+      await sendOTP(email, otp);
+    } catch (mailErr) {
+      console.error("Failed to send OTP:", mailErr);
+      // We still saved the user, but maybe we should tell them or let them resend
     }
 
-    // Automatically log in the user after registration
-    await sendTokens(res, newUser, "User registered and logged in successfully", 201);
+    res.status(201).json({
+      msg: "OTP sent to your email. Please verify to complete registration.",
+      email: email,
+    });
+
 
   } catch (err) {
     if (err.code === 11000) {
@@ -122,6 +149,8 @@ const login = async (req, res) => {
     if (!isMatch) return res.status(400).json({ error: "Invalid credentials" });
 
     await sendTokens(res, user);
+
+
 
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -265,5 +294,143 @@ const changePassword = async (req, res) => {
   }
 };
 
-module.exports = { register, login, refreshToken, logout, getMe, changePassword };
+const verifyOTP = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+    if (!email || !otp) {
+      return res.status(400).json({ error: "Email and OTP are required" });
+    }
+
+    // 1. Check PendingUser first (New Signup Flow)
+    const pendingUser = await PendingUser.findOne({ email });
+    if (pendingUser) {
+      if (pendingUser.otp !== otp || pendingUser.otpExpires < new Date()) {
+        return res.status(400).json({ error: "Invalid or expired OTP" });
+      }
+
+      // Create actual user after successful verification
+      const newUser = new User({
+        name: pendingUser.name,
+        email: pendingUser.email,
+        password: pendingUser.password,
+        role: pendingUser.role,
+        phone: pendingUser.phone,
+        isVerified: true
+      });
+
+      await newUser.save();
+      await PendingUser.deleteOne({ _id: pendingUser._id });
+
+      // Notify listeners about new registration
+      if (newUser.role === 'student') {
+        emitEvent('student_registered', { id: newUser._id, name: newUser.name });
+      }
+
+      return sendTokens(res, newUser, "Email verified and account created successfully", 201);
+    }
+
+    // 2. Fallback: Check User collection (for legacy users or direct updates)
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    if (user.isVerified) {
+      return res.status(400).json({ error: "Email is already verified" });
+    }
+
+    if (!user.otp || user.otp !== otp || user.otpExpires < new Date()) {
+      return res.status(400).json({ error: "Invalid or expired OTP" });
+    }
+
+    user.isVerified = true;
+    user.otp = null;
+    user.otpExpires = null;
+    await user.save();
+
+    await sendTokens(res, user, "Email verified and logged in successfully", 200);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+
+const resendOTP = async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({ error: "Email is required" });
+    }
+
+    const pendingUser = await PendingUser.findOne({ email });
+
+    if (!pendingUser) {
+      return res.status(404).json({ error: "No pending registration found. Please sign up again." });
+    }
+
+    // Check for rate limit block
+    if (pendingUser.blockedUntil && pendingUser.blockedUntil > new Date()) {
+      return res.status(429).json({ error: "try after sometime" });
+    }
+
+    // Check if resend count exceeded (3 resends allowed)
+    if (pendingUser.resendCount >= 3) {
+      pendingUser.blockedUntil = new Date(Date.now() + 30 * 60 * 1000); // 30 minutes block
+      await pendingUser.save();
+      return res.status(429).json({ error: "try after sometime" });
+    }
+
+    // Increment resend count
+    pendingUser.resendCount += 1;
+    const newOtp = crypto.randomInt(100000, 999999).toString();
+    const newOtpExpires = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
+
+    pendingUser.otp = newOtp;
+    pendingUser.otpExpires = newOtpExpires;
+    await pendingUser.save();
+
+    await sendOTP(email, newOtp);
+
+    res.status(200).json({ msg: "OTP resent successfully" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+
+
+const completeOnboarding = async (req, res) => {
+  try {
+    const { userType, targetRole, yearsOfExperience } = req.body;
+    if (!userType) {
+      return res.status(400).json({ error: "User type is required" });
+    }
+
+    const user = await User.findById(req.user.id);
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    user.userType = userType;
+    user.targetRole = targetRole || null;
+    user.yearsOfExperience = yearsOfExperience || null;
+    await user.save();
+
+    res.status(200).json({
+      msg: "Onboarding completed successfully",
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        userType: user.userType,
+        targetRole: user.targetRole,
+        yearsOfExperience: user.yearsOfExperience,
+      },
+    });
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+module.exports = { register, login, refreshToken, logout, getMe, changePassword, verifyOTP, resendOTP, completeOnboarding };
+
+
 

@@ -181,6 +181,15 @@ export const toggleJobHiredStatus = async (id) => {
   return response.data;
 };
 
+export const extractJD = async (formData, params = {}) => {
+  const response = await apiClient.post('/jobs/extract-jd', formData, {
+    params,
+    headers: { 'Content-Type': 'multipart/form-data' }
+  });
+  return response.data;
+};
+
+
 export const getJobApplicants = async (jobId) => {
   const response = await apiClient.get(`/applications/job/${jobId}`);
   return response.data;

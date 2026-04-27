@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { CheckCircle2 } from 'lucide-react';
+import { cn } from '../../utils/cn';
+
+
 import {
   ArrowLeft,
   Save,
@@ -12,10 +16,20 @@ import {
   AlignLeft,
   Settings,
   Target,
-  Loader2
+  Loader2,
+  FileText,
+  Upload,
+  Sparkles,
+  Zap,
+  Info,
+  Download
 } from 'lucide-react';
-import { createJob, getJobById, updateJob } from '../../services/api';
+
+
+
+import { createJob, getJobById, updateJob, extractJD } from '../../services/api';
 import toast from 'react-hot-toast';
+
 
 const AddJobRole = () => {
   const navigate = useNavigate();
@@ -37,6 +51,9 @@ const AddJobRole = () => {
   });
 
   const [newTag, setNewTag] = useState('');
+  const [extracting, setExtracting] = useState(false);
+  const [jdFile, setJdFile] = useState(null);
+
 
   useEffect(() => {
     if (isEdit) {
@@ -109,6 +126,52 @@ const AddJobRole = () => {
     }));
   };
 
+  const handleJDUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (!file.name.match(/\.(pdf|docx|txt)$/i)) {
+      toast.error('Please upload a PDF, DOCX, or TXT file.');
+      return;
+    }
+
+
+    setJdFile(file);
+    const formDataObj = new FormData();
+    formDataObj.append('file', file);
+
+    setExtracting(true);
+    const toastId = toast.loading('AI is analyzing the JD...');
+    try {
+      // Pass structured=true to get full job details
+      const data = await extractJD(formDataObj, { structured: 'true' });
+
+      setFormData(prev => ({
+        ...prev,
+        title: data.title || prev.title,
+        company: data.company || prev.company,
+        location: data.location || prev.location,
+        type: data.type || prev.type,
+        experience: data.experience || prev.experience,
+        description: data.description || prev.description,
+        requirements: data.requirements || prev.requirements,
+        responsibilities: data.responsibilities || prev.responsibilities,
+        tags: data.tags || prev.tags,
+        jdSource: 'FILE',
+        jdText: data.description // Use description as fallback text
+      }));
+
+      toast.success('Job details extracted successfully!', { id: toastId });
+    } catch (error) {
+      console.error('Extraction error:', error);
+      toast.error('AI failed to parse the file. Please try again or fill manually.', { id: toastId });
+    } finally {
+      setExtracting(false);
+    }
+  };
+
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -139,27 +202,68 @@ const AddJobRole = () => {
   }
 
   return (
-    <div className="w-full space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-12">
+    <div className="w-full space-y-8 pb-12">
 
-      {/* Back Button & Title */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <button
-            onClick={() => navigate('/admin/jobs')}
-            className="p-2 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors shadow-sm"
-          >
-            <ArrowLeft className="w-5 h-5 text-slate-600" />
-          </button>
-          <div>
-            <h2 className="text-2xl font-bold text-slate-900">{isEdit ? 'Edit Job Role' : 'Add New Job Role'}</h2>
-            <p className="text-slate-500 text-sm font-medium">
-              {isEdit ? `Modifying role: ${formData.title}` : 'Define a new potential job match for students'}
-            </p>
-          </div>
+
+      {/* Minimal Quick Fill Section */}
+      <div className="bg-white rounded-2xl border-2 border-dashed border-slate-200 p-8 text-center space-y-4 hover:border-slate-300 transition-all group">
+        <div className="max-w-md mx-auto space-y-2">
+          <h3 className="text-lg font-bold text-slate-900 tracking-tight">Quick Job Creation</h3>
+          <p className="text-slate-500 text-sm font-medium">
+            Upload your JD file (PDF/DOCX) to automatically populate all fields below.
+          </p>
         </div>
+
+        <div className="flex flex-wrap justify-center gap-4">
+          <input
+            type="file"
+            id="ai-jd-upload"
+            className="hidden"
+            accept=".pdf,.docx,.txt"
+            onChange={handleJDUpload}
+
+            disabled={extracting}
+          />
+          <label
+            htmlFor="ai-jd-upload"
+            className={cn(
+              "btn-mindvista !px-8 !py-4 flex items-center gap-3 cursor-pointer",
+              extracting && "opacity-80 cursor-wait"
+            )}
+          >
+            {extracting ? (
+              <Loader2 className="w-5 h-5 animate-spin" />
+            ) : (
+              <Upload className="w-5 h-5" />
+            )}
+            {extracting ? 'Processing File...' : 'Upload & Auto-Fill Form'}
+          </label>
+
+          <a
+            href="/sample-jd.txt"
+            download="MindVista-Sample-JD.txt"
+            className="flex items-center gap-2 px-8 py-4 bg-slate-50 border border-slate-200 text-slate-600 rounded-xl font-bold text-sm hover:bg-slate-100 hover:text-slate-900 transition-all shadow-sm"
+          >
+            <Download className="w-5 h-5" />
+            Download Sample Template
+          </a>
+
+        </div>
+
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+      <div className="flex items-center gap-2 text-slate-400">
+        <div className="h-[1px] flex-1 bg-slate-200" />
+        <span className="text-[10px] font-black uppercase tracking-widest px-4">Or fill details manually</span>
+        <div className="h-[1px] flex-1 bg-slate-200" />
+      </div>
+
+
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start relative">
+
+
         {/* Main Form Area */}
         <div className="lg:col-span-2 space-y-6">
           <div className="bg-white rounded-2xl border border-slate-200 p-6 lg:p-8 shadow-sm space-y-6">
@@ -184,183 +288,195 @@ const AddJobRole = () => {
                 </div>
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-4">
                 <label className="text-[11px] font-bold uppercase tracking-widest text-slate-500 ml-1">Job Description</label>
+              </div>
+
+
+              <textarea
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+                rows="6"
+                placeholder="Describe the role and its impact, or upload a JD file above..."
+                className="input-clay !p-4 !bg-slate-50 !border-slate-200 focus:!bg-white transition-all shadow-sm min-h-[160px] w-full text-sm leading-relaxed"
+              />
+
+              {/* Removed Populated from file indicator */}
+
+            </div>
+
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-[11px] font-bold uppercase tracking-widest text-slate-500 ml-1">Requirements</label>
                 <textarea
-                  name="description"
-                  value={formData.description}
+                  name="requirements"
+                  value={formData.requirements}
                   onChange={handleChange}
+                  onBlur={handleBlur}
                   rows="4"
-                  placeholder="Describe the role and its impact..."
+                  placeholder="List key requirements..."
                   className="input-clay !p-4 !bg-slate-50 !border-slate-200 focus:!bg-white transition-all shadow-sm min-h-[120px] w-full"
                 />
               </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-[11px] font-bold uppercase tracking-widest text-slate-500 ml-1">Requirements</label>
-                  <textarea
-                    name="requirements"
-                    value={formData.requirements}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    rows="4"
-                    placeholder="List key requirements..."
-                    className="input-clay !p-4 !bg-slate-50 !border-slate-200 focus:!bg-white transition-all shadow-sm min-h-[120px] w-full"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-[11px] font-bold uppercase tracking-widest text-slate-500 ml-1">Responsibilities</label>
-                  <textarea
-                    name="responsibilities"
-                    value={formData.responsibilities}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    rows="4"
-                    placeholder="List core responsibilities..."
-                    className="input-clay !p-4 !bg-slate-50 !border-slate-200 focus:!bg-white transition-all shadow-sm min-h-[120px] w-full"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-2xl border border-slate-200 p-8 shadow-sm space-y-6">
-            <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-              <Plus className="w-5 h-5 text-blue-500" />
-              Skills & Tags
-            </h3>
-
-            <div className="space-y-4">
-              <div className="flex gap-2">
-                <div className="relative flex-1">
-                  <Type className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                  <input
-                    type="text"
-                    value={newTag}
-                    onChange={(e) => setNewTag(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && handleAddTag()}
-                    placeholder="Add a skill tag (e.g. React, Python)"
-                    className="input-clay !pl-12 !bg-slate-50 !border-slate-200 focus:!bg-white transition-all shadow-sm w-full"
-                  />
-                </div>
-                <button
-                  type="button"
-                  onClick={handleAddTag}
-                  className="px-6 bg-slate-900 text-white rounded-xl font-bold text-sm hover:bg-slate-800 transition-all"
-                >
-                  Add
-                </button>
-              </div>
-
-              <div className="flex flex-wrap gap-2">
-                {formData.tags.map(tag => (
-                  <span key={tag} className="flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg border border-blue-100 text-xs font-bold uppercase tracking-wider">
-                    {tag}
-                    <button onClick={() => handleRemoveTag(tag)} className="hover:text-blue-800">
-                      <X className="w-3.5 h-3.5" />
-                    </button>
-                  </span>
-                ))}
-                {formData.tags.length === 0 && (
-                  <p className="text-sm text-slate-400 italic">No skills added yet.</p>
-                )}
+              <div className="space-y-2">
+                <label className="text-[11px] font-bold uppercase tracking-widest text-slate-500 ml-1">Responsibilities</label>
+                <textarea
+                  name="responsibilities"
+                  value={formData.responsibilities}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  rows="4"
+                  placeholder="List core responsibilities..."
+                  className="input-clay !p-4 !bg-slate-50 !border-slate-200 focus:!bg-white transition-all shadow-sm min-h-[120px] w-full"
+                />
               </div>
             </div>
           </div>
         </div>
 
-        {/* Sidebar Info */}
-        <div className="space-y-6">
-          <div className="bg-white rounded-2xl border border-slate-200 p-8 shadow-sm space-y-6">
-            <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-              <Settings className="w-5 h-5 text-blue-500" />
-              Company Info
-            </h3>
+        <div className="bg-white rounded-2xl border border-slate-200 p-8 shadow-sm space-y-6">
+          <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+            <Plus className="w-5 h-5 text-blue-500" />
+            Skills & Tags
+          </h3>
 
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <label className="text-[11px] font-bold uppercase tracking-widest text-slate-500 ml-1">Company Name</label>
-                <div className="relative">
-                  <Building2 className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                  <input
-                    type="text"
-                    name="company"
-                    value={formData.company}
-                    onChange={handleChange}
-                    placeholder="e.g. Google"
-                    className="input-clay !pl-12 !bg-slate-50 !border-slate-200 focus:!bg-white transition-all shadow-sm w-full"
-                  />
-                </div>
+          <div className="space-y-4">
+            <div className="flex gap-2">
+              <div className="relative flex-1">
+                <Type className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <input
+                  type="text"
+                  value={newTag}
+                  onChange={(e) => setNewTag(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && handleAddTag()}
+                  placeholder="Add a skill tag (e.g. React, Python)"
+                  className="input-clay !pl-12 !bg-slate-50 !border-slate-200 focus:!bg-white transition-all shadow-sm w-full"
+                />
               </div>
+              <button
+                type="button"
+                onClick={handleAddTag}
+                className="px-6 bg-slate-900 text-white rounded-xl font-bold text-sm hover:bg-slate-800 transition-all"
+              >
+                Add
+              </button>
+            </div>
 
-              <div className="space-y-2">
-                <label className="text-[11px] font-bold uppercase tracking-widest text-slate-500 ml-1">Location</label>
-                <div className="relative">
-                  <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                  <input
-                    type="text"
-                    name="location"
-                    value={formData.location}
-                    onChange={handleChange}
-                    placeholder="e.g. Mountain View, CA"
-                    className="input-clay !pl-12 !bg-slate-50 !border-slate-200 focus:!bg-white transition-all shadow-sm w-full"
-                  />
-                </div>
-              </div>
+            <div className="flex flex-wrap gap-2">
+              {formData.tags.map(tag => (
+                <span key={tag} className="flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg border border-blue-100 text-xs font-bold uppercase tracking-wider">
+                  {tag}
+                  <button onClick={() => handleRemoveTag(tag)} className="hover:text-blue-800">
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </span>
+              ))}
+              {formData.tags.length === 0 && (
+                <p className="text-sm text-slate-400 italic">No skills added yet.</p>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
 
-              <div className="space-y-2">
-                <label className="text-[11px] font-bold uppercase tracking-widest text-slate-500 ml-1">Employment Type</label>
-                <select
-                  name="type"
-                  value={formData.type}
+      {/* Sidebar Info */}
+      <div
+        className="space-y-6 lg:sticky lg:top-4 h-fit"
+        style={{ willChange: 'transform', transform: 'translateZ(0)' }}
+      >
+
+
+
+        <div className="bg-white rounded-2xl border border-slate-200 p-8 shadow-sm space-y-6">
+          <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+            <Settings className="w-5 h-5 text-blue-500" />
+            Company Info
+          </h3>
+
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <label className="text-[11px] font-bold uppercase tracking-widest text-slate-500 ml-1">Company Name</label>
+              <div className="relative">
+                <Building2 className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <input
+                  type="text"
+                  name="company"
+                  value={formData.company}
                   onChange={handleChange}
-                  className="input-clay !bg-slate-50 !border-slate-200 focus:!bg-white transition-all shadow-sm appearance-none w-full cursor-pointer"
-                >
-                  <option>Full-time</option>
-                  <option>Part-time</option>
-                  <option>Contract</option>
-                  <option>Remote</option>
-                  <option>Internship</option>
-                </select>
+                  placeholder="e.g. Google"
+                  className="input-clay !pl-12 !bg-slate-50 !border-slate-200 focus:!bg-white transition-all shadow-sm w-full"
+                />
               </div>
+            </div>
 
-              <div className="space-y-2">
-                <label className="text-[11px] font-bold uppercase tracking-widest text-slate-500 ml-1">Experience Required</label>
-                <div className="relative">
-                  <Target className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                  <input
-                    type="text"
-                    name="experience"
-                    value={formData.experience}
-                    onChange={handleChange}
-                    placeholder="e.g. 5+ years"
-                    className="input-clay !pl-12 !bg-slate-50 !border-slate-200 focus:!bg-white transition-all shadow-sm w-full"
-                  />
-                </div>
+            <div className="space-y-2">
+              <label className="text-[11px] font-bold uppercase tracking-widest text-slate-500 ml-1">Location</label>
+              <div className="relative">
+                <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <input
+                  type="text"
+                  name="location"
+                  value={formData.location}
+                  onChange={handleChange}
+                  placeholder="e.g. Mountain View, CA"
+                  className="input-clay !pl-12 !bg-slate-50 !border-slate-200 focus:!bg-white transition-all shadow-sm w-full"
+                />
               </div>
+            </div>
 
-              <div className="pt-4 space-y-3">
-                <button
-                  onClick={handleSubmit}
-                  disabled={loading}
-                  className="w-full flex items-center justify-center gap-2 px-8 py-3 bg-blue-600 text-white rounded-xl font-bold text-sm hover:bg-blue-700 transition-all shadow-md shadow-blue-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {loading ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <Save className="w-4 h-4" />
-                  )}
-                  {isEdit ? 'Update Job Role' : 'Save Job Role'}
-                </button>
-                <button
-                  onClick={() => navigate('/admin/jobs')}
-                  disabled={loading}
-                  className="w-full px-8 py-3 rounded-xl font-bold text-sm text-slate-500 hover:bg-slate-100 transition-all disabled:opacity-50"
-                >
-                  Discard Changes
-                </button>
+            <div className="space-y-2">
+              <label className="text-[11px] font-bold uppercase tracking-widest text-slate-500 ml-1">Employment Type</label>
+              <select
+                name="type"
+                value={formData.type}
+                onChange={handleChange}
+                className="input-clay !bg-slate-50 !border-slate-200 focus:!bg-white transition-all shadow-sm appearance-none w-full cursor-pointer"
+              >
+                <option>Full-time</option>
+                <option>Part-time</option>
+                <option>Contract</option>
+                <option>Remote</option>
+                <option>Internship</option>
+              </select>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-[11px] font-bold uppercase tracking-widest text-slate-500 ml-1">Experience Required</label>
+              <div className="relative">
+                <Target className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <input
+                  type="text"
+                  name="experience"
+                  value={formData.experience}
+                  onChange={handleChange}
+                  placeholder="e.g. 5+ years"
+                  className="input-clay !pl-12 !bg-slate-50 !border-slate-200 focus:!bg-white transition-all shadow-sm w-full"
+                />
               </div>
+            </div>
+
+            <div className="pt-4 space-y-3">
+              <button
+                onClick={handleSubmit}
+                disabled={loading}
+                className="w-full flex items-center justify-center gap-2 px-8 py-3 bg-blue-600 text-white rounded-xl font-bold text-sm hover:bg-blue-700 transition-all shadow-md shadow-blue-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loading ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Save className="w-4 h-4" />
+                )}
+                {isEdit ? 'Update Job Role' : 'Save Job Role'}
+              </button>
+              <button
+                onClick={() => navigate('/admin/jobs')}
+                disabled={loading}
+                className="w-full px-8 py-3 rounded-xl font-bold text-sm text-slate-500 hover:bg-slate-100 transition-all disabled:opacity-50"
+              >
+                Discard Changes
+              </button>
             </div>
           </div>
         </div>
@@ -368,5 +484,6 @@ const AddJobRole = () => {
     </div>
   );
 };
+
 
 export default AddJobRole;

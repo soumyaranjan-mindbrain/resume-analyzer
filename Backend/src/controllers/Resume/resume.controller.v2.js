@@ -125,7 +125,15 @@ const uploadResume = async (req, res) => {
     let analysisData;
     try {
       if (extractedText) {
-        analysisData = await analyzeResumeText(extractedText);
+        // Fetch user data for personalized analysis
+        const user = await prisma.user.findUnique({ where: { id: userId } });
+
+        analysisData = await analyzeResumeText(extractedText, null, {
+          userType: user?.userType,
+          targetRole: user?.targetRole,
+          yearsOfExperience: user?.yearsOfExperience
+        });
+
 
         // Step 4.5: Generate Career Roadmap
         console.log("[Upload] Generating Career Roadmap...");
@@ -254,7 +262,15 @@ const reanalyzeResume = async (req, res) => {
 
     let analysisData;
     try {
-      analysisData = await analyzeResumeText(extractedText, jobDescription);
+      // Fetch user data for personalized analysis
+      const user = await prisma.user.findUnique({ where: { id: req.userId } });
+
+      analysisData = await analyzeResumeText(extractedText, jobDescription, {
+        userType: user?.userType,
+        targetRole: user?.targetRole,
+        yearsOfExperience: user?.yearsOfExperience
+      });
+
 
       // Generate Roadmap for the combined context if needed, or just standard roadmap
       console.log("[Reanalyze] Generating Career Roadmap...");

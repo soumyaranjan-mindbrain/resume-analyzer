@@ -69,20 +69,47 @@ export const AuthProvider = ({ children }) => {
   const registerUser = async (userData) => {
     try {
       const data = await authService.register(userData);
+      return data; // returns { msg, email }
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const verifyOTPUser = async (email, otp) => {
+    try {
+      const data = await authService.verifyOTP(email, otp);
       const userResData = data.user;
       setUser(userResData);
       localStorage.setItem('mindvista_user', JSON.stringify(userResData));
-
-      // Ensure token is set if backend returned it
       if (data.token) {
         localStorage.setItem('auth_token', data.token);
       }
-
       return userResData;
     } catch (error) {
       throw error;
     }
   };
+
+  const resendOTPUser = async (email) => {
+    try {
+      return await authService.resendOTP(email);
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const updateOnboarding = async (onboardingData) => {
+    try {
+      const data = await authService.completeOnboarding(onboardingData);
+      const updatedUser = data.user;
+      setUser(updatedUser);
+      localStorage.setItem('mindvista_user', JSON.stringify(updatedUser));
+      return updatedUser;
+    } catch (error) {
+      throw error;
+    }
+  };
+
 
   const logout = async (redirectPath = '/') => {
     try {
@@ -99,7 +126,18 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, register: registerUser, logout, loading, checkAuth }}>
+    <AuthContext.Provider value={{
+      user,
+      login,
+      register: registerUser,
+      verifyOTP: verifyOTPUser,
+      resendOTP: resendOTPUser,
+      completeOnboarding: updateOnboarding,
+      logout,
+      loading,
+      checkAuth
+    }}>
+
       {!loading && children}
     </AuthContext.Provider>
   );

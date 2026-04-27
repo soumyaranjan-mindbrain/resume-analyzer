@@ -31,7 +31,18 @@ const analyzeResume = async (req, res) => {
     }
 
     // Force fresh AI analysis
-    const analysisData = await analyzeResumeText(extractedText);
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { userType: true, targetRole: true, yearsOfExperience: true }
+    });
+
+    const analysisData = await analyzeResumeText(extractedText, null, {
+      userType: user?.userType,
+      targetRole: user?.targetRole,
+      yearsOfExperience: user?.yearsOfExperience
+    });
+
+
 
     console.log(`[Analysis] AI returned score: ${analysisData.atsScore}`);
 

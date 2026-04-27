@@ -1,0 +1,25 @@
+Job Title: Senior Frontend Developer
+Company: MindVista Corp
+Location: Remote / Bangalore, India
+Employment Type: Full-time
+Experience Required: 3-5 Years
+
+About the Role:
+TechNova Solutions is looking for a passionate Senior Frontend Developer to lead our UI/UX initiatives. You will be responsible for building high-performance, scalable web applications using modern technologies and ensuring a seamless user experience.
+
+Candidate Requirements:
+- Strong proficiency in React.js and TypeScript.
+- Experience with Next.js and Tailwind CSS.
+- Familiarity with RESTful APIs and state management (Redux/Zustand).
+- Understanding of responsive design principles and performance optimization.
+- Proven track record of delivering clean, maintainable code.
+
+Core Responsibilities:
+- Architect and develop modern frontend components.
+- Collaborate with designers to translate Figma mocks into production-ready code.
+- Optimize application for maximum speed and scalability.
+- Mentor junior developers and participate in code reviews.
+- Implement security best practices for frontend architectures.
+
+Preferred Skills:
+React, TypeScript, Next.js, Tailwind CSS, Frontend Development, Web Performance, UI/UX, JavaScript, Git, Agile.

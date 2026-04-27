@@ -10,6 +10,14 @@ const FREE_MODELS = [
   "gemma2-9b-it"
 ];
 
+const ROLE_SKILLS = {
+  "Frontend Developer": ["HTML", "CSS", "JavaScript", "React", "TypeScript", "Responsive Design", "APIs", "Next.js", "Tailwind CSS"],
+  "Backend Developer": ["Node.js", "Express", "Databases", "MongoDB", "SQL", "REST APIs", "Auth", "System Design", "Microservices"],
+  "Java Developer": ["Java", "OOP", "Spring Boot", "SQL", "Hibernate", "REST", "Microservices", "Maven", "JPA"],
+  "React Native Developer": ["React Native", "JavaScript", "TypeScript", "Mobile UI", "APIs", "State Management", "Redux", "iOS/Android Deployment"]
+};
+
+
 /**
  * Centrally managed AI invocation with automatic model failover for 429 errors.
  */
@@ -137,10 +145,27 @@ async function extractTextFromDocx(input) {
 // ─────────────────────────────────────────────
 //  GROQ AI — RESUME ANALYSIS
 // ─────────────────────────────────────────────
-function buildAnalysisPrompt(resumeText) {
+function buildAnalysisPrompt(resumeText, userType = null, targetRole = null, yearsOfExperience = null) {
+
+  let roleContext = "";
+  if (targetRole && ROLE_SKILLS[targetRole]) {
+    roleContext = `
+TARGET ROLE: ${targetRole}
+EXPECTED SKILLS FOR THIS ROLE: ${ROLE_SKILLS[targetRole].join(", ")}
+${userType === "FRESHER"
+        ? "Since the candidate is a FRESHER, focus on their potential, projects, and foundational knowledge."
+        : `Since the candidate is EXPERIENCED (YoE: ${yearsOfExperience || "N/A"}), focus on technical depth, leadership, and professional impact.`}
+
+Weigh the score heavily based on these skills and the appropriate career stage.
+`;
+  }
+
+
   return `You are a Tier-1 Technical Recruiter and ATS Specialist.
+${roleContext}
   
 STEP 1: DOCUMENT VALIDATION
+
 First, determine if the provided text is a professional Resume or Curriculum Vitae (CV). 
 If it is NOT a resume (e.g., it is a project report, a book excerpt, an invoice, or non-career related text), you MUST return only this JSON and stop:
 { "isResume": false, "error": "This document does not appear to be a professional resume or CV. Please upload a valid resume payload." }
@@ -241,7 +266,8 @@ ${jobDescription.slice(0, 4000)}
 ---`;
 }
 
-async function analyzeResumeText(resumeText, jobDescription = null) {
+async function analyzeResumeText(resumeText, jobDescription = null, options = {}) {
+
   if (!process.env.GROQ_API_KEY) throw new Error("GROQ_API_KEY not found");
 
   if (!resumeText || resumeText.trim().length < 30) {
@@ -250,7 +276,9 @@ async function analyzeResumeText(resumeText, jobDescription = null) {
 
   const prompt = jobDescription
     ? buildMatchPrompt(resumeText, jobDescription)
-    : buildAnalysisPrompt(resumeText);
+    : buildAnalysisPrompt(resumeText, options.userType, options.targetRole, options.yearsOfExperience);
+
+
 
   try {
     const response = await callGroqWithFailover({
@@ -549,11 +577,55 @@ Return the optimized JSON object now.`;
   }
 }
 
+/**
+ * Extracts structured job details from raw JD text using AI (Groq).
+ */
+async function extractStructuredJDText(text) {
+  try {
+    const prompt = `
+      You are an expert HR recruitment assistant. Your task is to extract job role details from the provided Job Description text.
+      Return the data ONLY as a valid and clean JSON object.
+      
+      The JSON object MUST have these fields:
+      - title: The official job title
+      - company: The hiring company name
+      - location: Remote, or a specific city/country
+      - type: One of ["Full-time", "Part-time", "Contract", "Remote", "Internship"]
+      - experience: Experience required (e.g. "3+ Years")
+      - description: A concise 2-3 sentence overview of the role
+      - requirements: A list of candidate requirements (bullet points)
+      - responsibilities: A list of job responsibilities (bullet points)
+      - tags: A list of 5-10 key technical skills required
+      
+      Job Description:
+      """
+      ${text}
+      """
+    `;
+
+    const response = await callGroqWithFailover({
+      messages: [{ role: "user", content: prompt }],
+      temperature: 0.1,
+      response_format: { type: "json_object" }
+    });
+
+    const result = JSON.parse(response.choices[0].message.content);
+
+    // Ensure lists are formatted correctly
+    if (Array.isArray(result.requirements)) result.requirements = result.requirements.join('\n');
+    if (Array.isArray(result.responsibilities)) result.responsibilities = result.responsibilities.join('\n');
+
+    return result;
+  } catch (error) {
+    console.error("[JD Extraction] AI parsing failed:", error.message);
+    throw error;
+  }
+}
+
 module.exports = {
+  analyzeResumeText,
+  buildAnalysisPrompt,
   extractTextFromPdf,
   extractTextFromDocx,
-  analyzeResumeText,
-  generateCareerRoadmap,
-  extractResumeData,
-  optimizeResumeForJD
+  extractStructuredJDText
 };

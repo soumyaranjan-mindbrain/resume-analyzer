@@ -17,7 +17,14 @@ const userSchema = new mongoose.Schema({
   github: { type: String, default: "" },
   linkedin: { type: String, default: "" },
   refreshToken: { type: String, default: "" },
+  isVerified: { type: Boolean, default: false },
+  otp: { type: String, default: null },
+  otpExpires: { type: Date, default: null },
+  userType: { type: String, default: null },
+  targetRole: { type: String, default: null },
+  yearsOfExperience: { type: String, default: null },
 }, {
+
   timestamps: true,
   collection: "users" // Explicitly map to match Prisma's @@map("users")
 });

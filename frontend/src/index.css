@@ -76,11 +76,12 @@
     width: 800px;
     height: 800px;
     border-radius: 50%;
-    filter: blur(140px);
+    filter: blur(60px);
     z-index: -1;
     pointer-events: none;
-    opacity: 0.5;
+    opacity: 0.4;
   }
+
 
   body::before {
     background: #7dd3fc30;

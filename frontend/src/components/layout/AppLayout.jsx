@@ -184,17 +184,18 @@ const AppLayout = ({ children }) => {
 
         {user?.role !== 'admin' ? (
           <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-20">
-            <div className="absolute -top-[10%] -right-[5%] w-[70%] h-[70%] bg-blue-100/30 blur-[130px] rounded-full" />
-            <div className="absolute -bottom-[10%] -left-[5%] w-[65%] h-[65%] bg-slate-200/30 blur-[130px] rounded-full" />
+            <div className="absolute -top-[10%] -right-[5%] w-[70%] h-[70%] bg-blue-100/30 blur-[60px] rounded-full" />
+            <div className="absolute -bottom-[10%] -left-[5%] w-[65%] h-[65%] bg-slate-200/30 blur-[60px] rounded-full" />
             <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-white/10 opacity-70" />
           </div>
         ) : (
           <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-[0.4]">
             {/* Secondary tint for admin panel */}
-            <div className="absolute top-0 right-0 w-[50%] h-[50%] bg-blue-50/50 blur-[120px] rounded-full" />
-            <div className="absolute bottom-0 left-0 w-[50%] h-[50%] bg-slate-100/50 blur-[120px] rounded-full" />
+            <div className="absolute top-0 right-0 w-[50%] h-[50%] bg-blue-50/50 blur-[60px] rounded-full" />
+            <div className="absolute bottom-0 left-0 w-[50%] h-[50%] bg-slate-100/50 blur-[60px] rounded-full" />
           </div>
         )}
+
 
         <div className="relative z-10 flex flex-col h-full">
 

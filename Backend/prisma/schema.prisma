@@ -24,6 +24,14 @@ model User {
   linkedin  String?
   updatedAt DateTime? @updatedAt
 
+  isVerified  Boolean  @default(false)
+  otp         String?
+  otpExpires  DateTime?
+  userType    String?   // FRESHER, EXPERIENCED
+  targetRole  String?
+  yearsOfExperience String?
+
+
   resumes      Resume[] 
   jobs         Job[] 
   applications Application[]
@@ -85,6 +93,9 @@ model Job {
   isHired          Boolean  @default(false)
   userId           String   @db.ObjectId
   createdAt        DateTime @default(now())
+
+  jdSource         String?  @default("MANUAL")
+  jdText           String?
 
   user         User          @relation(fields: [userId], references: [id])  
   applications Application[]
