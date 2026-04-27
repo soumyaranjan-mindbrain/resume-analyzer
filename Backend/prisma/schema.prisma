@@ -150,3 +150,24 @@ model SystemConfig {
 
   @@map("system_configs")
 }
+
+model AIPrompt {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  key       String   @unique // 'analysis_fresher', 'analysis_experienced', etc.
+  content   String
+  isActive  Boolean  @default(true)
+  updatedAt DateTime @updatedAt
+
+  @@map("ai_prompts")
+}
+
+model JobTrack {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String   @unique // 'Frontend Developer'
+  skills    String[] // ['React', 'CSS']
+  isActive  Boolean  @default(true)
+  updatedAt DateTime @updatedAt
+
+  @@map("job_tracks")
+}
+

@@ -2,6 +2,10 @@
 const axios = require("axios");
 const mammoth = require("mammoth");
 const { groq } = require("../config/groq");
+const { PrismaClient } = require("@prisma/client");
+const prisma = new PrismaClient();
+
+
 
 const FREE_MODELS = [
   "llama-3.1-8b-instant",
@@ -143,15 +147,44 @@ async function extractTextFromDocx(input) {
 }
 
 // ─────────────────────────────────────────────
+//  DYNAMIC PROMPT HELPERS
+// ─────────────────────────────────────────────
+
+/**
+ * Replaces {{variable}} placeholders with actual data.
+ */
+function injectVariables(template, data) {
+  let result = template;
+  Object.keys(data).forEach(key => {
+    const regex = new RegExp(`{{${key}}}`, 'g');
+    result = result.replace(regex, data[key] || "");
+  });
+  return result;
+}
+
+async function getPromptsFromDB() {
+  try {
+    const prompts = await prisma.aIPrompt.findMany({ where: { isActive: true } });
+    const dict = {};
+    prompts.forEach(p => dict[p.key] = p.content);
+    return dict;
+  } catch (err) {
+    console.warn("[Prompts] Failed to fetch dynamic prompts:", err.message);
+    return {};
+  }
+}
+
+// ─────────────────────────────────────────────
 //  GROQ AI — RESUME ANALYSIS
 // ─────────────────────────────────────────────
-function buildAnalysisPrompt(resumeText, userType = null, targetRole = null, yearsOfExperience = null) {
+function buildAnalysisPrompt(resumeText, userType = null, targetRole = null, yearsOfExperience = null, roleSkills = ROLE_SKILLS, customTemplate = null) {
 
-  let roleContext = "";
-  if (targetRole && ROLE_SKILLS[targetRole]) {
+
+
+  if (targetRole && roleSkills[targetRole]) {
     roleContext = `
 TARGET ROLE: ${targetRole}
-EXPECTED SKILLS FOR THIS ROLE: ${ROLE_SKILLS[targetRole].join(", ")}
+EXPECTED SKILLS FOR THIS ROLE: ${roleSkills[targetRole].join(", ")}
 ${userType === "FRESHER"
         ? "Since the candidate is a FRESHER, focus on their potential, projects, and foundational knowledge."
         : `Since the candidate is EXPERIENCED (YoE: ${yearsOfExperience || "N/A"}), focus on technical depth, leadership, and professional impact.`}
@@ -159,6 +192,14 @@ ${userType === "FRESHER"
 Weigh the score heavily based on these skills and the appropriate career stage.
 `;
   }
+
+  if (customTemplate) {
+    // If a custom template is provided via Admin, use it instead of the default logic
+    // Note: Admin should include placeholders for ${resumeText}, ${roleContext}, etc. if they want to replace the whole thing
+    // For now, we'll assume customTemplate is an additional system instruction or a replacement for the rubric
+  }
+
+
 
 
   return `You are a Tier-1 Technical Recruiter and ATS Specialist.
@@ -274,9 +315,60 @@ async function analyzeResumeText(resumeText, jobDescription = null, options = {}
     throw new Error("Resume content too short to analyze.");
   }
 
-  const prompt = jobDescription
-    ? buildMatchPrompt(resumeText, jobDescription)
-    : buildAnalysisPrompt(resumeText, options.userType, options.targetRole, options.yearsOfExperience);
+  // --- Dynamic Config Loading ---
+  let dynamicRoleSkills = ROLE_SKILLS;
+  try {
+    const tracks = await prisma.jobTrack.findMany({ where: { isActive: true } });
+    if (tracks.length > 0) {
+      dynamicRoleSkills = {};
+      tracks.forEach(t => { dynamicRoleSkills[t.name] = t.skills; });
+    }
+  } catch (dbErr) {
+    console.warn("[Analysis] Using fallback role skills:", dbErr.message);
+  }
+
+  // Handle dynamic prompts (Optional: logic to swap buildAnalysisPrompt with DB content)
+  // For now, we'll pass the dynamicRoleSkills to the prompt builder if needed
+  // ...
+
+  // Handle dynamic prompts
+  const dbPrompts = await getPromptsFromDB();
+  let prompt;
+
+  if (jobDescription) {
+    const template = dbPrompts['job_match'] || buildMatchPrompt(resumeText, jobDescription);
+    prompt = typeof template === 'string' && template.includes('{{')
+      ? injectVariables(template, { resumeText, jobDescription })
+      : buildMatchPrompt(resumeText, jobDescription);
+  } else {
+    const key = options.userType === 'FRESHER' ? 'analysis_fresher' : 'analysis_experienced';
+    const template = dbPrompts[key];
+
+    if (template && template.includes('{{')) {
+      const skills = (options.targetRole && dynamicRoleSkills[options.targetRole])
+        ? dynamicRoleSkills[options.targetRole].join(", ")
+        : "General engineering skills";
+
+      prompt = injectVariables(template, {
+        resumeText,
+        userType: options.userType,
+        targetRole: options.targetRole,
+        yearsOfExperience: options.yearsOfExperience,
+        roleSkills: skills
+      });
+    } else {
+      prompt = buildAnalysisPrompt(
+        resumeText,
+        options.userType,
+        options.targetRole,
+        options.yearsOfExperience,
+        dynamicRoleSkills
+      );
+    }
+  }
+
+
+
 
 
 

@@ -4,12 +4,7 @@ import { UserCircle, Briefcase, GraduationCap, ChevronRight, CheckCircle2 } from
 import { cn } from '../../utils/cn';
 import { useAuth } from '../../context/AuthContext';
 
-const roles = [
-    "Frontend Developer",
-    "Backend Developer",
-    "Java Developer",
-    "React Native Developer"
-];
+
 
 const Onboarding = () => {
     const { user, completeOnboarding } = useAuth();
@@ -19,6 +14,29 @@ const Onboarding = () => {
     const [yearsOfExperience, setYearsOfExperience] = useState('');
     const [loading, setLoading] = useState(false);
     const [step, setStep] = useState(1);
+    const [dynamicRoles, setDynamicRoles] = useState([]);
+
+    React.useEffect(() => {
+        const fetchTracks = async () => {
+            try {
+                const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/config/tracks`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+                const data = await response.json();
+                if (data.success) {
+                    setDynamicRoles(data.tracks.map(t => t.name));
+                }
+            } catch (error) {
+                console.error("Failed to fetch tracks:", error);
+                // Fallback to static roles if API fails
+                setDynamicRoles(["Frontend Developer", "Backend Developer", "Java Developer", "React Native Developer"]);
+            }
+        };
+        fetchTracks();
+    }, []);
+
 
     const handleComplete = async () => {
         if (!userType) return;
@@ -135,7 +153,7 @@ const Onboarding = () => {
                             </p>
 
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                {roles.map((role) => (
+                                {dynamicRoles.map((role) => (
                                     <button
                                         key={role}
                                         onClick={() => setTargetRole(role)}
@@ -155,6 +173,7 @@ const Onboarding = () => {
                                     </button>
                                 ))}
                             </div>
+
 
                             <div className="pt-4">
                                 <button

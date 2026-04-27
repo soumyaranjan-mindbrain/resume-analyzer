@@ -68,8 +68,9 @@ const AppLayout = ({ children }) => {
     { path: '/admin/reports', label: 'Reports', icon: FileText },
     { path: '/admin/jobs', label: 'Job Descriptions', icon: Briefcase },
     { path: '/admin/support', label: 'Support Management', icon: HelpCircle },
-    { path: '/admin/settings', label: 'Settings', icon: Settings },
+    { path: '/admin/config', label: 'System Config', icon: Settings },
   ];
+
 
   const navItems = user?.role === 'admin' ? adminNavItems : userNavItems;
 
@@ -91,7 +92,9 @@ const AppLayout = ({ children }) => {
     '/admin/jobs': { title: 'Job Descriptions', subtitle: 'Manage available job roles and requirements.' },
     '/admin/jobs/new': { title: 'Create New Job Role', subtitle: 'Add a new position to the recruitment catalog.' },
     '/admin/support': { title: 'Support Management', subtitle: 'Manage student support queries and FAQs.' },
+    '/admin/config': { title: 'System Configuration', subtitle: 'Manage AI prompts, job tracks, and global parameters.' },
     '/admin/settings': { title: 'Settings', subtitle: 'Configure platform parameters and users.' },
+
   };
 
   const currentPage = pageInfo[location.pathname];

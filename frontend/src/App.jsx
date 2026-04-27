@@ -19,6 +19,8 @@ import SettingsAdmin from './pages/admin/Settings.jsx';
 import JobDescriptions from './pages/admin/JobDescriptions.jsx';
 import AddJobRole from './pages/admin/AddJobRole.jsx';
 import SupportManagement from './pages/admin/SupportManagement.jsx';
+import AdminConfig from './pages/admin/AdminConfig.jsx';
+
 import ProtectedRoute from './components/layout/ProtectedRoute.jsx';
 import PublicRoute from './components/layout/PublicRoute.jsx';
 import { AdminProvider } from './context/AdminContext.jsx';
@@ -65,6 +67,8 @@ function App() {
                 <Route path="/admin/jobs/edit/:id" element={<ProtectedRoute allowedRoles={['admin']}><AppLayout><AddJobRole /></AppLayout></ProtectedRoute>} />
                 <Route path="/admin/settings" element={<ProtectedRoute allowedRoles={['admin']}><AppLayout><SettingsAdmin /></AppLayout></ProtectedRoute>} />
                 <Route path="/admin/support" element={<ProtectedRoute allowedRoles={['admin']}><AppLayout><SupportManagement /></AppLayout></ProtectedRoute>} />
+                <Route path="/admin/config" element={<ProtectedRoute allowedRoles={['admin']}><AppLayout><AdminConfig /></AppLayout></ProtectedRoute>} />
+
               </Routes>
             </AnalysisProvider>
           </AdminProvider>

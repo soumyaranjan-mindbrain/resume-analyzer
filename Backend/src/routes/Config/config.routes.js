@@ -3,13 +3,26 @@ const router = express.Router();
 const configController = require("../../controllers/Config/config.controller");
 const { protect, admin } = require("../../middleware/auth-middleware");
 
-// Public route to check maintenance status
-router.get("/", configController.getConfig);
+// --- Public Config Routes ---
+// Needed for maintenance mode check and onboarding selection
+router.get("/", configController.getSystemConfig);
+router.get("/tracks", configController.getTracks);
 
-// Real-time config stream via SSE
-router.get("/stream", configController.streamConfig);
+// --- Admin-Only Management Routes ---
+router.use(protect);
+router.use(admin);
 
-// Admin only route to update maintenance status
-router.put("/", protect, admin, configController.updateConfig);
+// System Config update
+router.put("/", configController.updateSystemConfig);
+
+// Prompts
+router.get("/prompts", configController.getPrompts);
+router.put("/prompts/:key", configController.updatePrompt);
+
+// Job Tracks Management
+router.post("/tracks", configController.createTrack);
+router.put("/tracks/:id", configController.updateTrack);
+router.delete("/tracks/:id", configController.deleteTrack);
 
 module.exports = router;
+

@@ -1,93 +1,126 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
-const EventEmitter = require("events");
 
-const configEvents = new EventEmitter();
 
-// Get System Config
-exports.getConfig = async (req, res) => {
+
+// --- System Config (Maintenance Mode, etc.) ---
+
+exports.getSystemConfig = async (req, res) => {
     try {
         let config = await prisma.systemConfig.findFirst();
-
-        // Create default if not exists
         if (!config) {
             config = await prisma.systemConfig.create({
                 data: { maintenanceMode: false }
             });
         }
-
-        res.status(200).json({ config });
+        res.json({ success: true, config });
     } catch (error) {
-        console.error("Error fetching config:", error);
-        res.status(500).json({ error: "Failed to fetch system configuration" });
+        res.status(500).json({ error: error.message });
     }
 };
 
-// SSE stream for real-time config updates
-exports.streamConfig = async (req, res) => {
-    res.setHeader('Content-Type', 'text/event-stream');
-    res.setHeader('Cache-Control', 'no-cache');
-    res.setHeader('Connection', 'keep-alive');
-    res.flushHeaders();
-
-    const sendConfig = async () => {
-        try {
-            const config = await prisma.systemConfig.findFirst();
-            res.write(`data: ${JSON.stringify({ config })}\n\n`);
-        } catch (error) {
-            console.error("Error in config stream:", error);
-        }
-    };
-
-    // Send initial config
-    await sendConfig();
-
-    // Listen for updates
-    const onUpdate = () => {
-        sendConfig();
-    };
-
-    configEvents.on('update', onUpdate);
-
-    // Keep connection alive with heartbeat
-    const heartbeat = setInterval(() => {
-        res.write(': heartbeat\n\n');
-    }, 30000);
-
-    req.on('close', () => {
-        clearInterval(heartbeat);
-        configEvents.removeListener('update', onUpdate);
-        res.end();
-    });
-};
-
-// Update System Config (Admin Only)
-exports.updateConfig = async (req, res) => {
+exports.updateSystemConfig = async (req, res) => {
     try {
         const { maintenanceMode } = req.body;
+        const existing = await prisma.systemConfig.findFirst();
 
-        let config = await prisma.systemConfig.findFirst();
-
-        if (!config) {
-            config = await prisma.systemConfig.create({
-                data: { maintenanceMode: !!maintenanceMode }
+        let config;
+        if (existing) {
+            config = await prisma.systemConfig.update({
+                where: { id: existing.id },
+                data: { maintenanceMode }
             });
         } else {
-            config = await prisma.systemConfig.update({
-                where: { id: config.id },
-                data: { maintenanceMode: !!maintenanceMode }
+            config = await prisma.systemConfig.create({
+                data: { maintenanceMode }
             });
         }
-
-        // Notify all streaming clients
-        configEvents.emit('update');
-
-        res.status(200).json({
-            message: `Maintenance mode ${config.maintenanceMode ? 'enabled' : 'disabled'}`,
-            config
-        });
+        res.json({ success: true, config });
     } catch (error) {
-        console.error("Error updating config:", error);
-        res.status(500).json({ error: "Failed to update system configuration" });
+        res.status(500).json({ error: error.message });
+    }
+};
+
+
+// --- Prompts Management ---
+
+
+exports.getPrompts = async (req, res) => {
+    try {
+        const prompts = await prisma.aIPrompt.findMany();
+        res.json({ success: true, prompts });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+exports.updatePrompt = async (req, res) => {
+    try {
+        const { key } = req.params;
+        const { content, isActive } = req.body;
+
+        const prompt = await prisma.aIPrompt.upsert({
+            where: { key },
+            update: { content, isActive },
+            create: { key, content, isActive: isActive ?? true }
+        });
+
+        res.json({ success: true, prompt });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+// --- Job Tracks Management ---
+
+exports.getTracks = async (req, res) => {
+    try {
+        const tracks = await prisma.jobTrack.findMany({
+            where: { isActive: true }
+        });
+        res.json({ success: true, tracks });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+exports.createTrack = async (req, res) => {
+    try {
+        const { name, skills } = req.body;
+        const track = await prisma.jobTrack.create({
+            data: { name, skills, isActive: true }
+        });
+        res.json({ success: true, track });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+exports.updateTrack = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { name, skills, isActive } = req.body;
+
+        const track = await prisma.jobTrack.update({
+            where: { id },
+            data: { name, skills, isActive }
+        });
+
+        res.json({ success: true, track });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+exports.deleteTrack = async (req, res) => {
+    try {
+        const { id } = req.params;
+        await prisma.jobTrack.update({
+            where: { id },
+            data: { isActive: false }
+        });
+        res.json({ success: true, message: "Track deactivated successfully" });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
     }
 };
