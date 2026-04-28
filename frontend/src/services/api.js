@@ -114,6 +114,12 @@ export const optimizeForJD = async (resumeData, jobDescription) => {
   return response.data;
 };
 
+export const extractAndFillResume = async (formData) => {
+  const response = await apiClient.post('/resume/resume-maker/extract-fill', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  });
+  return response.data;
+};
 // Dashboard APIs
 export const getDashboardStats = async () => {
   const response = await apiClient.get('/dashboard');

@@ -101,14 +101,16 @@ const uploadResume = async (req, res) => {
       throw extractErr;
     }
 
-    // Step 2: Upload buffer to Cloudinary
-    let fileUrl = "";
+    // Step 2: Upload buffer to Cloudinary (with graceful fallback)
+    let fileUrl = "local://resume_pending_upload";
     try {
       const cloudResult = await uploadBufferToCloudinary(file.buffer, file.originalname);
       fileUrl = cloudResult.secure_url;
+      console.log("[Upload] Cloudinary upload successful:", fileUrl);
     } catch (cloudErr) {
-      console.error("[Upload] Cloudinary upload failed:", cloudErr.message);
-      return res.status(500).json({ error: "File upload to cloud failed: " + cloudErr.message });
+      console.error("[Upload] Cloudinary upload failed (using fallback):", cloudErr.message);
+      // ✅ Graceful fallback: continue without cloud URL — text is still extracted and analysis will work
+      // fileUrl stays as placeholder; user can view analysis results even if PDF preview won't work
     }
 
     // Step 3: Save resume to database
@@ -260,40 +262,22 @@ const reanalyzeResume = async (req, res) => {
       await prisma.resume.update({ where: { id: resume.id }, data: { extractedText } });
     }
 
-    let analysisData;
+    // Fetch user data for personalized analysis
+    const user = await prisma.user.findUnique({ where: { id: req.userId } });
+
+    analysisData = await analyzeResumeText(extractedText, jobDescription, {
+      userType: user?.userType,
+      targetRole: user?.targetRole,
+      yearsOfExperience: user?.yearsOfExperience
+    });
+
+    // Generate Roadmap
+    console.log("[Reanalyze] Generating Career Roadmap...");
     try {
-      // Fetch user data for personalized analysis
-      const user = await prisma.user.findUnique({ where: { id: req.userId } });
-
-      analysisData = await analyzeResumeText(extractedText, jobDescription, {
-        userType: user?.userType,
-        targetRole: user?.targetRole,
-        yearsOfExperience: user?.yearsOfExperience
-      });
-
-
-      // Generate Roadmap for the combined context if needed, or just standard roadmap
-      console.log("[Reanalyze] Generating Career Roadmap...");
-      try {
-        const roadmap = await generateCareerRoadmap(analysisData);
-        analysisData.roadmap = roadmap;
-      } catch (roadmapErr) {
-        console.error("[Reanalyze] Roadmap generation failed:", roadmapErr.message);
-      }
-    } catch (analysisError) {
-      analysisData = {
-        atsScore: 0,
-        keywordsMissing: [],
-        jobsMatched: 0,
-        suggestions: [analysisError.message],
-        trends: [],
-        summary: "",
-        skillsExtracted: [],
-        experienceLevel: "Unknown",
-        topStrengths: [],
-        weaknesses: [],
-        roadmap: null,
-      };
+      const roadmap = await generateCareerRoadmap(analysisData);
+      analysisData.roadmap = roadmap;
+    } catch (roadmapErr) {
+      console.error("[Reanalyze] Roadmap generation failed:", roadmapErr.message);
     }
 
     await saveAnalysis(resume.id, analysisData);

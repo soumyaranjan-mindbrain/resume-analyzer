@@ -170,11 +170,10 @@ const JobMatches = () => {
       }
     } catch (e) {
       clearInterval(progressInterval);
-      const isValidationError = e?.message?.includes('Validation Error:');
-      const friendlyMsg = isValidationError
-        ? e.message.replace('Validation Error:', '').trim()
-        : 'Please upload a professional resume to analyze properly.';
-      setApplyError(friendlyMsg);
+      console.error('[runApply] Error:', e);
+      const msg = e?.response?.data?.error || e?.message || 'Something went wrong during analysis.';
+      setApplyError(msg);
+      setApplyStep('error');
     }
   };
 
@@ -205,9 +204,17 @@ const JobMatches = () => {
       setIsApplying(true);
       const jobId = selectedJob.id || selectedJob._id;
       await applyToJob(jobId, currentResumeId);
+
+      // Update local state to reflect application status immediately
+      setJobs(prevJobs => prevJobs.map(j =>
+        (j.id === jobId || j._id === jobId) ? { ...j, isApplied: true } : j
+      ));
+
       setApplyStep('success');
     } catch (err) {
-      setApplyError(err.message || 'Application failed');
+      console.error('[handleFinalApply] Error:', err);
+      const msg = err?.response?.data?.error || err?.message || 'Application failed';
+      setApplyError(msg);
       setApplyStep('error');
     } finally {
       setIsApplying(false);
@@ -254,12 +261,10 @@ const JobMatches = () => {
 
       await runApply(selectedJob, resumeId);
     } catch (err) {
-      const isValidationError = err?.message?.includes('Validation Error:');
-      const friendlyMsg = isValidationError
-        ? err.message.replace('Validation Error:', '').trim()
-        : 'Please upload a professional resume to analyze properly.';
-      setApplyError(friendlyMsg);
-      setApplyStep('choose');
+      console.error('[handleFileUploadAndApply] Error:', err);
+      const msg = err?.response?.data?.error || err?.message || 'Upload failed. Please try again.';
+      setApplyError(msg);
+      setApplyStep('error');
     }
   };
 
@@ -374,17 +379,25 @@ const JobMatches = () => {
                       </button>
 
                       <button
-                        onClick={() => job.isHired ? toast.error('This role is no longer accepting applications') : openApply(job)}
-                        disabled={job.isHired}
+                        onClick={() => {
+                          if (job.isApplied) return;
+                          job.isHired ? toast.error('This role is no longer accepting applications') : openApply(job);
+                        }}
+                        disabled={job.isHired || job.isApplied}
                         className={cn(
-                          "flex items-center justify-center gap-2 px-3 lg:px-4 py-3 lg:py-3.5 rounded-xl font-bold text-[10px] lg:text-[11px] uppercase tracking-widest shadow-md transition-all",
-                          job.isHired
-                            ? "bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200"
-                            : "bg-slate-900 text-white hover:bg-slate-800 active:scale-95 shadow-slate-900/10"
+                          "flex items-center justify-center gap-2 px-3 lg:px-4 py-3 lg:py-3.5 rounded-xl font-bold text-[10px] lg:text-[11px] uppercase tracking-widest shadow-md transition-all active:scale-95",
+                          job.isApplied
+                            ? "bg-emerald-50 text-emerald-600 border border-emerald-100 shadow-none cursor-default"
+                            : (job.isHired
+                              ? "bg-slate-100 text-slate-400 cursor-not-allowed shadow-none"
+                              : "bg-blue-600 text-white hover:bg-blue-700 shadow-blue-600/20 shadow-lg")
                         )}
                       >
-                        {job.isHired ? <Lock className="w-3.5 h-3.5" /> : null}
-                        {job.isHired ? 'Closed' : 'Apply'}
+                        {job.isApplied ? (
+                          <>
+                            <CheckCircle2 className="w-4 h-4" /> Applied
+                          </>
+                        ) : 'Apply Now'}
                       </button>
                     </div>
                   </div>
@@ -645,13 +658,13 @@ const JobMatches = () => {
                       <div className="text-2xl font-black text-blue-600">{uploadProgress}%</div>
                     </div>
                     <div className="space-y-3">
-                      <h4 className="text-2xl font-bold text-slate-800">Deep Parsing Context...</h4>
+                      <h4 className="text-2xl font-bold text-slate-800">Analyzing Resume...</h4>
                       <p className="text-sm font-medium text-slate-500 px-12 leading-relaxed">
-                        Our AI is currently benchmarking your experience against the <span className="text-slate-900 font-bold">{selectedJob.title}</span> requirements.
+                        We are currently matching your experience against the <span className="text-slate-900 font-bold">{selectedJob.title}</span> requirements.
                       </p>
                     </div>
                     <div className="flex items-center gap-4 mt-4">
-                      {[ShieldCheck, Cpu, Zap].map((Icon, i) => (
+                      {[ShieldCheck, Briefcase, Target].map((Icon, i) => (
                         <div key={i} className="flex flex-col items-center gap-2">
                           <div className="w-12 h-12 bg-white border border-slate-100 rounded-2xl flex items-center justify-center shadow-sm">
                             <Icon className="w-5 h-5 text-slate-400" />
@@ -692,7 +705,7 @@ const JobMatches = () => {
                             <span className="text-5xl font-black text-white italic tracking-tighter">
                               {applyResult?.analysis?.atsScore ?? 0}
                             </span>
-                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Match Index</span>
+                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Match Score</span>
                           </div>
                         </div>
 
@@ -706,10 +719,10 @@ const JobMatches = () => {
                             </span>
                           </div>
                           <h4 className="text-2xl md:text-3xl font-bold text-white mb-3">
-                            {(applyResult?.analysis?.atsScore ?? 0) >= 80 ? 'Elite Alignment Detected' : (applyResult?.analysis?.atsScore ?? 0) >= 60 ? 'Strong Candidate Potential' : 'Strategic Optimization Required'}
+                            {(applyResult?.analysis?.atsScore ?? 0) >= 80 ? 'Excellent Match' : (applyResult?.analysis?.atsScore ?? 0) >= 60 ? 'Good Match' : 'Improvement Recommended'}
                           </h4>
                           <p className="text-slate-400 text-sm leading-relaxed max-w-xl italic">
-                            "{applyResult?.analysis?.summaryAnalysis?.substring(0, 180) || 'Your resume has been benchmarked against thousands of industry data points.'}..."
+                            "{applyResult?.analysis?.summaryAnalysis?.substring(0, 180) || 'Your resume has been compared against industry requirements for this role.'}..."
                           </p>
                         </div>
                       </div>
@@ -719,7 +732,7 @@ const JobMatches = () => {
                     <div className="p-1 w-full rounded-[2rem] bg-gradient-to-br from-blue-500/20 to-emerald-500/20">
                       <div className="bg-white/80 backdrop-blur-xl rounded-[1.9rem] p-6 lg:p-8 border border-white/40">
                         <h5 className="flex items-center gap-2 text-slate-900 font-black text-xs uppercase tracking-[0.2em] mb-6">
-                          <Target className="w-5 h-5 text-blue-600" /> Strategic Verdict
+                          <Target className="w-5 h-5 text-blue-600" /> Match Analysis
                         </h5>
                         <p className="text-sm font-medium text-slate-700 leading-loose text-justify">
                           {applyResult?.analysis?.summaryAnalysis || applyResult?.analysis?.summary}
@@ -731,7 +744,7 @@ const JobMatches = () => {
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                       {/* Left: Progress Bars */}
                       <div className="lg:col-span-5 space-y-6">
-                        <h5 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Alignment Breakdown</h5>
+                        <h5 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Score Breakdown</h5>
                         <div className="space-y-5">
                           {[
                             { label: 'Skill Alignment', value: applyResult?.analysis?.breakdown?.skillAlignment, max: 40, color: 'bg-blue-600' },

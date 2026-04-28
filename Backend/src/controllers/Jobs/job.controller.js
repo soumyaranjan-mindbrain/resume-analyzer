@@ -60,6 +60,8 @@ exports.createJob = async (req, res) => {
 exports.getJobs = async (req, res) => {
   try {
     const { search, skill } = req.query;
+    const currentUserId = req.userId || req.user?.id || req.user?._id;
+    const isValidId = currentUserId && /^[0-9a-fA-F]{24}$/.test(currentUserId);
 
     const jobs = await prisma.job.findMany({
       where: {
@@ -82,12 +84,23 @@ exports.getJobs = async (req, res) => {
       include: {
         _count: {
           select: { applications: true }
-        }
+        },
+        ...(isValidId ? {
+          applications: {
+            where: { userId: currentUserId },
+            select: { id: true }
+          }
+        } : {})
       },
       orderBy: { createdAt: "desc" }
     });
 
-    res.json(jobs);
+    const jobsWithStatus = jobs.map(j => ({
+      ...j,
+      isApplied: isValidId ? (j.applications?.length > 0) : false
+    }));
+
+    res.json(jobsWithStatus);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

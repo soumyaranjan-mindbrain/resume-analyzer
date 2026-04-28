@@ -10,21 +10,34 @@ cloudinary.config({
 });
 
 // Upload a buffer directly to Cloudinary (returns secure_url)
-const uploadBufferToCloudinary = (buffer, originalname) => {
+const uploadBufferToCloudinary = (buffer, originalname, retries = 2) => {
   return new Promise((resolve, reject) => {
-    const stream = cloudinary.uploader.upload_stream(
-      {
-        folder: "resumes",
-        resource_type: "raw", // Required for PDFs and DOCX
-        access_mode: "public", // Ensure URL is publicly accessible
-        public_id: `resume_${Date.now()}_${originalname.replace(/[^a-zA-Z0-9]/g, "_")}`,
-      },
-      (error, result) => {
-        if (error) return reject(error);
-        resolve(result);
-      }
-    );
-    stream.end(buffer);
+    const attemptUpload = (retriesLeft) => {
+      const stream = cloudinary.uploader.upload_stream(
+        {
+          folder: "resumes",
+          resource_type: "raw", // Required for PDFs and DOCX
+          access_mode: "public", // Ensure URL is publicly accessible
+          public_id: `resume_${Date.now()}_${originalname.replace(/[^a-zA-Z0-9]/g, "_")}`,
+          timeout: 60000, // 60s timeout
+        },
+        (error, result) => {
+          if (error) {
+            if (retriesLeft > 0) {
+              console.warn(`[Cloudinary] Upload failed, retrying... (${retriesLeft} left):`, error.message);
+              setTimeout(() => attemptUpload(retriesLeft - 1), 1000);
+            } else {
+              return reject(error);
+            }
+          } else {
+            resolve(result);
+          }
+        }
+      );
+      stream.end(buffer);
+    };
+
+    attemptUpload(retries);
   });
 };
 

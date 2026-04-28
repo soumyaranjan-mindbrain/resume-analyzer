@@ -1,6 +1,7 @@
 const prisma = require("../../prisma/client");
 const {
     extractTextFromPdf,
+    extractTextFromDocx,
     extractResumeData,
     optimizeResumeForJD,
 } = require("../../services/resumeAnalysis.service");
@@ -40,6 +41,39 @@ const autoFillFromResume = async (req, res) => {
     }
 };
 
+// ─────────────────────────────────────────────
+// Extract resume text in-memory for Resume Maker (NO Cloudinary upload)
+// ─────────────────────────────────────────────
+const extractAndFill = async (req, res) => {
+    try {
+        const file = req.file;
+        if (!file) return res.status(400).json({ error: "No file uploaded" });
+
+        const isDocx = file.originalname.toLowerCase().endsWith(".docx");
+
+        let extractedText = "";
+        if (isDocx) {
+            extractedText = await extractTextFromDocx(file.buffer);
+        } else {
+            extractedText = await extractTextFromPdf(file.buffer);
+        }
+
+        if (!extractedText || extractedText.trim().length < 30) {
+            return res.status(400).json({ error: "Could not extract text from the uploaded file." });
+        }
+
+        const structuredData = await extractResumeData(extractedText);
+
+        res.json({
+            success: true,
+            data: structuredData,
+        });
+    } catch (err) {
+        console.error("[ExtractAndFill Error]", err.message);
+        res.status(500).json({ error: "Failed to extract resume data: " + err.message });
+    }
+};
+
 const optimizeForJD = async (req, res) => {
     try {
         const { resumeData, jobDescription } = req.body;
@@ -61,5 +95,6 @@ const optimizeForJD = async (req, res) => {
 
 module.exports = {
     autoFillFromResume,
+    extractAndFill,
     optimizeForJD,
 };

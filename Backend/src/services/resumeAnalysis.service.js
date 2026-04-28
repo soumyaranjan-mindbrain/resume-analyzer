@@ -201,8 +201,14 @@ ROLE-SPECIFIC SCORING ENFORCEMENT (CRITICAL — READ CAREFULLY):
 - If the candidate has SOME transferable skills but is in a DIFFERENT domain, total score MUST be 25-40.
 - Only give "keywords" above 15 if the resume contains MOST of the mandatory skills.
 ${userType === "FRESHER"
-        ? "- FRESHER: Accept academic projects, internships, and learning as valid. But skills must still be RELEVANT to the target role."
-        : `- EXPERIENCED (${yearsOfExperience || "N/A"} YoE): Require production-level usage of mandatory skills, not just listing them.`}
+        ? `- FRESHER CALIBRATION:
+  * DO NOT penalize for "lack of professional work experience" or "short tenure".
+  * Evaluate "Experience Quality" based on Academic Projects, Internships, Freelancing, and Open Source.
+  * If the candidate has good projects but zero job history, DO NOT list "Experience gap" as a weakness.
+  * Focus on learning agility and foundational skill depth.`
+        : `- EXPERIENCED (${yearsOfExperience || "N/A"} YoE) CALIBRATION:
+  * Require production-level usage of mandatory skills.
+  * Penalize if the years of experience don't match the depth of achievements.`}
 `;
   }
 
@@ -210,7 +216,9 @@ ${userType === "FRESHER"
 ${roleSection}
 
 STEP 1: DOCUMENT VALIDATION
-First, determine if the text below is a professional Resume/CV.
+First, determine if the text below is a professional Resume, CV, or Profile.
+* ONLY return false if the content is completely unrelated (e.g. food recipe, random gibberish).
+* IF it contains any name, contact info, skills, or projects, treat it as a Resume.
 If it is NOT a resume (e.g., project report, book, invoice, random text), return ONLY:
 { "isResume": false, "error": "This document does not appear to be a professional resume or CV. Please upload a valid resume." }
 
@@ -271,7 +279,9 @@ ${resumeText.slice(0, 8000)}
 }
 
 
-function buildMatchPrompt(resumeText, jobDescription) {
+function buildMatchPrompt(resumeText, jobDescription, options = {}) {
+  const { userType, targetRole, yearsOfExperience } = options;
+
   return `You are a Tier-1 Technical Recruiter and ATS Specialist. Your task is to perform an exhaustive, BRUTALLY HONEST comparison between a Candidate's Resume and a specific Job Description (JD).
 
 ═══════════════════════════════════════════════════════════════
@@ -279,9 +289,13 @@ JOB DESCRIPTION CONTEXT:
 ${jobDescription.slice(0, 4000)}
 ═══════════════════════════════════════════════════════════════
 
+CANDIDATE TYPE: ${userType === "FRESHER" ? "FRESHER (No work experience)" : `EXPERIENCED (${yearsOfExperience || "N/A"} years)`}
+
 STEP 1: DOCUMENT VALIDATION
-First, verify that the 'RESUME PAYLOAD' (provided below) is a professional Resume or CV.
-If it is NOT a resume (e.g., project report, random text), you MUST return:
+First, verify that the 'RESUME PAYLOAD' (provided below) is a professional Resume, CV, or Profile. 
+* ONLY return false if the content is completely unrelated (e.g. food recipe, random gibberish, a movie script).
+* IF it contains any name, contact info, skills, or even just academic projects, treat it as a Resume.
+If it is NOT a resume, you MUST return:
 { "isResume": false, "error": "The uploaded document is not a professional resume. Job matching requires a valid resume payload." }
 
 STEP 2: PIN-POINTED ATS ALIGNMENT ANALYSIS
@@ -293,10 +307,19 @@ SCORING RUBRIC (Max 100 pts):
 3.  Keyword Match (20 pts): Frequency and relevance of industry terms from the JD.
 4.  Strategic Impact (10 pts): Does the candidate's achievements show they can solve the problems implied in the JD?
 
-CRITICAL SCORING RULES:
+${userType === "FRESHER"
+      ? `- FRESHER CALIBRATION:
+  * DO NOT penalize for "lack of professional work experience" or "short tenure".
+  * Evaluate "Experience Relevance" based on Academic Projects, Internships, Freelancing, and Open Source.
+  * If the candidate has good projects but zero job history, DO NOT list "Experience gap" as a weakness.
+  * Focus on learning agility and foundational skill depth.`
+      : `- EXPERIENCED (${yearsOfExperience || "N/A"} YoE) CALIBRATION:
+  * Require production-level usage of mandatory skills.
+  * Penalize if the years of experience don't match the depth of achievements.`}
+
+CRITICAL MATCHING RULES (STRICT):
 - If the JD is random text or unrelated to the candidate's field (e.g., Coder vs Chef), score MUST be below 20.
 - If the candidate misses 30%+ of the mandatory tech stack, score MUST be below 50.
-- If the candidate's experience level is much lower than required (e.g., JD asks for 10y but candidate has 1y), score MUST be below 40.
 
 Return ONLY valid JSON (no markdown, no preamble):
 {
@@ -351,7 +374,7 @@ async function analyzeResumeText(resumeText, jobDescription = null, options = {}
   let prompt;
 
   if (jobDescription) {
-    prompt = buildMatchPrompt(resumeText, jobDescription);
+    prompt = buildMatchPrompt(resumeText, jobDescription, options);
   } else {
     prompt = buildAnalysisPrompt(
       resumeText,
@@ -715,6 +738,8 @@ module.exports = {
   buildAnalysisPrompt,
   extractTextFromPdf,
   extractTextFromDocx,
+  extractResumeData,
+  optimizeResumeForJD,
   extractStructuredJDText,
   generateCareerRoadmap,
 };

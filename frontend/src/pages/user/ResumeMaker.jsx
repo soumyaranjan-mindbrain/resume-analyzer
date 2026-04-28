@@ -18,11 +18,12 @@ import {
     Save,
     Trash2,
     MoreVertical,
-    FileText
+    FileText,
+    Upload as UploadIcon
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
 import * as Templates from './components/ResumeTemplates';
-import { uploadResume, autoFillFromResume, optimizeForJD } from '../../services/api';
+import { extractAndFillResume, optimizeForJD, extractJD } from '../../services/api';
 import { toast } from 'react-hot-toast';
 
 const dummyPreviewData = {
@@ -59,8 +60,10 @@ const ResumeMaker = () => {
     const [activeTab, setActiveTab] = useState('basics');
     const [isProcessing, setIsProcessing] = useState(false);
     const [jdText, setJdText] = useState('');
+    const [isExtractingJD, setIsExtractingJD] = useState(false);
     const [uploadedFile, setUploadedFile] = useState(null);
     const autoFillInputRef = useRef(null);
+    const jdFileInputRef = useRef(null);
 
     const [resumeData, setResumeData] = useState(() => {
         const saved = sessionStorage.getItem(CACHE_KEY);
@@ -119,6 +122,31 @@ const ResumeMaker = () => {
         }));
     };
 
+    const handleJDUpload = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        try {
+            setIsExtractingJD(true);
+            toast.loading('Analyzing JD File...', { id: 'jd-extract' });
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            const { text } = await extractJD(formData);
+            if (text) {
+                setJdText(text);
+                toast.success('JD extracted successfully', { id: 'jd-extract' });
+            }
+        } catch (error) {
+            console.error('JD Extraction Error:', error);
+            toast.error('Failed to extract JD text', { id: 'jd-extract' });
+        } finally {
+            setIsExtractingJD(false);
+            e.target.value = ''; // Reset input
+        }
+    };
+
     // AI Automation: Strategic Synthesis (Source + Target)
     const handleAutoFill = async () => {
         const file = uploadedFile;
@@ -126,19 +154,18 @@ const ResumeMaker = () => {
 
         try {
             setIsProcessing(true);
-            toast.loading('Initializing Strategic Synthesis...', { id: 'autofill' });
+            toast.loading('Processing Details...', { id: 'autofill' });
 
-            // 1. Upload & Parse Base Data
+            // 1. Extract text & auto-fill (no Cloudinary upload)
             const formData = new FormData();
             formData.append('file', file);
-            const uploadResult = await uploadResume(formData);
-            const { data: parsedData } = await autoFillFromResume(uploadResult.resume.id);
+            const { data: parsedData } = await extractAndFillResume(formData);
 
             let finalData = parsedData;
 
             // 2. Immediate Optimization if JD is provided
             if (jdText.trim()) {
-                toast.loading('Aligning with target benchmarks...', { id: 'autofill' });
+                toast.loading('Optimizing for Job Role...', { id: 'autofill' });
                 const { data: optimizedData } = await optimizeForJD(parsedData, jdText);
                 finalData = optimizedData;
             }
@@ -526,9 +553,28 @@ const ResumeMaker = () => {
 
                         {/* Step 2: Job Context */}
                         <div className="space-y-8">
-                            <div className="flex items-center gap-4">
-                                <span className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center font-black text-white italic">02</span>
-                                <h2 className="text-3xl font-black text-slate-900 uppercase italic tracking-tighter">Job Description</h2>
+                            <div className="flex items-center justify-between gap-4">
+                                <div className="flex items-center gap-4">
+                                    <span className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center font-black text-white italic">02</span>
+                                    <h2 className="text-3xl font-black text-slate-900 uppercase italic tracking-tighter">Job Description</h2>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <input
+                                        type="file"
+                                        ref={jdFileInputRef}
+                                        onChange={handleJDUpload}
+                                        className="hidden"
+                                        accept=".pdf,.docx,.txt"
+                                    />
+                                    <button
+                                        onClick={() => jdFileInputRef.current?.click()}
+                                        disabled={isExtractingJD}
+                                        className="px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-500 hover:bg-white hover:text-blue-600 hover:border-blue-200 transition-all flex items-center gap-2"
+                                    >
+                                        {isExtractingJD ? <Sparkles className="w-3 h-3 animate-spin" /> : <UploadIcon className="w-3 h-3" />}
+                                        Upload JD
+                                    </button>
+                                </div>
                             </div>
 
                             <div className="space-y-4">
@@ -595,26 +641,29 @@ const ResumeMaker = () => {
                     </div>
                 </div>
 
-                {/* Neural Processing Overlay - Global */}
-                {isProcessing && (
-                    <div className="fixed inset-0 z-[100] bg-slate-900/40 backdrop-blur-md flex items-center justify-center p-8 animate-in fade-in duration-500">
-                        <div className="max-w-md w-full bg-white rounded-[3rem] p-10 shadow-2xl space-y-8 text-center animate-in zoom-in-95 duration-500">
-                            <div className="relative w-24 h-24 mx-auto">
-                                <div className="absolute inset-0 bg-blue-500/20 rounded-full animate-ping" />
-                                <div className="absolute inset-2 bg-blue-500/20 rounded-full animate-pulse" />
-                                <div className="relative bg-blue-600 w-full h-full rounded-full flex items-center justify-center shadow-2xl shadow-blue-500/40">
-                                    <Sparkles className="w-10 h-10 text-white animate-spin-slow" />
+                {/* Processing Overlay - Portalled for full screen coverage */}
+                {createPortal(
+                    isProcessing && (
+                        <div className="fixed inset-0 z-[9999] bg-slate-900/60 backdrop-blur-xl flex items-center justify-center p-8 animate-in fade-in duration-500 no-print">
+                            <div className="max-w-md w-full bg-white rounded-[3rem] p-10 shadow-2xl space-y-8 text-center animate-in zoom-in-95 duration-500">
+                                <div className="relative w-24 h-24 mx-auto">
+                                    <div className="absolute inset-0 bg-blue-500/20 rounded-full animate-ping" />
+                                    <div className="absolute inset-2 bg-blue-500/20 rounded-full animate-pulse" />
+                                    <div className="relative bg-blue-600 w-full h-full rounded-full flex items-center justify-center shadow-2xl shadow-blue-500/40">
+                                        <Briefcase className="w-10 h-10 text-white" />
+                                    </div>
+                                </div>
+                                <div className="space-y-3">
+                                    <h3 className="text-2xl font-black text-slate-900 uppercase italic tracking-tight leading-none">Generating Resume</h3>
+                                    <p className="text-slate-500 font-medium text-sm">Optimizing your professional details for the selected job role...</p>
+                                </div>
+                                <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                                    <div className="h-full bg-blue-600 animate-loading-bar" />
                                 </div>
                             </div>
-                            <div className="space-y-3">
-                                <h3 className="text-2xl font-black text-slate-900 uppercase italic tracking-tight leading-none">Synthesizing Narrative</h3>
-                                <p className="text-slate-500 font-medium text-sm">Aligning your professional trajectory with industry benchmarks and neural standards...</p>
-                            </div>
-                            <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                                <div className="h-full bg-blue-600 animate-loading-bar" />
-                            </div>
                         </div>
-                    </div>
+                    ),
+                    document.body
                 )}
             </div>
         </div>

@@ -14,6 +14,7 @@ const {
 const { analyzeResume } = require("../../controllers/Analysis/analysis.controller.v2");
 const {
   autoFillFromResume,
+  extractAndFill,
   optimizeForJD,
 } = require("../../controllers/Resume/resumeMaker.controller");
 const { authMiddleware } = require("../../middleware/auth-middleware");
@@ -30,6 +31,7 @@ router.post("/reanalyze", authMiddleware, reanalyzeResume);
 router.post("/match", authMiddleware, matchResume);
 router.get("/feedback", authMiddleware, getResumeFeedback);
 router.get("/my-resumes", authMiddleware, getMyResumes);
+router.post("/resume-maker/extract-fill", authMiddleware, upload.single("file"), extractAndFill);
 router.post("/resume-maker/auto-fill", authMiddleware, autoFillFromResume);
 router.post("/resume-maker/optimize", authMiddleware, optimizeForJD);
 router.get("/:id", authMiddleware, getResumeById);

@@ -389,7 +389,6 @@ const Students = () => {
 
               <div className="grid grid-cols-2 gap-6">
                 {[
-                  { label: "Course / Branch", value: selectedStudent.course || selectedStudent.branch || 'N/A' },
                   { label: "Phone Number", value: selectedStudent.phone || 'N/A' },
                   { label: "Enrollment Status", value: selectedStudent.status || 'Active' },
                   { label: "Average ATS Score", value: `${selectedStudent.score || 0}%`, highlight: true },
