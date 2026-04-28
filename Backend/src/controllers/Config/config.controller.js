@@ -116,7 +116,7 @@ exports.deleteTrack = async (req, res) => {
     try {
         const { id } = req.params;
         await prisma.jobTrack.update({
-            where: { id },
+            where: { id: id },
             data: { isActive: false }
         });
         res.json({ success: true, message: "Track deactivated successfully" });
@@ -124,3 +124,29 @@ exports.deleteTrack = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+// --- Platform Purge (Clear DB) ---
+
+exports.purgePlatformData = async (req, res) => {
+    try {
+        // 1. Delete all dependencies first
+        await prisma.analysis.deleteMany({});
+        await prisma.application.deleteMany({});
+        await prisma.helpTicket.deleteMany({});
+        await prisma.resume.deleteMany({});
+
+        // 2. Delete all students, but keep admins
+        await prisma.user.deleteMany({
+            where: { role: "student" }
+        });
+
+        res.json({
+            success: true,
+            message: "Platform has been purged. All students, resumes, and reports deleted."
+        });
+    } catch (error) {
+        console.error("[Purge Error]", error);
+        res.status(500).json({ error: error.message });
+    }
+};
+

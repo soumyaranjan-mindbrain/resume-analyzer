@@ -24,5 +24,9 @@ router.post("/tracks", configController.createTrack);
 router.put("/tracks/:id", configController.updateTrack);
 router.delete("/tracks/:id", configController.deleteTrack);
 
+// Platform Purge
+router.post("/purge", configController.purgePlatformData);
+
 module.exports = router;
+
 

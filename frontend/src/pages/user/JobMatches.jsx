@@ -665,107 +665,143 @@ const JobMatches = () => {
                 {applyStep === 'result' && applyResult && (
                   <div className="space-y-8 animate-fade-in">
 
-                    {/* Score Summary */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="bg-white rounded-[2rem] p-6 lg:p-8 border border-slate-100 shadow-sm flex flex-col items-center text-center justify-center">
-                        <div className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-600 mb-4">ATS Compatibility Score</div>
-                        <div className="relative w-32 h-32 flex items-center justify-center mb-4">
+                    {/* Hero Score Section */}
+                    <div className="relative p-8 rounded-[2.5rem] bg-slate-900 overflow-hidden shadow-2xl">
+                      <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/20 rounded-full blur-[80px] -mr-32 -mt-32" />
+                      <div className="absolute bottom-0 left-0 w-64 h-64 bg-emerald-600/10 rounded-full blur-[80px] -ml-32 -mb-32" />
+
+                      <div className="relative z-10 flex flex-col md:flex-row items-center gap-10">
+                        <div className="relative w-40 h-40 flex items-center justify-center shrink-0">
                           <svg className="w-full h-full -rotate-90">
-                            <circle cx="64" cy="64" r="58" fill="none" stroke="#f1f5f9" strokeWidth="12" />
+                            <circle cx="80" cy="80" r="72" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="12" />
                             <circle
-                              cx="64" cy="64" r="58" fill="none" stroke="currentColor" strokeWidth="12"
-                              strokeDasharray={2 * Math.PI * 58}
-                              strokeDashoffset={2 * Math.PI * 58 * (1 - (applyResult?.analysis?.atsScore ?? 0) / 100)}
-                              className={cn(
-                                "transition-all duration-1000 ease-out",
-                                (applyResult?.analysis?.atsScore ?? 0) >= 80 ? "text-emerald-500" : (applyResult?.analysis?.atsScore ?? 0) >= 60 ? "text-amber-500" : "text-rose-500"
-                              )}
+                              cx="80" cy="80" r="72" fill="none" stroke="url(#scoreGradient)" strokeWidth="14"
+                              strokeDasharray={2 * Math.PI * 72}
+                              strokeDashoffset={2 * Math.PI * 72 * (1 - (applyResult?.analysis?.atsScore ?? 0) / 100)}
+                              strokeLinecap="round"
+                              className="transition-all duration-1000 ease-out"
                             />
+                            <defs>
+                              <linearGradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" stopColor="#4b7bff" />
+                                <stop offset="100%" stopColor="#10b981" />
+                              </linearGradient>
+                            </defs>
                           </svg>
                           <div className="absolute inset-0 flex flex-col items-center justify-center">
-                            <span className={cn(
-                              "text-4xl font-black",
-                              (applyResult?.analysis?.atsScore ?? 0) >= 80 ? "text-emerald-600" : (applyResult?.analysis?.atsScore ?? 0) >= 60 ? "text-amber-600" : "text-rose-600"
-                            )}>
+                            <span className="text-5xl font-black text-white italic tracking-tighter">
                               {applyResult?.analysis?.atsScore ?? 0}
                             </span>
-                            <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">Percent</span>
+                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Match Index</span>
                           </div>
                         </div>
-                        <p className="text-sm font-bold text-slate-700">
-                          {(applyResult?.analysis?.atsScore ?? 0) >= 80 ? 'Exceptional Match!' : (applyResult?.analysis?.atsScore ?? 0) >= 60 ? 'Strong Potential' : 'Needs Optimization'}
-                        </p>
-                      </div>
 
-                      <div className="bg-white rounded-[2rem] p-6 lg:p-8 border border-slate-100 shadow-sm space-y-6">
-                        <div>
-                          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-2">Experience Level</p>
-                          <span className="px-4 py-2 bg-slate-900 text-white text-[11px] font-bold uppercase tracking-widest rounded-xl">
-                            {applyResult?.analysis?.experienceLevel || 'Identified'}
-                          </span>
-                        </div>
-                        <div>
-                          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-2">Key Strengths</p>
-                          <div className="flex flex-wrap gap-2">
-                            {(applyResult?.analysis?.topStrengths || []).slice(0, 3).map((st, i) => (
-                              <span key={i} className="px-3 py-1.5 bg-emerald-50 text-emerald-700 text-[10px] font-bold rounded-lg border border-emerald-100">
-                                {st}
-                              </span>
-                            ))}
+                        <div className="text-center md:text-left flex-1">
+                          <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 mb-4">
+                            <span className="px-4 py-1.5 bg-blue-500/10 text-blue-400 text-[10px] font-black uppercase tracking-[0.2em] rounded-full border border-blue-500/20">
+                              {applyResult?.analysis?.experienceLevel || 'Professional'}
+                            </span>
+                            <span className="px-4 py-1.5 bg-emerald-500/10 text-emerald-400 text-[10px] font-black uppercase tracking-[0.2em] rounded-full border border-emerald-500/20">
+                              ATS Verified
+                            </span>
                           </div>
-                        </div>
-                        <div>
-                          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-2">Recommendation</p>
-                          <p className="text-xs font-medium text-slate-600 leading-relaxed italic">
-                            "{applyResult?.analysis?.summary || 'Review your full analysis in the dashboard for detailed insights.'}"
+                          <h4 className="text-2xl md:text-3xl font-bold text-white mb-3">
+                            {(applyResult?.analysis?.atsScore ?? 0) >= 80 ? 'Elite Alignment Detected' : (applyResult?.analysis?.atsScore ?? 0) >= 60 ? 'Strong Candidate Potential' : 'Strategic Optimization Required'}
+                          </h4>
+                          <p className="text-slate-400 text-sm leading-relaxed max-w-xl italic">
+                            "{applyResult?.analysis?.summaryAnalysis?.substring(0, 180) || 'Your resume has been benchmarked against thousands of industry data points.'}..."
                           </p>
                         </div>
                       </div>
                     </div>
 
-                    {/* Pinpointed Details */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                      <div className="space-y-4">
-                        <h5 className="flex items-center gap-2 text-rose-600 font-black text-[11px] uppercase tracking-[0.2em]">
-                          <TrendingDown className="w-4 h-4" /> Areas for Improvement
+                    {/* Strategic Verdict - Glassmorphism */}
+                    <div className="p-1 w-full rounded-[2rem] bg-gradient-to-br from-blue-500/20 to-emerald-500/20">
+                      <div className="bg-white/80 backdrop-blur-xl rounded-[1.9rem] p-6 lg:p-8 border border-white/40">
+                        <h5 className="flex items-center gap-2 text-slate-900 font-black text-xs uppercase tracking-[0.2em] mb-6">
+                          <Target className="w-5 h-5 text-blue-600" /> Strategic Verdict
                         </h5>
-                        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden text-left">
-                          {(applyResult?.analysis?.weaknesses || []).map((w, i) => (
-                            <div key={i} className="p-4 border-b border-slate-50 last:border-0 flex items-start gap-3">
-                              <div className="w-1.5 h-1.5 rounded-full bg-rose-400 mt-2 shrink-0" />
-                              <p className="text-xs font-bold text-slate-700 leading-relaxed">{w}</p>
+                        <p className="text-sm font-medium text-slate-700 leading-loose text-justify">
+                          {applyResult?.analysis?.summaryAnalysis || applyResult?.analysis?.summary}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Detailed Breakdown Section */}
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                      {/* Left: Progress Bars */}
+                      <div className="lg:col-span-5 space-y-6">
+                        <h5 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Alignment Breakdown</h5>
+                        <div className="space-y-5">
+                          {[
+                            { label: 'Skill Alignment', value: applyResult?.analysis?.breakdown?.skillAlignment, max: 40, color: 'bg-blue-600' },
+                            { label: 'Experience Relevance', value: applyResult?.analysis?.breakdown?.experienceRelevance, max: 30, color: 'bg-emerald-600' },
+                            { label: 'Keywords Density', value: applyResult?.analysis?.breakdown?.keywords, max: 20, color: 'bg-amber-500' },
+                            { label: 'Strategic Impact', value: applyResult?.analysis?.breakdown?.impact, max: 10, color: 'bg-indigo-600' }
+                          ].map((item, i) => (
+                            <div key={i} className="space-y-2">
+                              <div className="flex justify-between items-center text-[11px] font-bold uppercase tracking-widest text-slate-600">
+                                <span>{item.label}</span>
+                                <span>{item.value}/{item.max}</span>
+                              </div>
+                              <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                                <div
+                                  className={cn("h-full transition-all duration-1000 ease-out rounded-full shadow-lg", item.color)}
+                                  style={{ width: `${(item.value / item.max) * 100}%` }}
+                                />
+                              </div>
                             </div>
                           ))}
                         </div>
                       </div>
 
-                      <div className="space-y-4">
-                        <h5 className="flex items-center gap-2 text-blue-600 font-black text-[11px] uppercase tracking-[0.2em]">
-                          <Target className="w-4 h-4" /> Missing Keywords
-                        </h5>
-                        <div className="flex flex-wrap gap-2">
-                          {(applyResult?.analysis?.keywordsMissing || []).length > 0 ? (
-                            (applyResult?.analysis?.keywordsMissing || []).map((kw, i) => (
-                              <span key={i} className="px-3 py-1.5 bg-slate-50 text-slate-600 text-[10px] font-bold rounded-lg border border-slate-200 uppercase tracking-tight">
-                                {kw}
-                              </span>
-                            ))
-                          ) : (
-                            <p className="text-xs font-medium text-slate-400 italic">No critical keywords missing!</p>
-                          )}
-                        </div>
-                        <div className="mt-4 p-4 bg-amber-50 rounded-2xl border border-amber-100">
-                          <div className="flex items-center gap-2 text-amber-700 font-bold text-[10px] uppercase tracking-widest mb-1">
-                            <Lightbulb className="w-3.5 h-3.5" /> Pro Tip
+                      {/* Right: Missing Keywords & Suggestions */}
+                      <div className="lg:col-span-7 space-y-8">
+                        <div className="bg-slate-50 border border-slate-200/60 rounded-[2rem] p-6 lg:p-8">
+                          <h5 className="flex items-center gap-2 text-rose-600 font-bold text-[11px] uppercase tracking-[0.2em] mb-4">
+                            <TrendingDown className="w-4 h-4" /> Recommended Keywords
+                          </h5>
+                          <div className="flex flex-wrap gap-2">
+                            {(applyResult?.analysis?.keywordsMissing || []).length > 0 ? (
+                              (applyResult?.analysis?.keywordsMissing || []).map((kw, i) => (
+                                <span key={i} className="px-3 py-1.5 bg-white text-slate-700 text-[10px] font-bold rounded-xl border border-slate-200 shadow-sm transition-all hover:border-blue-400 uppercase tracking-tight">
+                                  {kw}
+                                </span>
+                              ))
+                            ) : (
+                              <p className="text-xs font-medium text-slate-400 italic">Resume is keyword-perfect for this job.</p>
+                            )}
                           </div>
-                          <p className="text-[11px] text-amber-800 font-medium leading-relaxed">
-                            Injecting these missing keywords naturally into your experience can boost your score by up to 15%.
-                          </p>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          <div className="p-6 bg-emerald-50/50 rounded-3xl border border-emerald-100">
+                            <h6 className="text-[10px] font-black uppercase tracking-widest text-emerald-700 mb-3 flex items-center gap-2">
+                              <Zap className="w-4 h-4" /> Top Strengths
+                            </h6>
+                            <ul className="space-y-2">
+                              {(applyResult?.analysis?.topStrengths || []).slice(0, 3).map((s, i) => (
+                                <li key={i} className="text-[11px] font-bold text-slate-700 flex items-start gap-2">
+                                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-1 shrink-0" />
+                                  {s}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                          <div className="p-6 bg-slate-900 rounded-3xl text-white">
+                            <h6 className="text-[10px] font-black uppercase tracking-widest text-blue-400 mb-3 flex items-center gap-2">
+                              <Lightbulb className="w-4 h-4" /> Optimization
+                            </h6>
+                            <p className="text-[11px] text-slate-300 font-medium leading-relaxed italic">
+                              "{applyResult?.analysis?.suggestions?.[0] || 'Refine your summary to match the job responsibilities.'}"
+                            </p>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
                 )}
+
 
                 {applyStep === 'error' && (
                   <div className="py-12 flex flex-col items-center justify-center gap-6 text-center">

@@ -139,7 +139,7 @@ export const AnalysisProvider = ({ children }) => {
         }
     }, [user?.id, user?.role, fetchDashboardData, fetchHistory, fetchJobs, fetchRecommendations, fetchSkillInsights]);
 
-    const startAnalysis = useCallback(async (fileToUpload) => {
+    const startAnalysis = useCallback(async (fileToUpload, selections = {}) => {
         if (!fileToUpload) return;
 
         setIsAnalyzing(true);
@@ -171,12 +171,16 @@ export const AnalysisProvider = ({ children }) => {
             }, 300);
 
             // 3. Generation Phase
-            await analyzeResume(resumeId);
+            await analyzeResume(resumeId, selections);
             clearInterval(parsingInterval);
             setStatus('generating');
             setProgress(100);
 
             await new Promise(r => setTimeout(r, 1000));
+
+            // Background Refresh
+            fetchDashboardData(true);
+            fetchHistory(true);
 
             setIsAnalyzing(false);
             setFile(null);

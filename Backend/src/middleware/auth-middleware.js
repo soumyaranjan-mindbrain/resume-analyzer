@@ -59,12 +59,35 @@ const authMiddleware = (req, res, next) => {
 
 const protect = authMiddleware;
 
-const admin = (req, res, next) => {
-  if (req.user && (req.user.role === "admin" || req.user.role === "ADMIN")) {
-    next();
-  } else {
-    console.warn(`[Admin FAIL] User ${req.user?.id} has role: ${req.user?.role}`);
-    res.status(403).json({ error: "Not authorized as an admin" });
+const admin = async (req, res, next) => {
+  try {
+    // 1. Check if role exists in token (req.user is the decoded token)
+    let role = req.user?.role;
+
+    // 2. Fallback: If role is missing from token, fetch from DB
+    if (!role && req.userId) {
+      console.log(`[Admin Debug] Role missing from token for user ${req.userId}, fetching from DB...`);
+      const User = require("../models/User"); // Mongoose model
+      try {
+        const user = await User.findById(req.userId).select("role");
+        role = user?.role;
+      } catch (err) {
+        console.error("[Admin Debug] DB fetch failed:", err.message);
+      }
+    }
+
+    if (role && (role.toLowerCase() === "admin")) {
+      next();
+    } else {
+      console.warn(`[Admin FAIL] User ${req.userId} denied. Role found: ${role}`);
+      res.status(403).json({
+        error: "Not authorized as an admin",
+        details: "This high-privilege area requires an administrator account."
+      });
+    }
+  } catch (error) {
+    console.error("[Admin Critical] Middleware Error:", error);
+    res.status(500).json({ error: "Internal server error during authorization check" });
   }
 };
 

@@ -85,6 +85,7 @@ exports.getTickets = async (req, res) => {
 // ---------------- ADMIN: GET ALL TICKETS ----------------
 exports.adminGetAllTickets = async (req, res) => {
   try {
+    console.log("[Support Fix] Fetching all tickets for admin...");
     const tickets = await prisma.helpTicket.findMany({
       include: {
         user: {
@@ -96,18 +97,19 @@ exports.adminGetAllTickets = async (req, res) => {
       },
     });
 
+    console.log(`[Support Fix] Found ${tickets.length} tickets.`);
+
     return res.status(200).json({
       success: true,
       data: tickets,
     });
   } catch (error) {
+    console.error("[Support Fix] Error in adminGetAllTickets:", error);
     return res.status(500).json({
       success: false,
       message: error.message,
     });
   }
-
-
 };
 
 // ---------------- ADMIN: UPDATE TICKET (Reply/Resolve) ----------------

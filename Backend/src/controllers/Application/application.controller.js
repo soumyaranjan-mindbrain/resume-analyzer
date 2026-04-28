@@ -6,11 +6,15 @@ const applyToJob = async (req, res) => {
         const { jobId, resumeId } = req.body;
         const userId = req.userId || req.user?.id || req.user?._id;
 
+        console.log(`[Apply] Request: User ${userId} applying to Job ${jobId} with Resume ${resumeId}`);
+
         if (!jobId || !resumeId) {
+            console.error("[Apply] Error: Missing jobId or resumeId");
             return res.status(400).json({ error: "jobId and resumeId are required" });
         }
 
         if (!userId) {
+            console.error("[Apply] Error: Missing userId in request");
             return res.status(401).json({ error: "User unauthorized" });
         }
 
@@ -75,6 +79,8 @@ const getMyApplications = async (req, res) => {
 const getJobApplicants = async (req, res) => {
     try {
         const { jobId } = req.params;
+        console.log(`[GetApplicants] Fetching candidates for Job ID: ${jobId}`);
+
         const applications = await prisma.application.findMany({
             where: { jobId },
             include: {
@@ -88,9 +94,11 @@ const getJobApplicants = async (req, res) => {
             orderBy: { createdAt: "desc" }
         });
 
+        console.log(`[GetApplicants] Successfully retrieved ${applications.length} applications for Job ${jobId}`);
         res.json({ success: true, applications });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error(`[GetApplicants Error] Job ${req.params.jobId}:`, err.message);
+        res.status(500).json({ error: "Failed to fetch applicants: " + err.message });
     }
 };
 

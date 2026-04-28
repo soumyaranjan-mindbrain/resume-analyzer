@@ -43,7 +43,7 @@ const PremiumSelect = ({
 
             {isOpen && (
                 <div className="absolute top-full left-0 right-0 mt-2 bg-white/95 backdrop-blur-xl border border-slate-100 rounded-2xl shadow-[0_30px_60px_-15px_rgba(0,0,0,0.2)] py-2 z-[60] animate-in fade-in slide-in-from-top-4 duration-500 zoom-in-95">
-                    <div className="max-h-60 overflow-y-auto custom-scrollbar">
+                    <div className="max-h-72 overflow-y-auto custom-scrollbar">
                         {options.map((opt) => (
                             <button
                                 key={opt.value}

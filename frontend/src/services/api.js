@@ -25,10 +25,11 @@ export const uploadResume = async (formData, onUploadProgress) => {
   return response.data;
 };
 
-export const analyzeResume = async (resumeId) => {
-  const response = await apiClient.post('/resume/analyze', { resumeId });
+export const analyzeResume = async (resumeId, params = {}) => {
+  const response = await apiClient.post('/resume/analyze', { resumeId, ...params });
   return response.data;
 };
+
 
 export const reanalyzeResume = async (resumeId, jobDescription) => {
   const response = await apiClient.post('/resume/reanalyze', { resumeId, jobDescription });
@@ -247,6 +248,11 @@ export const applyToJob = async (jobId, resumeId) => {
 };
 
 // System Config APIs
+export const getTracks = async () => {
+  const response = await apiClient.get('/config/tracks');
+  return response.data;
+};
+
 export const getConfig = async () => {
   const response = await apiClient.get('/config');
   return response.data;

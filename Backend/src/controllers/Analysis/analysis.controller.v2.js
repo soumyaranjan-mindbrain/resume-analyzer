@@ -2,6 +2,7 @@ const prisma = require("../../prisma/client");
 const {
   analyzeResumeText,
   extractTextFromPdf,
+  generateCareerRoadmap,
 } = require("../../services/resumeAnalysis.service");
 
 const analyzeResume = async (req, res) => {
@@ -30,19 +31,28 @@ const analyzeResume = async (req, res) => {
       return res.status(400).json({ error: "Could not extract text from resume for analysis." });
     }
 
-    // Force fresh AI analysis
+    // Allow dynamic overrides from the request body (set by the frontend modal)
+    const { targetRole: dynamicRole, userType: dynamicUserType, yearsOfExperience: dynamicExp } = req.body;
+
     const user = await prisma.user.findUnique({
       where: { id: userId },
       select: { userType: true, targetRole: true, yearsOfExperience: true }
     });
 
     const analysisData = await analyzeResumeText(extractedText, null, {
-      userType: user?.userType,
-      targetRole: user?.targetRole,
-      yearsOfExperience: user?.yearsOfExperience
+      userType: dynamicUserType || user?.userType,
+      targetRole: dynamicRole || user?.targetRole,
+      yearsOfExperience: dynamicExp || user?.yearsOfExperience
     });
 
-
+    // Generate career roadmap
+    let roadmap = null;
+    try {
+      roadmap = await generateCareerRoadmap(analysisData);
+      analysisData.roadmap = roadmap;
+    } catch (roadmapErr) {
+      console.warn("[Analysis] Roadmap generation failed:", roadmapErr.message);
+    }
 
     console.log(`[Analysis] AI returned score: ${analysisData.atsScore}`);
 
@@ -50,6 +60,7 @@ const analyzeResume = async (req, res) => {
       where: { resumeId },
       update: {
         atsScore: analysisData.atsScore,
+        scoreBreakdown: analysisData.scoreBreakdown || {},
         keywordsMissing: analysisData.keywordsMissing,
         jobsMatched: analysisData.jobsMatched,
         suggestions: analysisData.suggestions,
@@ -58,10 +69,12 @@ const analyzeResume = async (req, res) => {
         experienceLevel: analysisData.experienceLevel,
         topStrengths: analysisData.topStrengths,
         weaknesses: analysisData.weaknesses,
+        roadmap: roadmap,
       },
       create: {
         resumeId,
         atsScore: analysisData.atsScore,
+        scoreBreakdown: analysisData.scoreBreakdown || {},
         keywordsMissing: analysisData.keywordsMissing,
         jobsMatched: analysisData.jobsMatched,
         suggestions: analysisData.suggestions,
@@ -70,6 +83,7 @@ const analyzeResume = async (req, res) => {
         experienceLevel: analysisData.experienceLevel,
         topStrengths: analysisData.topStrengths,
         weaknesses: analysisData.weaknesses,
+        roadmap: roadmap,
       },
     });
 
@@ -82,6 +96,9 @@ const analyzeResume = async (req, res) => {
     });
   } catch (err) {
     console.error("[Analysis Error]", err.message);
+    if (err.message?.includes("Validation Error:")) {
+      return res.status(400).json({ error: err.message.replace("Validation Error:", "").trim() });
+    }
     res.status(500).json({ error: err.message });
   }
 };

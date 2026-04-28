@@ -8,10 +8,12 @@ import {
 } from 'lucide-react';
 import { deleteAllData, getConfig, updateConfig } from '../../services/api';
 import { useConfig } from '../../context/ConfigContext';
+import { useAnalysis } from '../../context/AnalysisContext';
 import toast from 'react-hot-toast';
 
 const Settings = () => {
   const { refreshConfig } = useConfig();
+  const { fetchDashboardData, fetchHistory, fetchJobs, fetchSkillInsights } = useAnalysis();
   const [isMaintenance, setIsMaintenance] = useState(false);
   const [showPurgeModal, setShowPurgeModal] = useState(false);
   const [purgeConfirmText, setPurgeConfirmText] = useState('');
@@ -63,6 +65,12 @@ const Settings = () => {
       toast.success('All platform data has been purged');
       setShowPurgeModal(false);
       setPurgeConfirmText('');
+
+      // Background Sync
+      fetchDashboardData(true);
+      fetchHistory(true);
+      fetchJobs(true);
+      fetchSkillInsights(true);
     } catch (error) {
       toast.error('Failed to delete platform data');
     } finally {

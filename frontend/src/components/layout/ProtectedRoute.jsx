@@ -30,14 +30,8 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
     return <Navigate to="/" replace />;
   }
 
-  // Onboarding redirection - Only for students
+  // Onboarding redirection disabled - now part of the analysis flow
   const isStudent = user.role === 'student';
-  const needsOnboarding = isStudent && !user.userType;
-  const isOnboardingPage = window.location.pathname === '/onboarding';
-
-  if (needsOnboarding && !isOnboardingPage) {
-    return <Navigate to="/onboarding" replace />;
-  }
 
   if (allowedRoles && !allowedRoles.includes(user.role)) {
 

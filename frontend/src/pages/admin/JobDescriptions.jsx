@@ -453,9 +453,6 @@ const JobDescriptions = () => {
                                 )}>
                                   {app.resume?.analysis?.atsScore || 0}%
                                 </span>
-                                <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center border border-slate-100 text-slate-400 group-hover:text-slate-900 group-hover:scale-110 transition-all cursor-pointer">
-                                  <ArrowUpRight className="w-4 h-4" />
-                                </div>
                               </div>
                             </td>
                           </tr>

@@ -179,61 +179,67 @@ async function getPromptsFromDB() {
 // ─────────────────────────────────────────────
 function buildAnalysisPrompt(resumeText, userType = null, targetRole = null, yearsOfExperience = null, roleSkills = ROLE_SKILLS, customTemplate = null) {
 
+  let roleSection = "";
 
+  if (targetRole) {
+    const skills = roleSkills[targetRole];
+    const skillList = skills ? (Array.isArray(skills) ? skills.join(", ") : skills) : "General engineering skills";
 
-  if (targetRole && roleSkills[targetRole]) {
-    roleContext = `
+    roleSection = `
+═══════════════════════════════════════════════════════════════
 TARGET ROLE: ${targetRole}
-EXPECTED SKILLS FOR THIS ROLE: ${roleSkills[targetRole].join(", ")}
-${userType === "FRESHER"
-        ? "Since the candidate is a FRESHER, focus on their potential, projects, and foundational knowledge."
-        : `Since the candidate is EXPERIENCED (YoE: ${yearsOfExperience || "N/A"}), focus on technical depth, leadership, and professional impact.`}
+MANDATORY SKILLS FOR THIS ROLE: [${skillList}]
+CANDIDATE TYPE: ${userType === "FRESHER" ? "FRESHER (No work experience)" : `EXPERIENCED (${yearsOfExperience || "N/A"} years)`}
+═══════════════════════════════════════════════════════════════
 
-Weigh the score heavily based on these skills and the appropriate career stage.
+ROLE-SPECIFIC SCORING ENFORCEMENT (CRITICAL — READ CAREFULLY):
+- You MUST score this resume EXCLUSIVELY for the role of "${targetRole}".
+- The MANDATORY SKILLS listed above are the PRIMARY scoring criteria for "keywords" and "techSkills".
+- For EACH mandatory skill that is COMPLETELY ABSENT from the resume, deduct 2-3 points from "keywords" (max 20).
+- If the resume has ZERO overlap with [${skillList}], then "keywords" MUST be 0-3 and "techSkills" MUST be 0-2.
+- If the candidate's domain is COMPLETELY DIFFERENT (e.g., Chef resume for Backend Developer), total score MUST be 10-20.
+- If the candidate has SOME transferable skills but is in a DIFFERENT domain, total score MUST be 25-40.
+- Only give "keywords" above 15 if the resume contains MOST of the mandatory skills.
+${userType === "FRESHER"
+        ? "- FRESHER: Accept academic projects, internships, and learning as valid. But skills must still be RELEVANT to the target role."
+        : `- EXPERIENCED (${yearsOfExperience || "N/A"} YoE): Require production-level usage of mandatory skills, not just listing them.`}
 `;
   }
 
-  if (customTemplate) {
-    // If a custom template is provided via Admin, use it instead of the default logic
-    // Note: Admin should include placeholders for ${resumeText}, ${roleContext}, etc. if they want to replace the whole thing
-    // For now, we'll assume customTemplate is an additional system instruction or a replacement for the rubric
-  }
-
-
-
-
   return `You are a Tier-1 Technical Recruiter and ATS Specialist.
-${roleContext}
-  
+${roleSection}
+
 STEP 1: DOCUMENT VALIDATION
+First, determine if the text below is a professional Resume/CV.
+If it is NOT a resume (e.g., project report, book, invoice, random text), return ONLY:
+{ "isResume": false, "error": "This document does not appear to be a professional resume or CV. Please upload a valid resume." }
 
-First, determine if the provided text is a professional Resume or Curriculum Vitae (CV). 
-If it is NOT a resume (e.g., it is a project report, a book excerpt, an invoice, or non-career related text), you MUST return only this JSON and stop:
-{ "isResume": false, "error": "This document does not appear to be a professional resume or CV. Please upload a valid resume payload." }
-
-STEP 2: NEURAL ANALYSIS
-If it IS a resume, analyze it and provide a BRUTALLY HONEST score based on a 100-point rubric.
+STEP 2: ROLE-TARGETED ATS ANALYSIS
+Analyze THIS resume specifically for the "${targetRole || "General"}" role.
 
 SCORING RUBRIC (Max 100 pts):
-1.  Keyword Density (20 pts): Match against standard industry tech stacks. 
-2.  Quantifiability (15 pts): Use of numbers (%, $, #) to show impact. 
-3.  Technical Depth (10 pts): Advanced tools, architectures, and depth.
-4.  Experience Quality (10 pts): Tenure, company prestige, career growth.
-5.  Education (8 pts): Degree relevance, high-tier institutions.
-6.  Projects (8 pts): Complexity, open source, or live links.
-7.  Formatting (7 pts): ATS-friendly structure, no graphics/columns.
-8.  Summary (6 pts): High-impact value proposition, clear role.
-9.  Certifications (5 pts): AWS, GCP, Azure, or professional certs.
-10. Online Presence (5 pts): Active GitHub, LinkedIn, Portfolio.
-11. Soft Skills (4 pts): Leadership, mentoring, collaboration.
-12. Grammar (2 pts): Zero typos, professional tone.
+1.  Keyword Density (20 pts): How many MANDATORY SKILLS from the target role appear in the resume? If none match = 0-3. If all match = 16-20.
+2.  Quantifiability (15 pts): Measurable impact with numbers (%, $, #).
+3.  Technical Depth (10 pts): Depth of knowledge in the TARGET ROLE's tech stack specifically. Generic/unrelated skills = 0-2.
+4.  Experience Quality (10 pts): Work experience RELEVANT to the target role only.
+5.  Education (8 pts): Degree relevance to the target role's domain.
+6.  Projects (8 pts): Projects demonstrating TARGET ROLE skills.
+7.  Formatting (7 pts): ATS-friendly, clean structure.
+8.  Summary (6 pts): Value proposition aligned with the target role.
+9.  Certifications (5 pts): Certifications relevant to the target role.
+10. Online Presence (5 pts): GitHub/LinkedIn/Portfolio with relevant work.
+11. Soft Skills (4 pts): Leadership, collaboration, communication.
+12. Grammar (2 pts): Professional tone, zero typos.
 
-BE EXTREMELY CRITICAL. 
-- Generic student resumes with only school projects: 40-55 pts.
-- Solid professional resumes (2-4 years): 60-75 pts.
-- Industry experts / FAANG level: 85+ pts.
+SCORING CALIBRATION:
+- Resume with NO relevant skills for "${targetRole || "target role"}": 10-25 pts MAXIMUM.
+- Resume from DIFFERENT domain with some transferable skills: 25-40 pts.
+- Generic student resume, partially relevant: 35-55 pts.  
+- Good resume with most target skills present: 55-75 pts.
+- Excellent resume perfectly aligned to target role: 75-90 pts.
+- Expert with deep domain mastery + leadership: 85-100 pts.
 
-Return ONLY valid JSON:
+Return ONLY valid JSON (no markdown, no explanation):
 {
   "isResume": true,
   "breakdown": {
@@ -250,12 +256,12 @@ Return ONLY valid JSON:
     "softSkills": 0-4,
     "grammar": 0-2
   },
-  "keywordsMissing": ["specifically", "missing", "technical", "terms"],
-  "suggestions": ["specific actionable advice"],
-  "topStrengths": ["Exactly 4 specific proven strengths"],
-  "weaknesses": ["Exactly 4 specific improvement areas"],
+  "keywordsMissing": ["specific skills from MANDATORY list that are MISSING from the resume"],
+  "suggestions": ["4-5 actions to improve fit for ${targetRole || "the target role"}"],
+  "topStrengths": ["Exactly 4 strengths relevant to ${targetRole || "the role"}"],
+  "weaknesses": ["Exactly 4 gaps/weaknesses for ${targetRole || "the role"}"],
   "experienceLevel": "Entry | Mid | Senior",
-  "summaryAnalysis": "Deep executive critique of the candidate's professional standing and resume quality (minimum 6-8 lines). Focus on specific areas for improvement, technical gaps, and strategic market positioning."
+  "summaryAnalysis": "6-8 line critique: How well does this candidate fit '${targetRole || "the role"}'? What mandatory skills are missing? What domain-specific improvements are needed?"
 }
 
 RESUME PAYLOAD:
@@ -264,46 +270,54 @@ ${resumeText.slice(0, 8000)}
 ---`;
 }
 
+
 function buildMatchPrompt(resumeText, jobDescription) {
-  return `You are a Tier-1 Technical Recruiter. Your task is to perform a pin-pointed comparison between a Candidate's Resume and a specific Job Description (JD).
+  return `You are a Tier-1 Technical Recruiter and ATS Specialist. Your task is to perform an exhaustive, BRUTALLY HONEST comparison between a Candidate's Resume and a specific Job Description (JD).
+
+═══════════════════════════════════════════════════════════════
+JOB DESCRIPTION CONTEXT:
+${jobDescription.slice(0, 4000)}
+═══════════════════════════════════════════════════════════════
 
 STEP 1: DOCUMENT VALIDATION
-First, verify that the 'RESUME' payload provided is a professional Resume or CV. 
+First, verify that the 'RESUME PAYLOAD' (provided below) is a professional Resume or CV.
 If it is NOT a resume (e.g., project report, random text), you MUST return:
 { "isResume": false, "error": "The uploaded document is not a professional resume. Job matching requires a valid resume payload." }
 
-STEP 2: ATS MATCH ANALYSIS
-If it IS a resume, score its alignment with the JD.
+STEP 2: PIN-POINTED ATS ALIGNMENT ANALYSIS
+If it IS a resume, analyze its match against the JD using this 100-point rubric:
 
-CRITICAL INSTRUCTIONS:
-- If the JD is random text, jibberish, placeholder text, or completely irrelevant to the candidates career (e.g., candidate is a Coder but JD is for a Chef), the total score MUST be very low (below 30).
-- Be EXTREMELY STRICT. If the candidate misses 20% of required tech stack, they lose 15+ points in Skill Alignment.
-- The score must reflect the ELIGIBILITY for THIS specific role.
+SCORING RUBRIC (Max 100 pts):
+1.  Skill Alignment (40 pts): Match of mandatory technical skills found in JD vs those in Resume. 
+2.  Experience Relevance (30 pts): Does the work history align with the JD's level and responsibilities? 
+3.  Keyword Match (20 pts): Frequency and relevance of industry terms from the JD.
+4.  Strategic Impact (10 pts): Does the candidate's achievements show they can solve the problems implied in the JD?
 
-Return ONLY valid JSON:
+CRITICAL SCORING RULES:
+- If the JD is random text or unrelated to the candidate's field (e.g., Coder vs Chef), score MUST be below 20.
+- If the candidate misses 30%+ of the mandatory tech stack, score MUST be below 50.
+- If the candidate's experience level is much lower than required (e.g., JD asks for 10y but candidate has 1y), score MUST be below 40.
+
+Return ONLY valid JSON (no markdown, no preamble):
 {
+  "isResume": true,
   "breakdown": {
     "skillAlignment": 0-40,
     "experienceRelevance": 0-30,
     "keywords": 0-20,
     "impact": 0-10
   },
-  "keywordsMissing": ["specific", "missing", "tech", "from", "JD"],
-  "suggestions": ["actions to take specifically for THIS application"],
-  "topStrengths": ["Exactly 4 specific matches vs JD"],
-  "weaknesses": ["Exactly 4 specific gaps vs JD"],
+  "keywordsMissing": ["Top 8-10 missing tech/soft skills found in JD"],
+  "suggestions": ["4-5 specific actions to optimize this resume for THIS job description"],
+  "topStrengths": ["4 specific areas where the candidate is a perfect match vs JD"],
+  "weaknesses": ["4 specific gaps/weaknesses relative to THIS specific role"],
   "experienceLevel": "Entry | Mid | Senior",
-  "summaryAnalysis": "Deep executive critique of the role-fit (minimum 6-8 lines). Compare specific technical depth vs the JD requirements, highlight critical alignment gaps, and provide a strategic verdict on candidacy."
+  "summaryAnalysis": "Strategic Verdict (6-8 lines): A critical assessment of the candidate's 'Hireability' for this specific role. Identify exactly why they will or will not pass the initial screening."
 }
 
-RESUME:
+RESUME PAYLOAD:
 ---
-${resumeText.slice(0, 6000)}
----
-
-JOB DESCRIPTION:
----
-${jobDescription.slice(0, 4000)}
+${resumeText.slice(0, 8000)}
 ---`;
 }
 
@@ -331,41 +345,23 @@ async function analyzeResumeText(resumeText, jobDescription = null, options = {}
   // For now, we'll pass the dynamicRoleSkills to the prompt builder if needed
   // ...
 
-  // Handle dynamic prompts
-  const dbPrompts = await getPromptsFromDB();
+  // Always use the built-in prompts which have the correct JSON schema
+  // that the scoring function (gv) expects. DB prompt templates can override
+  // if they are well-tested, but for now the built-in prompts are reliable.
   let prompt;
 
   if (jobDescription) {
-    const template = dbPrompts['job_match'] || buildMatchPrompt(resumeText, jobDescription);
-    prompt = typeof template === 'string' && template.includes('{{')
-      ? injectVariables(template, { resumeText, jobDescription })
-      : buildMatchPrompt(resumeText, jobDescription);
+    prompt = buildMatchPrompt(resumeText, jobDescription);
   } else {
-    const key = options.userType === 'FRESHER' ? 'analysis_fresher' : 'analysis_experienced';
-    const template = dbPrompts[key];
-
-    if (template && template.includes('{{')) {
-      const skills = (options.targetRole && dynamicRoleSkills[options.targetRole])
-        ? dynamicRoleSkills[options.targetRole].join(", ")
-        : "General engineering skills";
-
-      prompt = injectVariables(template, {
-        resumeText,
-        userType: options.userType,
-        targetRole: options.targetRole,
-        yearsOfExperience: options.yearsOfExperience,
-        roleSkills: skills
-      });
-    } else {
-      prompt = buildAnalysisPrompt(
-        resumeText,
-        options.userType,
-        options.targetRole,
-        options.yearsOfExperience,
-        dynamicRoleSkills
-      );
-    }
+    prompt = buildAnalysisPrompt(
+      resumeText,
+      options.userType,
+      options.targetRole,
+      options.yearsOfExperience,
+      dynamicRoleSkills
+    );
   }
+
 
 
 
@@ -719,5 +715,7 @@ module.exports = {
   buildAnalysisPrompt,
   extractTextFromPdf,
   extractTextFromDocx,
-  extractStructuredJDText
+  extractStructuredJDText,
+  generateCareerRoadmap,
 };
+

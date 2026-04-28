@@ -1,4 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
+import { createPortal } from 'react-dom';
+
 import { useNavigate } from 'react-router-dom';
 import {
   BarChart3,
@@ -11,16 +13,24 @@ import {
   ArrowUp,
   MoreHorizontal,
   CheckCircle2,
-  ChevronRight,
   TrendingUp,
   FileCheck2,
-  ListChecks
+  ListChecks,
+  UserCircle,
+  Briefcase as BriefcaseIcon,
+  ChevronDown,
+  X,
+  GraduationCap
 } from 'lucide-react';
+
+
 import { motion, AnimatePresence } from 'framer-motion';
 import dashboardBanner from '../../assets/dashboard-banner-seamless.png';
 import { useAuth } from '../../context/AuthContext';
 import { useAnalysis } from '../../context/AnalysisContext';
-import { getDashboardStats, getMyResumes } from '../../services/api';
+import { getDashboardStats, getMyResumes, getConfig, getTracks } from '../../services/api';
+import PremiumSelect from '../../components/ui/PremiumSelect';
+
 
 const cn = (...classes) => classes.filter(Boolean).join(' ');
 
@@ -77,13 +87,39 @@ const Dashboard = () => {
   const { socket } = useSocket();
   const { startAnalysis, isAnalyzing, dashboardStats, loading: analysisLoading, fetchDashboardData } = useAnalysis();
 
+  // --- Analysis Config Modal State ---
+  const [showConfigModal, setShowConfigModal] = useState(false);
+  const [pendingFile, setPendingFile] = useState(null);
+  const [availableTracks, setAvailableTracks] = useState([]);
+  const [selections, setSelections] = useState({
+    userType: 'FRESHER',
+    targetRole: '',
+    yearsOfExperience: ''
+  });
+
   const stats = dashboardStats?.stats;
   const resumes = dashboardStats?.resumes || [];
   const loading = analysisLoading.dashboard;
 
+  useEffect(() => {
+    const fetchTracks = async () => {
+      try {
+        const res = await getTracks();
+        if (res.success) {
+          setAvailableTracks(res.tracks);
+        }
+      } catch (err) {
+        console.error("Failed to fetch tracks:", err);
+      }
+    };
+    fetchTracks();
+  }, []);
+
+
+
 
   useEffect(() => {
-    fetchDashboardData();
+    fetchDashboardData(true);
   }, []);
 
   // Real-time automatic background refresh disabled as per user request
@@ -91,10 +127,26 @@ const Dashboard = () => {
   const handleFileSelect = (e) => {
     const file = e.target.files[0];
     if (file) {
-      startAnalysis(file);
-      e.target.value = ''; // Reset input value to allow re-uploading same file
+      setPendingFile(file);
+      setShowConfigModal(true);
+      e.target.value = '';
     }
   };
+
+  const handleStartAnalysis = () => {
+    if (!pendingFile) return;
+
+    const analysisData = {
+      targetRole: selections.targetRole,
+      userType: selections.userType,
+      yearsOfExperience: selections.userType === 'EXPERIENCED' ? selections.yearsOfExperience : null
+    };
+
+    startAnalysis(pendingFile, analysisData);
+    setShowConfigModal(false);
+    setPendingFile(null);
+  };
+
 
   const rawScoreBreakdown = safeParseJson(stats?.scoreBreakdown) || stats?.scoreBreakdown || {};
   const atsScore = clampNumber(stats?.atsScore ?? 0, 0, 100);
@@ -363,8 +415,109 @@ const Dashboard = () => {
         className="hidden"
         accept=".pdf,.docx"
       />
+
+      {/* --- Analysis Configuration Modal (Portal-based for full-screen blur) --- */}
+      {showConfigModal && createPortal(
+        <AnimatePresence mode="wait">
+          <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowConfigModal(false)}
+              className="fixed inset-0 bg-slate-900/60 backdrop-blur-[12px]"
+            />
+
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative w-full max-w-lg bg-white rounded-[2.5rem] shadow-[0_30px_100px_-20px_rgba(0,0,0,0.5)] border border-white"
+            >
+              <div className="p-8 md:p-10">
+                <div className="flex items-center justify-between mb-8">
+                  <div>
+                    <h2 className="text-2xl font-black text-slate-800 tracking-tight italic uppercase">Analyze <span className="text-blue-600">Resume</span></h2>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Configure your target career metrics</p>
+                  </div>
+                  <button
+                    onClick={() => setShowConfigModal(false)}
+                    className="p-3 hover:bg-slate-50 rounded-2xl text-slate-400 transition-colors"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+
+                <div className="space-y-6">
+                  {/* Career Level Selection */}
+                  <div className="flex p-1.5 bg-slate-50 rounded-2xl border border-slate-100">
+                    <button
+                      onClick={() => setSelections({ ...selections, userType: 'FRESHER' })}
+                      className={cn(
+                        "flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all",
+                        selections.userType === 'FRESHER' ? "bg-white text-slate-900 shadow-sm" : "text-slate-400 hover:text-slate-600"
+                      )}
+                    >
+                      <GraduationCap className="w-4 h-4" /> Fresher
+                    </button>
+                    <button
+                      onClick={() => setSelections({ ...selections, userType: 'EXPERIENCED' })}
+                      className={cn(
+                        "flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all",
+                        selections.userType === 'EXPERIENCED' ? "bg-white text-slate-900 shadow-sm" : "text-slate-400 hover:text-slate-600"
+                      )}
+                    >
+                      <BriefcaseIcon className="w-4 h-4" /> Experienced
+                    </button>
+                  </div>
+
+                  {/* Target Role Dropdown */}
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Target Role</label>
+                    <PremiumSelect
+                      options={availableTracks.map(track => ({ value: track.name, label: track.name }))}
+                      value={selections.targetRole}
+                      onChange={(value) => setSelections({ ...selections, targetRole: value })}
+                      placeholder="Select Target Role"
+                      className="w-full"
+                    />
+                  </div>
+
+                  {/* Experience Field (Conditional) */}
+                  {selections.userType === 'EXPERIENCED' && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      className="space-y-2"
+                    >
+                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Years of Experience</label>
+                      <input
+                        type="number"
+                        placeholder="e.g. 2"
+                        value={selections.yearsOfExperience}
+                        onChange={(e) => setSelections({ ...selections, yearsOfExperience: e.target.value })}
+                        className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold text-slate-700 focus:bg-white focus:border-blue-500 transition-all outline-none"
+                      />
+                    </motion.div>
+                  )}
+
+                  <button
+                    onClick={handleStartAnalysis}
+                    disabled={!selections.targetRole || (selections.userType === 'EXPERIENCED' && !selections.yearsOfExperience)}
+                    className="w-full flex items-center justify-center gap-3 py-5 bg-blue-600 text-white rounded-2xl font-black text-xs uppercase tracking-[0.2rem] hover:bg-blue-700 transition-all shadow-xl shadow-blue-600/20 disabled:opacity-50 disabled:grayscale active:scale-95 mt-4"
+                  >
+                    Start AI Analysis
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </AnimatePresence>,
+        document.body
+      )}
     </div>
   );
 };
+
 
 export default Dashboard;

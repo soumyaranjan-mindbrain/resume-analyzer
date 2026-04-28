@@ -276,7 +276,7 @@ const ReportModal = ({ isOpen, onClose, resume }) => {
 const History = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { resumes, loading, fetchHistory, startAnalysis, isAnalyzing } = useAnalysis();
+  const { resumes, loading, fetchHistory, fetchDashboardData, startAnalysis, isAnalyzing } = useAnalysis();
 
   const [selectedResume, setSelectedResume] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -328,7 +328,10 @@ const History = () => {
     const resumeId = deleteModal.resumeId;
     try {
       await deleteResume(resumeId);
-      await fetchHistory(true);
+      await Promise.all([
+        fetchHistory(true),
+        fetchDashboardData(true)
+      ]);
       toast.success('Resume deleted successfully');
     } catch (error) {
       console.error('Delete Error:', error);
