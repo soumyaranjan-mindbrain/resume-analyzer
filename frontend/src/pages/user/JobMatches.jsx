@@ -40,7 +40,7 @@ const GLOBAL_CACHE_KEY = 'MBI_GLOBAL_RESUME_CONTEXT';
 const JobMatches = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
-  const { jobs, loading, fetchJobs } = useAnalysis();
+  const { jobs, setJobs, loading, fetchJobs } = useAnalysis();
 
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [selectedJob, setSelectedJob] = useState(null);
@@ -817,14 +817,48 @@ const JobMatches = () => {
 
 
                 {applyStep === 'error' && (
-                  <div className="py-12 flex flex-col items-center justify-center gap-6 text-center">
-                    <div className="w-20 h-20 bg-rose-50 rounded-3xl flex items-center justify-center">
-                      <AlertCircle className="w-10 h-10 text-rose-500" />
-                    </div>
-                    <div className="space-y-2 px-8">
-                      <h4 className="text-xl font-bold text-slate-800 uppercase tracking-tight">System Interruption</h4>
-                      <p className="text-sm font-medium text-slate-500">{applyError || 'We encountered a technical hurdle while processing your request. Please try again.'}</p>
-                    </div>
+                  <div className="py-12 flex flex-col items-center justify-center gap-6 text-center animate-fade-in">
+                    {applyError.toLowerCase().includes('already applied') ? (
+                      <>
+                        <div className="w-24 h-24 bg-blue-50 rounded-[2.5rem] flex items-center justify-center shadow-xl shadow-blue-500/10 relative">
+                          <ShieldCheck className="w-12 h-12 text-blue-600" />
+                          <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-white border border-blue-100 rounded-full flex items-center justify-center shadow-md">
+                            <CheckCircle2 className="w-4 h-4 text-blue-600" />
+                          </div>
+                        </div>
+                        <div className="space-y-3 px-10">
+                          <h4 className="text-2xl font-black text-slate-900 tracking-tight">Application Already Active</h4>
+                          <p className="text-slate-500 font-medium leading-relaxed">
+                            Our records indicate you've already applied for the <span className="text-slate-900 font-bold">{selectedJob.title}</span> role.
+                            Your current application is under active review.
+                          </p>
+                        </div>
+                        <div className="flex gap-3">
+                          <button
+                            onClick={closeModals}
+                            className="px-8 py-3 bg-blue-600 text-white rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-blue-700 transition-all active:scale-95 shadow-lg shadow-blue-600/20"
+                          >
+                            Explore More Jobs
+                          </button>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="w-20 h-20 bg-rose-50 rounded-3xl flex items-center justify-center">
+                          <AlertCircle className="w-10 h-10 text-rose-500" />
+                        </div>
+                        <div className="space-y-2 px-8">
+                          <h4 className="text-xl font-bold text-slate-800 uppercase tracking-tight">System Interruption</h4>
+                          <p className="text-sm font-medium text-slate-500">{applyError || 'We encountered a technical hurdle while processing your request. Please try again.'}</p>
+                        </div>
+                        <button
+                          onClick={() => setApplyStep('choose')}
+                          className="mt-4 px-6 py-2.5 bg-slate-100 text-slate-600 rounded-xl font-bold text-[10px] uppercase tracking-widest hover:bg-slate-200 transition-all"
+                        >
+                          Try Again
+                        </button>
+                      </>
+                    )}
                   </div>
                 )}
 

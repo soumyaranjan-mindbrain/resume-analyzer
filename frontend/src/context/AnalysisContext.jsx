@@ -214,6 +214,7 @@ export const AnalysisProvider = ({ children }) => {
             dashboardStats,
             resumes,
             jobs,
+            setJobs,
             recommendations,
             skillInsights,
             loading,
