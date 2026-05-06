@@ -44,6 +44,18 @@ const Auth = () => {
   const [successMsg, setSuccessMsg] = useState('');
   const [verifyEmail, setVerifyEmail] = useState(true);
 
+  useEffect(() => {
+    // Clear all fields when switching between login and signup
+    setName('');
+    setEmail('');
+    setPhone('');
+    setPassword('');
+    setError('');
+    setSuccessMsg('');
+    setStep('auth');
+    setOtp('');
+  }, [isLogin]);
+
 
   const leftPanelRef = useRef(null);
   const formPanelRef = useRef(null);
