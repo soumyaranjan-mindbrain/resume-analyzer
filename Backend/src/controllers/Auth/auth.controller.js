@@ -54,7 +54,7 @@ const sendTokens = async (res, user, message = "Login successful", status = 200)
 // Registration
 const register = async (req, res) => {
   try {
-    const { name, email, password, role, phone } = req.body;
+    const { name, email, password, role, phone, verifyEmail = true } = req.body;
     const allowedRoles = ["admin", "student"];
     if (!name || !email || !password || !role) {
       return res.status(400).json({ error: "Name, email, password and role are required" });
@@ -78,6 +78,28 @@ const register = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
+
+    // If verification is disabled, create user immediately
+    if (verifyEmail === false) {
+      const newUser = new User({
+        name,
+        email,
+        password: hashedPassword,
+        role,
+        phone: phone || "",
+        isVerified: false
+      });
+
+      await newUser.save();
+
+      // Notify listeners about new registration
+      if (newUser.role === 'student') {
+        emitEvent('student_registered', { id: newUser._id, name: newUser.name });
+      }
+
+      return sendTokens(res, newUser, "Account created successfully", 201);
+    }
+
     const otp = crypto.randomInt(100000, 999999).toString();
     const otpExpires = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
 

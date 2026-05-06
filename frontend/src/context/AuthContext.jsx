@@ -69,7 +69,11 @@ export const AuthProvider = ({ children }) => {
   const registerUser = async (userData) => {
     try {
       const data = await authService.register(userData);
-      return data; // returns { msg, email }
+      if (data.user) {
+        setUser(data.user);
+        localStorage.setItem('mindvista_user', JSON.stringify(data.user));
+      }
+      return data; // returns { msg, email, user?, token? }
     } catch (error) {
       throw error;
     }
