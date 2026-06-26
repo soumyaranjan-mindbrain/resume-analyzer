@@ -23,7 +23,7 @@ export const SocketProvider = ({ children }) => {
 
         const newSocket = io(socketUrl, {
             withCredentials: true,
-            transports: ['polling', 'websocket'], // Try polling first for better compatibility
+            transports: ['websocket'], // Use WebSocket directly to avoid Render polling issues
             reconnectionAttempts: 5,
             timeout: 10000
         });
