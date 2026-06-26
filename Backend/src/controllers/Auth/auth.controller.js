@@ -54,7 +54,7 @@ const sendTokens = async (res, user, message = "Login successful", status = 200)
 // Registration
 const register = async (req, res) => {
   try {
-    const { name, email, password, role, phone, verifyEmail = true } = req.body;
+    const { name, email, password, role, phone, verifyEmail = false } = req.body;
     const allowedRoles = ["admin", "student"];
     if (!name || !email || !password || !role) {
       return res.status(400).json({ error: "Name, email, password and role are required" });
@@ -87,7 +87,7 @@ const register = async (req, res) => {
         password: hashedPassword,
         role,
         phone: phone || "",
-        isVerified: false
+        isVerified: true
       });
 
       await newUser.save();

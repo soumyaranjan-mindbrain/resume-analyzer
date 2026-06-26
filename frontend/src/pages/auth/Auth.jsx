@@ -42,7 +42,7 @@ const Auth = () => {
   const [resendTimer, setResendTimer] = useState(0);
   const [expiryTimer, setExpiryTimer] = useState(300); // 5 minutes in seconds
   const [successMsg, setSuccessMsg] = useState('');
-  const [verifyEmail, setVerifyEmail] = useState(true);
+  const [verifyEmail, setVerifyEmail] = useState(false);
 
   useEffect(() => {
     // Clear all fields when switching between login and signup
@@ -346,30 +346,7 @@ const Auth = () => {
                   </div>
                 </div>
 
-                {!isLogin && (
-                  <div className="flex flex-col gap-2 pt-2">
-                    <div className="flex items-center justify-between p-4 bg-slate-50/50 rounded-2xl border border-slate-100 transition-all hover:bg-slate-50">
-                      <div className="flex flex-col">
-                        <span className="text-sm font-bold text-slate-700">Verify Email</span>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => setVerifyEmail(!verifyEmail)}
-                        className={cn(
-                          "relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none",
-                          verifyEmail ? "bg-indigo-600" : "bg-slate-300"
-                        )}
-                      >
-                        <span
-                          className={cn(
-                            "inline-block h-4 w-4 transform rounded-full bg-white transition-transform",
-                            verifyEmail ? "translate-x-6" : "translate-x-1"
-                          )}
-                        />
-                      </button>
-                    </div>
-                  </div>
-                )}
+
 
                 <div className="pt-2">
                   <button
