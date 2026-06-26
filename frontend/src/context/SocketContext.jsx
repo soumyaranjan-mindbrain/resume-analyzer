@@ -16,7 +16,8 @@ export const SocketProvider = ({ children }) => {
     const [connected, setConnected] = useState(false);
 
     useEffect(() => {
-        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+        // Use env variable if set, otherwise use correct production backend
+        const apiUrl = import.meta.env.VITE_API_URL || 'https://resume-analyzer-b390.onrender.com/api';
         const socketUrl = apiUrl.replace(/\/api$/, '');
 
         console.log('[Socket] Connecting to:', socketUrl);
