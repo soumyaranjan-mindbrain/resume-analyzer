@@ -4,7 +4,7 @@ import { UserCircle, Briefcase, GraduationCap, ChevronRight, CheckCircle2 } from
 import { cn } from '../../utils/cn';
 import { useAuth } from '../../context/AuthContext';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'https://resume-analyzer-b390.onrender.com/api';
+const API_BASE = import.meta.env.VITE_API_URL || 'https://resume-analyzer-ila2.onrender.com/api';
 
 const Onboarding = () => {
     const { user, completeOnboarding } = useAuth();
