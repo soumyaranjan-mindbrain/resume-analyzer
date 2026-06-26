@@ -3,20 +3,42 @@ const { Server } = require("socket.io");
 let io;
 
 const initSocket = (server) => {
-    const origins = [
+    // Parse client URLs from environment variable
+    let clientUrls = [];
+    if (process.env.CLIENT_URL) {
+        clientUrls = process.env.CLIENT_URL.split(",")
+            .map(url => url.trim())
+            .filter(Boolean);
+    }
+
+    const allowedOrigins = [
         "http://localhost:5173",
         "http://localhost:3000",
         "http://127.0.0.1:5173",
         "http://127.0.0.1:3000",
-        process.env.CLIENT_URL,
-        process.env.CLIENT_URL?.replace(/\/$/, '') // Add version without trailing slash
-    ].filter(Boolean);
+        ...clientUrls
+    ].map(url => url.replace(/\/$/, "").toLowerCase()); // Normalize: remove trailing slash and lowercase
 
-    console.log(`[Socket] Initializing with allowed origins:`, origins);
+    console.log(`[Socket] Initializing with allowed origins:`, allowedOrigins);
+
+    const corsOriginFunc = (origin, callback) => {
+        if (!origin) {
+            return callback(null, true);
+        }
+        const normalizedOrigin = origin.replace(/\/$/, "").toLowerCase();
+        if (allowedOrigins.includes(normalizedOrigin)) {
+            return callback(null, true);
+        }
+        const isVercelOriginAllowed = allowedOrigins.some(url => url.includes("vercel.app"));
+        if (isVercelOriginAllowed && normalizedOrigin.endsWith(".vercel.app")) {
+            return callback(null, true);
+        }
+        callback(null, false);
+    };
 
     io = new Server(server, {
         cors: {
-            origin: origins,
+            origin: corsOriginFunc,
             methods: ["GET", "POST"],
             credentials: true
         }

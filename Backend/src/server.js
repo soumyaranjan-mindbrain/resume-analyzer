@@ -32,6 +32,15 @@ app.use((req, res, next) => {
 
 // CORS configuration
 const cors = require("cors");
+
+// Parse client URLs from environment variable
+let clientUrls = [];
+if (process.env.CLIENT_URL) {
+  clientUrls = process.env.CLIENT_URL.split(",")
+    .map(url => url.trim())
+    .filter(Boolean);
+}
+
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:5174",
@@ -39,20 +48,40 @@ const allowedOrigins = [
   "http://127.0.0.1:5173",
   "http://127.0.0.1:5174",
   "http://127.0.0.1:3000",
-  process.env.CLIENT_URL
-].filter(Boolean);
+  ...clientUrls
+].map(url => url.replace(/\/$/, "").toLowerCase()); // Normalize: remove trailing slash and lowercase
 
+console.log("[CORS] Configured Allowed Origins:", allowedOrigins);
 
 app.use(
   cors({
     origin: function (origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(null, false);
+      // Allow requests with no origin (like mobile apps, curl, postman, server-to-server)
+      if (!origin) {
+        return callback(null, true);
       }
+      
+      const normalizedOrigin = origin.replace(/\/$/, "").toLowerCase();
+      
+      // Exact match
+      if (allowedOrigins.includes(normalizedOrigin)) {
+        return callback(null, true);
+      }
+      
+      // Match Vercel preview / deployment domains dynamically if vercel.app is in allowed origins
+      const isVercelOriginAllowed = allowedOrigins.some(url => url.includes("vercel.app"));
+      if (isVercelOriginAllowed && normalizedOrigin.endsWith(".vercel.app")) {
+        console.log(`[CORS] Dynamically allowing Vercel preview/deployment origin: ${origin}`);
+        return callback(null, true);
+      }
+
+      console.warn(`[CORS] Request from origin ${origin} was BLOCKED. Not in allowed origins list.`);
+      callback(null, false);
     },
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With", "Accept", "Origin"],
+    optionsSuccessStatus: 200
   })
 );
 

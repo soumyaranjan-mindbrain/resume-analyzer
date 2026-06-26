@@ -20,14 +20,14 @@ const sendTokens = async (res, user, message = "Login successful", status = 200)
     .cookie("token", accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       path: "/",
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     })
     .cookie("refresh_token", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       path: "/",
       maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
     })
@@ -231,14 +231,14 @@ const logout = async (req, res) => {
       .cookie("token", "", {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
         path: "/",
         expires: new Date(0),
       })
       .cookie("refresh_token", "", {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
         path: "/",
         expires: new Date(0),
       })
