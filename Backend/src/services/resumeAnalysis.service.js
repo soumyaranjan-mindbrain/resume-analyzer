@@ -2,8 +2,8 @@
 const axios = require("axios");
 const mammoth = require("mammoth");
 const { groq } = require("../config/groq");
-const { PrismaClient } = require("@prisma/client");
-const prisma = new PrismaClient();
+const JobTrack = require("../models/JobTrack");
+const AIPrompt = require("../models/AIPrompt");
 
 
 
@@ -164,7 +164,7 @@ function injectVariables(template, data) {
 
 async function getPromptsFromDB() {
   try {
-    const prompts = await prisma.aIPrompt.findMany({ where: { isActive: true } });
+    const prompts = await AIPrompt.find({ isActive: true });
     const dict = {};
     prompts.forEach(p => dict[p.key] = p.content);
     return dict;
@@ -355,7 +355,7 @@ async function analyzeResumeText(resumeText, jobDescription = null, options = {}
   // --- Dynamic Config Loading ---
   let dynamicRoleSkills = ROLE_SKILLS;
   try {
-    const tracks = await prisma.jobTrack.findMany({ where: { isActive: true } });
+    const tracks = await JobTrack.find({ isActive: true });
     if (tracks.length > 0) {
       dynamicRoleSkills = {};
       tracks.forEach(t => { dynamicRoleSkills[t.name] = t.skills; });

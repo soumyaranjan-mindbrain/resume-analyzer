@@ -1,4 +1,6 @@
-const prisma = require("../../prisma/client");
+const Resume = require("../../models/Resume");
+const User = require("../../models/User");
+const Analysis = require("../../models/Analysis");
 const {
   analyzeResumeText,
   extractTextFromPdf,
@@ -11,9 +13,7 @@ const analyzeResume = async (req, res) => {
     if (!resumeId) return res.status(400).json({ error: "resumeId is required" });
 
     const userId = req.userId || req.user?.id;
-    const resume = await prisma.resume.findFirst({
-      where: { id: resumeId, userId: userId },
-    });
+    const resume = await Resume.findOne({ _id: resumeId, userId: userId });
 
     if (!resume) {
       console.warn(`[Analysis] Resume not found or unauthorized: ${resumeId}`);
@@ -22,9 +22,12 @@ const analyzeResume = async (req, res) => {
 
     console.log(`[Analysis] Starting fresh analysis for resume: ${resumeId}`);
 
-    const extractedText = resume.extractedText || (await extractTextFromPdf(resume.fileUrl));
-    if (!resume.extractedText && extractedText) {
-      await prisma.resume.update({ where: { id: resume.id }, data: { extractedText } });
+    let extractedText = resume.extractedText;
+    if (!extractedText) {
+      extractedText = await extractTextFromPdf(resume.fileUrl);
+      if (extractedText) {
+        await Resume.findByIdAndUpdate(resume._id, { extractedText });
+      }
     }
 
     if (!extractedText) {
@@ -34,10 +37,7 @@ const analyzeResume = async (req, res) => {
     // Allow dynamic overrides from the request body (set by the frontend modal)
     const { targetRole: dynamicRole, userType: dynamicUserType, yearsOfExperience: dynamicExp } = req.body;
 
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { userType: true, targetRole: true, yearsOfExperience: true }
-    });
+    const user = await User.findById(userId, 'userType targetRole yearsOfExperience').lean();
 
     const analysisData = await analyzeResumeText(extractedText, null, {
       userType: dynamicUserType || user?.userType,
@@ -56,40 +56,32 @@ const analyzeResume = async (req, res) => {
 
     console.log(`[Analysis] AI returned score: ${analysisData.atsScore}`);
 
-    const analysis = await prisma.analysis.upsert({
-      where: { resumeId },
-      update: {
-        atsScore: analysisData.atsScore,
-        scoreBreakdown: analysisData.scoreBreakdown || {},
-        keywordsMissing: analysisData.keywordsMissing,
-        jobsMatched: analysisData.jobsMatched,
-        suggestions: analysisData.suggestions,
-        trends: analysisData.trends,
-        summary: analysisData.summary,
-        experienceLevel: analysisData.experienceLevel,
-        topStrengths: analysisData.topStrengths,
-        weaknesses: analysisData.weaknesses,
-        roadmap: roadmap,
-      },
-      create: {
-        resumeId,
-        atsScore: analysisData.atsScore,
-        scoreBreakdown: analysisData.scoreBreakdown || {},
-        keywordsMissing: analysisData.keywordsMissing,
-        jobsMatched: analysisData.jobsMatched,
-        suggestions: analysisData.suggestions,
-        trends: analysisData.trends,
-        summary: analysisData.summary,
-        experienceLevel: analysisData.experienceLevel,
-        topStrengths: analysisData.topStrengths,
-        weaknesses: analysisData.weaknesses,
-        roadmap: roadmap,
-      },
-    });
+    const updateFields = {
+      atsScore: analysisData.atsScore,
+      scoreBreakdown: analysisData.scoreBreakdown || {},
+      keywordsMissing: analysisData.keywordsMissing,
+      jobsMatched: analysisData.jobsMatched,
+      suggestions: analysisData.suggestions,
+      trends: analysisData.trends,
+      summary: analysisData.summary,
+      experienceLevel: analysisData.experienceLevel,
+      topStrengths: analysisData.topStrengths,
+      weaknesses: analysisData.weaknesses,
+      roadmap: roadmap,
+    };
+
+    const analysis = await Analysis.findOneAndUpdate(
+      { resumeId },
+      updateFields,
+      { new: true, upsert: true }
+    );
+
+    const analysisObj = analysis.toObject();
+    analysisObj.id = analysisObj._id.toString();
 
     res.json({
       success: true,
-      ...analysis,
+      ...analysisObj,
       ...analysisData,
       extractedText,
       skillExtraction: analysisData.skillsExtracted,

@@ -1,4 +1,7 @@
-const prisma = require("../../prisma/client");
+const User = require("../../models/User");
+const Resume = require("../../models/Resume");
+const Analysis = require("../../models/Analysis");
+const Job = require("../../models/Job");
 
 //  GET ANALYTICS
 exports.getAnalytics = async (req, res) => {
@@ -8,11 +11,19 @@ exports.getAnalytics = async (req, res) => {
 
     //   STUDENT ANALYTICS
     if (role === "student") {
-      const resumes = await prisma.resume.findMany({
-        where: { userId },
-        include: { analysis: true },
-        orderBy: { createdAt: "desc" },
-      });
+      const resumesDoc = await Resume.find({ userId }).sort({ createdAt: -1 });
+      const resumes = await Promise.all(resumesDoc.map(async (r) => {
+        const analysis = await Analysis.findOne({ resumeId: r._id }).lean();
+        return {
+          id: r._id.toString(),
+          userId: r.userId,
+          fileUrl: r.fileUrl,
+          fileName: r.fileName,
+          extractedText: r.extractedText,
+          createdAt: r.createdAt,
+          analysis: analysis ? { ...analysis, id: analysis._id.toString() } : null
+        };
+      }));
 
       const analyzed = resumes.filter((r) => r.analysis);
 
@@ -58,8 +69,8 @@ exports.getAnalytics = async (req, res) => {
       });
 
       // Fetch Real In-Demand Skills from Jobs
-      const jobSkills = await prisma.job.findMany({ select: { skillsRequired: true }, take: 20 });
-      const flatSkills = jobSkills.flatMap(j => j.skillsRequired);
+      const jobSkills = await Job.find({}, 'skillsRequired').limit(20).lean();
+      const flatSkills = jobSkills.flatMap(j => j.skillsRequired || []);
       const skillCounts = {};
       flatSkills.forEach(s => skillCounts[s] = (skillCounts[s] || 0) + 1);
 
@@ -115,28 +126,22 @@ exports.getAnalytics = async (req, res) => {
       const { range } = req.query;
       const isWeek = range === "week";
 
-      const totalUsers = await prisma.user.count({ where: { role: "student" } });
-      const totalResumes = await prisma.resume.count();
-      const totalAnalyses = await prisma.analysis.count();
+      const totalUsers = await User.countDocuments({ role: "student" });
+      const totalResumes = await Resume.countDocuments({});
+      const totalAnalyses = await Analysis.countDocuments({});
 
       // Growth Calculation (Last 30 days vs previous 30 days)
       const now = new Date();
       const thirtyDaysAgo = new Date(now.getTime() - (30 * 24 * 60 * 60 * 1000));
       const sixtyDaysAgo = new Date(now.getTime() - (60 * 24 * 60 * 60 * 1000));
 
-      const [newUsers, prevUsers, newResumes, prevResumes, newAvg, prevAvg] = await Promise.all([
-        prisma.user.count({ where: { role: "student", createdAt: { gte: thirtyDaysAgo } } }),
-        prisma.user.count({ where: { role: "student", createdAt: { gte: sixtyDaysAgo, lt: thirtyDaysAgo } } }),
-        prisma.resume.count({ where: { createdAt: { gte: thirtyDaysAgo } } }),
-        prisma.resume.count({ where: { createdAt: { gte: sixtyDaysAgo, lt: thirtyDaysAgo } } }),
-        prisma.analysis.aggregate({
-          where: { createdAt: { gte: thirtyDaysAgo } },
-          _avg: { atsScore: true }
-        }),
-        prisma.analysis.aggregate({
-          where: { createdAt: { gte: sixtyDaysAgo, lt: thirtyDaysAgo } },
-          _avg: { atsScore: true }
-        })
+      const [newUsers, prevUsers, newResumes, prevResumes, newAvgAnalyses, prevAvgAnalyses] = await Promise.all([
+        User.countDocuments({ role: "student", createdAt: { $gte: thirtyDaysAgo } }),
+        User.countDocuments({ role: "student", createdAt: { $gte: sixtyDaysAgo, $lt: thirtyDaysAgo } }),
+        Resume.countDocuments({ createdAt: { $gte: thirtyDaysAgo } }),
+        Resume.countDocuments({ createdAt: { $gte: sixtyDaysAgo, $lt: thirtyDaysAgo } }),
+        Analysis.find({ createdAt: { $gte: thirtyDaysAgo } }, 'atsScore').lean(),
+        Analysis.find({ createdAt: { $gte: sixtyDaysAgo, $lt: thirtyDaysAgo } }, 'atsScore').lean()
       ]);
 
       const calculateGrowth = (current, previous) => {
@@ -145,21 +150,25 @@ exports.getAnalytics = async (req, res) => {
         return (growth >= 0 ? "+" : "") + growth.toFixed(1) + "%";
       };
 
+      const newSum = newAvgAnalyses.reduce((acc, a) => acc + (a.atsScore || 0), 0);
+      const newAvgScore = newAvgAnalyses.length ? newSum / newAvgAnalyses.length : 0;
+
+      const prevSum = prevAvgAnalyses.reduce((acc, a) => acc + (a.atsScore || 0), 0);
+      const prevAvgScore = prevAvgAnalyses.length ? prevSum / prevAvgAnalyses.length : 0;
+
       const userGrowth = calculateGrowth(newUsers, prevUsers);
       const resumeGrowth = calculateGrowth(newResumes, prevResumes);
-      const scoreGrowth = calculateGrowth(Math.round(newAvg._avg.atsScore || 0), Math.round(prevAvg._avg.atsScore || 0));
+      const scoreGrowth = calculateGrowth(Math.round(newAvgScore), Math.round(prevAvgScore));
 
-      const avgResult = await prisma.analysis.aggregate({
-        _avg: { atsScore: true },
-      });
-
-      const averageAtsScore = Math.round(avgResult._avg.atsScore || 0);
+      const allAnalyses = await Analysis.find({}, 'atsScore').lean();
+      const allSum = allAnalyses.reduce((acc, a) => acc + (a.atsScore || 0), 0);
+      const averageAtsScore = allAnalyses.length ? Math.round(allSum / allAnalyses.length) : 0;
 
       // Readiness Breakdown (Percentages)
       const totalAnalysesCount = totalAnalyses || 1;
-      const marketReadyCount = await prisma.analysis.count({ where: { atsScore: { gte: 80 } } });
-      const developingCount = await prisma.analysis.count({ where: { atsScore: { gte: 50, lt: 80 } } });
-      const criticalCount = await prisma.analysis.count({ where: { atsScore: { lt: 50 } } });
+      const marketReadyCount = await Analysis.countDocuments({ atsScore: { $gte: 80 } });
+      const developingCount = await Analysis.countDocuments({ atsScore: { $gte: 50, $lt: 80 } });
+      const criticalCount = await Analysis.countDocuments({ atsScore: { $lt: 50 } });
 
       const readinessBreakdown = {
         marketReady: Math.round((marketReadyCount / totalAnalysesCount) * 100),
@@ -174,14 +183,8 @@ exports.getAnalytics = async (req, res) => {
       else startDate.setMonth(startDate.getMonth() - 6);
 
       const [monthlyResumes, monthlyAnalyses] = await Promise.all([
-        prisma.resume.findMany({
-          where: { createdAt: { gte: startDate } },
-          select: { createdAt: true }
-        }),
-        prisma.analysis.findMany({
-          where: { createdAt: { gte: startDate } },
-          select: { createdAt: true, jobsMatched: true }
-        })
+        Resume.find({ createdAt: { $gte: startDate } }, 'createdAt').lean(),
+        Analysis.find({ createdAt: { $gte: startDate } }, 'createdAt jobsMatched').lean()
       ]);
 
       const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -243,11 +246,19 @@ exports.getReports = async (req, res) => {
 
     // 🎓 STUDENT REPORTS
     if (role === "student") {
-      const resumes = await prisma.resume.findMany({
-        where: { userId },
-        include: { analysis: true },
-        orderBy: { createdAt: "desc" },
-      });
+      const resumesDoc = await Resume.find({ userId }).sort({ createdAt: -1 });
+      const resumes = await Promise.all(resumesDoc.map(async (r) => {
+        const analysis = await Analysis.findOne({ resumeId: r._id }).lean();
+        return {
+          id: r._id.toString(),
+          userId: r.userId,
+          fileUrl: r.fileUrl,
+          fileName: r.fileName,
+          extractedText: r.extractedText,
+          createdAt: r.createdAt,
+          analysis: analysis ? { ...analysis, id: analysis._id.toString() } : null
+        };
+      }));
 
       const reportRows = resumes.map((resume) => ({
         resumeId: resume.id,
@@ -272,30 +283,33 @@ exports.getReports = async (req, res) => {
 
     //   ADMIN REPORTS
     if (role === "admin") {
-      const recentAnalyses = await prisma.analysis.findMany({
-        take: 50, // Increased for pool visibility
-        orderBy: { createdAt: "desc" },
-        include: {
-          resume: {
-            include: {
-              user: true
-            }
+      const recentAnalyses = await Analysis.find()
+        .sort({ createdAt: -1 })
+        .limit(50)
+        .populate({
+          path: 'resumeId',
+          populate: {
+            path: 'userId'
           }
-        },
-      });
+        })
+        .lean();
 
       return res.json({
         type: "admin",
-        recentReports: recentAnalyses.map((analysis) => ({
-          resumeId: analysis.resumeId,
-          fileName: analysis.resume?.fileName || "Unknown",
-          studentName: analysis.resume?.user?.name || "Student",
-          atsScore: analysis.atsScore,
-          keywordsMissing:
-            analysis.keywordsMissing?.length || 0,
-          jobsMatched: analysis.jobsMatched,
-          createdAt: analysis.createdAt,
-        })),
+        recentReports: recentAnalyses.map((analysis) => {
+          const resume = analysis.resumeId;
+          const user = resume?.userId;
+          return {
+            resumeId: analysis.resumeId?._id?.toString() || analysis.resumeId,
+            fileName: resume?.fileName || "Unknown",
+            studentName: user?.name || "Student",
+            atsScore: analysis.atsScore,
+            keywordsMissing:
+              analysis.keywordsMissing?.length || 0,
+            jobsMatched: analysis.jobsMatched,
+            createdAt: analysis.createdAt,
+          };
+        }),
       });
     }
 
@@ -312,20 +326,19 @@ exports.getSkillInsights = async (req, res) => {
     if (role !== "admin") return res.status(403).json({ message: "Admin only" });
 
     // Fetch all job skills (Demand)
-    const jobs = await prisma.job.findMany({ select: { skillsRequired: true } });
+    const jobs = await Job.find({}, 'skillsRequired').lean();
     const demandMap = {};
     jobs.forEach(job => {
-      job.skillsRequired.forEach(skill => {
+      (job.skillsRequired || []).forEach(skill => {
         const s = skill.toLowerCase().trim();
         demandMap[s] = (demandMap[s] || 0) + 1;
       });
     });
 
     // Fetch all extracted skills (Supply)
-    const analyses = await prisma.analysis.findMany({ select: { trends: true } });
+    const analyses = await Analysis.find({}, 'trends').lean();
     const supplyMap = {};
     analyses.forEach(analysis => {
-      // Assuming trends contains skillExtraction or similar
       const skills = analysis.trends?.skills || [];
       skills.forEach(skill => {
         const s = skill.toLowerCase().trim();
@@ -368,12 +381,18 @@ exports.getDashboard = async (req, res) => {
 
     //   STUDENT DASHBOARD
     if (role === "student") {
-      // Fetch the most recently UPDATED analysis (updatedAt changes on every re-analysis)
-      const latestAnalysis = await prisma.analysis.findFirst({
-        where: { resume: { userId } },
-        orderBy: { updatedAt: "desc" },
-        include: { resume: true },
-      });
+      const userResumes = await Resume.find({ userId }, '_id').lean();
+      const resumeIds = userResumes.map(r => r._id);
+      
+      const latestAnalysis = await Analysis.findOne({ resumeId: { $in: resumeIds } })
+        .sort({ updatedAt: -1 })
+        .populate('resumeId')
+        .lean();
+
+      if (latestAnalysis) {
+        latestAnalysis.resume = latestAnalysis.resumeId;
+        latestAnalysis.id = latestAnalysis._id.toString();
+      }
 
       const latest = latestAnalysis;
 
@@ -398,9 +417,9 @@ exports.getDashboard = async (req, res) => {
 
     //  ADMIN DASHBOARD
     if (role === "admin") {
-      const totalUsers = await prisma.user.count({ where: { role: "student" } });
-      const totalResumes = await prisma.resume.count();
-      const totalAnalyses = await prisma.analysis.count();
+      const totalUsers = await User.countDocuments({ role: "student" });
+      const totalResumes = await Resume.countDocuments({});
+      const totalAnalyses = await Analysis.countDocuments({});
 
       return res.json({
         type: "admin",
@@ -427,11 +446,10 @@ exports.completeRoadmapPhase = async (req, res) => {
       return res.status(400).json({ message: "phaseIndex is required" });
     }
 
-    // Find the latest analysis for the user
-    const latestAnalysis = await prisma.analysis.findFirst({
-      where: { resume: { userId } },
-      orderBy: { updatedAt: "desc" }
-    });
+    const userResumes = await Resume.find({ userId }, '_id').lean();
+    const resumeIds = userResumes.map(r => r._id);
+
+    const latestAnalysis = await Analysis.findOne({ resumeId: { $in: resumeIds } }).sort({ updatedAt: -1 });
 
     if (!latestAnalysis) {
       return res.status(404).json({ message: "No analysis found" });
@@ -441,27 +459,20 @@ exports.completeRoadmapPhase = async (req, res) => {
     const indexStr = parseInt(phaseIndex);
 
     if (currentPhases.includes(indexStr)) {
-      // Toggle off if already completed
       currentPhases = currentPhases.filter(idx => idx !== indexStr);
     } else {
-      // Toggle on
       currentPhases.push(indexStr);
     }
 
-    const updated = await prisma.analysis.update({
-      where: { id: latestAnalysis.id },
-      data: { completedPhases: currentPhases }
-    });
+    latestAnalysis.completedPhases = currentPhases;
+    await latestAnalysis.save();
 
     res.json({
       message: "Roadmap progress updated",
-      completedPhases: updated.completedPhases
+      completedPhases: latestAnalysis.completedPhases
     });
 
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
-
-
-

@@ -1,4 +1,4 @@
-const prisma = require("../../prisma/client");
+const Analysis = require("../../models/Analysis");
 
 const analyzeResume = async (req, res) => {
   try {
@@ -19,19 +19,20 @@ const analyzeResume = async (req, res) => {
       "Prisma"
     ];
 
-    const analysis = await prisma.analysis.create({
-      data: {
-        resumeId,
-        atsScore,
-        keywordsMissing,
-        jobsMatched,
-        suggestions: aiFeedback,
-        trends: skillsExtracted
-      },
+    const analysis = await Analysis.create({
+      resumeId,
+      atsScore,
+      keywordsMissing,
+      jobsMatched,
+      suggestions: aiFeedback,
+      trends: skillsExtracted
     });
 
+    const analysisObj = analysis.toObject();
+    analysisObj.id = analysisObj._id.toString();
+
     res.json({
-      ...analysis,
+      ...analysisObj,
       aiFeedback,
       skillExtraction: skillsExtracted,
       jobMatch: jobsMatched
@@ -41,4 +42,4 @@ const analyzeResume = async (req, res) => {
   }
 };
 
-module.exports = { analyzeResume };  
+module.exports = { analyzeResume };

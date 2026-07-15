@@ -1,4 +1,4 @@
-const prisma = require("../../prisma/client");
+const Resume = require("../../models/Resume");
 const {
     extractTextFromPdf,
     extractTextFromDocx,
@@ -12,9 +12,7 @@ const autoFillFromResume = async (req, res) => {
         if (!resumeId) return res.status(400).json({ error: "resumeId is required" });
 
         const userId = req.userId || req.user?.id;
-        const resume = await prisma.resume.findFirst({
-            where: { id: resumeId, userId: userId },
-        });
+        const resume = await Resume.findOne({ _id: resumeId, userId: userId });
 
         if (!resume) {
             return res.status(404).json({ error: "Resume not found" });
@@ -23,10 +21,7 @@ const autoFillFromResume = async (req, res) => {
         let extractedText = resume.extractedText;
         if (!extractedText) {
             extractedText = await extractTextFromPdf(resume.fileUrl);
-            await prisma.resume.update({
-                where: { id: resumeId },
-                data: { extractedText },
-            });
+            await Resume.findByIdAndUpdate(resumeId, { extractedText });
         }
 
         const structuredData = await extractResumeData(extractedText);

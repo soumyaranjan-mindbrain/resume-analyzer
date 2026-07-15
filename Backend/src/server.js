@@ -7,12 +7,6 @@ dotenv.config();
 // Bulletproof environment check
 process.env.JWT_SECRET = "jobMatcherDevSecret2026";
 console.log(`[Auth Fix] JWT_SECRET force-set to internal dev string.`);
-// Prisma (used by /api/students and other routes) expects DATABASE_URL.
-// In this repo we primarily configure Mongo via MONGO_URI, so default DATABASE_URL to it.
-if (!process.env.DATABASE_URL && process.env.MONGO_URI) {
-  process.env.DATABASE_URL = process.env.MONGO_URI;
-  console.log(`[DB Fix] DATABASE_URL not set; defaulting to MONGO_URI for Prisma.`);
-}
 const connectDB = require("./config/db");
 connectDB();
 

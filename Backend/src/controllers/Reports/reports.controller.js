@@ -1,22 +1,23 @@
-const { PrismaClient } = require("@prisma/client");
-const prisma = new PrismaClient();
+const User = require("../../models/User");
+const Resume = require("../../models/Resume");
+const Analysis = require("../../models/Analysis");
 
 exports.getAllReports = async (req, res) => {
     try {
         const { startDate, endDate, range } = req.query;
-        let where = {};
+        let query = {};
 
         if (startDate || endDate) {
-            where.createdAt = {};
+            query.createdAt = {};
             const start = startDate ? new Date(startDate) : null;
             const end = endDate ? new Date(endDate) : null;
 
-            if (start && !isNaN(start.getTime())) where.createdAt.gte = start;
-            if (end && !isNaN(end.getTime())) where.createdAt.lte = end;
+            if (start && !isNaN(start.getTime())) query.createdAt.$gte = start;
+            if (end && !isNaN(end.getTime())) query.createdAt.$lte = end;
 
             // If no valid dates were provided after all, remove the createdAt filter
-            if (Object.keys(where.createdAt).length === 0) {
-                delete where.createdAt;
+            if (Object.keys(query.createdAt).length === 0) {
+                delete query.createdAt;
             }
         } else if (range && range !== 'all') {
             const now = new Date();
@@ -27,53 +28,45 @@ exports.getAllReports = async (req, res) => {
             else if (range === '1y') start = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate());
 
             if (start) {
-                where.createdAt = { gte: start };
+                query.createdAt = { $gte: start };
             }
         }
 
         // Fetch all analyses with filtering
-        const analyses = await prisma.analysis.findMany({
-            where,
-            select: {
-                id: true,
-                resumeId: true,
-                atsScore: true,
-                summary: true,
-                experienceLevel: true,
-                jobsMatched: true,
-                createdAt: true
-            },
-            orderBy: {
-                createdAt: 'desc'
-            }
-        });
+        const analyses = await Analysis.find(query)
+            .select('resumeId atsScore summary experienceLevel jobsMatched createdAt')
+            .sort({ createdAt: -1 })
+            .lean();
 
         // Get all unique resume IDs, filtering out any invalid ones
         const resumeIds = [...new Set(analyses.map(a => a.resumeId).filter(Boolean))];
 
         // 1. Fetch Resumes (Manual join to handle orphans gracefully)
-        const resumes = resumeIds.length > 0 ? await prisma.resume.findMany({
-            where: { id: { in: resumeIds } }
-        }) : [];
+        const resumes = resumeIds.length > 0 ? await Resume.find({ _id: { $in: resumeIds } }).lean() : [];
 
         // 2. Fetch Users associated with these resumes
         const userIds = [...new Set(resumes.map(r => r.userId).filter(Boolean))];
-        const users = userIds.length > 0 ? await prisma.user.findMany({
-            where: { id: { in: userIds } },
-            select: { id: true, name: true, email: true }
-        }) : [];
+        const users = userIds.length > 0 ? await User.find({ _id: { $in: userIds } }).select('id name email').lean() : [];
 
         // 3. Create maps for quick lookup
         const userMap = users.reduce((acc, user) => {
-            acc[user.id.toString()] = user;
+            acc[user._id.toString()] = {
+                id: user._id.toString(),
+                name: user.name,
+                email: user.email
+            };
             return acc;
         }, {});
 
         const resumeMap = resumes.reduce((acc, resume) => {
-            if (resume && resume.id) {
+            if (resume && resume._id) {
                 const user = resume.userId ? userMap[resume.userId.toString()] : null;
-                acc[resume.id.toString()] = {
-                    ...resume,
+                acc[resume._id.toString()] = {
+                    id: resume._id.toString(),
+                    fileUrl: resume.fileUrl,
+                    fileName: resume.fileName,
+                    extractedText: resume.extractedText,
+                    createdAt: resume.createdAt,
                     user: user || { name: 'Unknown User', email: 'N/A' }
                 };
             }
@@ -86,7 +79,13 @@ exports.getAllReports = async (req, res) => {
                 const resumeIdStr = analysis.resumeId ? analysis.resumeId.toString() : null;
                 const resume = resumeIdStr ? resumeMap[resumeIdStr] : null;
                 return {
-                    ...analysis,
+                    id: analysis._id.toString(),
+                    resumeId: resumeIdStr,
+                    atsScore: analysis.atsScore,
+                    summary: analysis.summary,
+                    experienceLevel: analysis.experienceLevel,
+                    jobsMatched: analysis.jobsMatched,
+                    createdAt: analysis.createdAt,
                     resume
                 };
             })

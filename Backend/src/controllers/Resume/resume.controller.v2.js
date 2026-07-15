@@ -1,4 +1,6 @@
-const prisma = require("../../prisma/client");
+const User = require("../../models/User");
+const Resume = require("../../models/Resume");
+const Analysis = require("../../models/Analysis");
 const { uploadBufferToCloudinary } = require("../../config/cloudinary.config");
 const {
   extractTextFromPdf,
@@ -39,14 +41,11 @@ async function saveAnalysis(resumeId, analysisData) {
     roadmap: analysisData.roadmap,
   };
 
-  return prisma.analysis.upsert({
-    where: { resumeId },
-    update: data,
-    create: {
-      resumeId,
-      ...data,
-    },
-  });
+  return Analysis.findOneAndUpdate(
+    { resumeId },
+    data,
+    { new: true, upsert: true }
+  );
 }
 
 function fallbackJobMatch(jobDescription, resumeAnalysis) {
@@ -109,33 +108,31 @@ const uploadResume = async (req, res) => {
       console.log("[Upload] Cloudinary upload successful:", fileUrl);
     } catch (cloudErr) {
       console.error("[Upload] Cloudinary upload failed (using fallback):", cloudErr.message);
-      // ✅ Graceful fallback: continue without cloud URL — text is still extracted and analysis will work
-      // fileUrl stays as placeholder; user can view analysis results even if PDF preview won't work
     }
 
     // Step 3: Save resume to database
-    const resume = await prisma.resume.create({
-      data: {
-        userId: userId,
-        fileUrl: fileUrl,
-        fileName: file.originalname,
-        extractedText: extractedText,
-      },
+    const resume = await Resume.create({
+      userId: userId,
+      fileUrl: fileUrl,
+      fileName: file.originalname,
+      extractedText: extractedText,
     });
+
+    const resumeObj = resume.toObject();
+    resumeObj.id = resumeObj._id.toString();
 
     // Step 4: AI Analysis
     let analysisData;
     try {
       if (extractedText) {
         // Fetch user data for personalized analysis
-        const user = await prisma.user.findUnique({ where: { id: userId } });
+        const user = await User.findById(userId).lean();
 
         analysisData = await analyzeResumeText(extractedText, null, {
           userType: user?.userType,
           targetRole: user?.targetRole,
           yearsOfExperience: user?.yearsOfExperience
         });
-
 
         // Step 4.5: Generate Career Roadmap
         console.log("[Upload] Generating Career Roadmap...");
@@ -174,10 +171,10 @@ const uploadResume = async (req, res) => {
       };
     }
 
-    await saveAnalysis(resume.id, analysisData);
+    await saveAnalysis(resumeObj.id, analysisData);
 
-    console.log("[Upload SUCCESS] Resume saved:", resume.id);
-    res.json({ success: true, resume: { ...resume, extractedText }, analysis: analysisData });
+    console.log("[Upload SUCCESS] Resume saved:", resumeObj.id);
+    res.json({ success: true, resume: { ...resumeObj, extractedText }, analysis: analysisData });
   } catch (err) {
     console.error("[Upload ERROR]", err.message);
 
@@ -199,11 +196,11 @@ const matchResume = async (req, res) => {
       return res.status(400).json({ error: "resumeId and jobDescription are required" });
     }
 
-    const resume = await prisma.resume.findFirst({
-      where: { id: resumeId, userId: req.userId },
-      include: { analysis: true },
-    });
+    const resume = await Resume.findOne({ _id: resumeId, userId: req.userId }).lean();
     if (!resume) return res.status(404).json({ error: "Resume not found" });
+
+    resume.id = resume._id.toString();
+    resume.analysis = await Analysis.findOne({ resumeId: resume._id }).lean();
 
     res.json({ success: true, resumeId, ...fallbackJobMatch(jobDescription, resume.analysis) });
   } catch (err) {
@@ -219,11 +216,12 @@ const getResumeFeedback = async (req, res) => {
     const { resumeId } = req.query;
     if (!resumeId) return res.status(400).json({ error: "resumeId query parameter is required" });
 
-    const resume = await prisma.resume.findFirst({
-      where: { id: resumeId, userId: req.userId },
-      include: { analysis: true },
-    });
-    if (!resume || !resume.analysis) return res.status(404).json({ error: "Analysis not available" });
+    const resume = await Resume.findOne({ _id: resumeId, userId: req.userId }).lean();
+    if (!resume) return res.status(404).json({ error: "Analysis not available" });
+    resume.id = resume._id.toString();
+    resume.analysis = await Analysis.findOne({ resumeId: resume._id }).lean();
+
+    if (!resume.analysis) return res.status(404).json({ error: "Analysis not available" });
 
     res.json({
       success: true,
@@ -246,26 +244,23 @@ const reanalyzeResume = async (req, res) => {
       return res.status(400).json({ error: "resumeId and jobDescription are required" });
     }
 
-    const resume = await prisma.resume.findFirst({
-      where: { id: resumeId, userId: req.userId },
-      include: { analysis: true },
-    });
+    const resume = await Resume.findOne({ _id: resumeId, userId: req.userId }).lean();
     if (!resume) return res.status(404).json({ error: "Resume not found" });
 
     let extractedText = resume.extractedText;
     if (!extractedText) {
       const isDocx = resume.fileUrl.toLowerCase().endsWith(".docx");
       extractedText = isDocx
-        ? await extractTextFromDocx(resume.fileUrl) // Note: Docx extraction might need a buffer, but re-analyzing might need a download if buffer is gone
+        ? await extractTextFromDocx(resume.fileUrl)
         : await extractTextFromPdf(resume.fileUrl);
 
-      await prisma.resume.update({ where: { id: resume.id }, data: { extractedText } });
+      await Resume.findByIdAndUpdate(resume._id, { extractedText });
     }
 
     // Fetch user data for personalized analysis
-    const user = await prisma.user.findUnique({ where: { id: req.userId } });
+    const user = await User.findById(req.userId).lean();
 
-    analysisData = await analyzeResumeText(extractedText, jobDescription, {
+    const analysisData = await analyzeResumeText(extractedText, jobDescription, {
       userType: user?.userType,
       targetRole: user?.targetRole,
       yearsOfExperience: user?.yearsOfExperience
@@ -280,7 +275,7 @@ const reanalyzeResume = async (req, res) => {
       console.error("[Reanalyze] Roadmap generation failed:", roadmapErr.message);
     }
 
-    await saveAnalysis(resume.id, analysisData);
+    await saveAnalysis(resume._id.toString(), analysisData);
     res.json({ success: true, resumeId, analysis: analysisData });
   } catch (err) {
     if (err.message?.includes("Validation Error:")) {
@@ -292,11 +287,16 @@ const reanalyzeResume = async (req, res) => {
 
 const getMyResumes = async (req, res) => {
   try {
-    const resumes = await prisma.resume.findMany({
-      where: { userId: req.userId },
-      include: { analysis: true },
-      orderBy: { createdAt: "desc" },
-    });
+    const resumesDoc = await Resume.find({ userId: req.userId }).sort({ createdAt: -1 });
+    const resumes = await Promise.all(resumesDoc.map(async (r) => {
+      const analysis = await Analysis.findOne({ resumeId: r._id }).lean();
+      return {
+        ...r.toObject(),
+        id: r._id.toString(),
+        analysis: analysis ? { ...analysis, id: analysis._id.toString() } : null
+      };
+    }));
+
     res.json({ success: true, count: resumes.length, resumes });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -306,11 +306,13 @@ const getMyResumes = async (req, res) => {
 const getResumeById = async (req, res) => {
   try {
     const { id } = req.params;
-    const resume = await prisma.resume.findFirst({
-      where: { id, userId: req.userId },
-      include: { analysis: true },
-    });
+    const resume = await Resume.findOne({ _id: id, userId: req.userId }).lean();
     if (!resume) return res.status(404).json({ error: "Resume not found" });
+    resume.id = resume._id.toString();
+
+    const analysis = await Analysis.findOne({ resumeId: resume._id }).lean();
+    resume.analysis = analysis ? { ...analysis, id: analysis._id.toString() } : null;
+
     res.json({ success: true, resume });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -328,12 +330,9 @@ const deleteResume = async (req, res) => {
       return res.status(400).json({ error: "Missing resume ID" });
     }
 
-    // 1. Find the resume first to verify ownership
-    const resume = await prisma.resume.findFirst({
-      where: {
-        id: id,
-        userId: userId
-      }
+    const resume = await Resume.findOne({
+      _id: id,
+      userId: userId
     });
 
     if (!resume) {
@@ -341,16 +340,10 @@ const deleteResume = async (req, res) => {
       return res.status(404).json({ error: "Resume not found or you don't have permission to delete it" });
     }
 
-    // 2. Delete associated analysis records first
-    const deletedAnalysis = await prisma.analysis.deleteMany({
-      where: { resumeId: id }
-    });
-    console.log(`[Delete Info] Cleaned up ${deletedAnalysis.count} associated analysis records.`);
+    const deletedAnalysis = await Analysis.deleteMany({ resumeId: id });
+    console.log(`[Delete Info] Cleaned up ${deletedAnalysis.deletedCount || 0} associated analysis records.`);
 
-    // 3. Delete the resume
-    await prisma.resume.delete({
-      where: { id: id }
-    });
+    await Resume.findByIdAndDelete(id);
 
     console.log(`[Delete SUCCESS] Successfully removed resume ${id} and all related data.`);
     res.json({ success: true, message: "Resume and analysis deleted successfully" });

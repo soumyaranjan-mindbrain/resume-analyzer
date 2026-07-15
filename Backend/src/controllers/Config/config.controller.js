@@ -1,17 +1,19 @@
-const { PrismaClient } = require("@prisma/client");
-const prisma = new PrismaClient();
-
-
+const SystemConfig = require("../../models/SystemConfig");
+const AIPrompt = require("../../models/AIPrompt");
+const JobTrack = require("../../models/JobTrack");
+const Analysis = require("../../models/Analysis");
+const Application = require("../../models/Application");
+const HelpTicket = require("../../models/HelpTicket");
+const Resume = require("../../models/Resume");
+const User = require("../../models/User");
 
 // --- System Config (Maintenance Mode, etc.) ---
 
 exports.getSystemConfig = async (req, res) => {
     try {
-        let config = await prisma.systemConfig.findFirst();
+        let config = await SystemConfig.findOne();
         if (!config) {
-            config = await prisma.systemConfig.create({
-                data: { maintenanceMode: false }
-            });
+            config = await SystemConfig.create({ maintenanceMode: false });
         }
         res.json({ success: true, config });
     } catch (error) {
@@ -22,18 +24,13 @@ exports.getSystemConfig = async (req, res) => {
 exports.updateSystemConfig = async (req, res) => {
     try {
         const { maintenanceMode } = req.body;
-        const existing = await prisma.systemConfig.findFirst();
+        const existing = await SystemConfig.findOne();
 
         let config;
         if (existing) {
-            config = await prisma.systemConfig.update({
-                where: { id: existing.id },
-                data: { maintenanceMode }
-            });
+            config = await SystemConfig.findByIdAndUpdate(existing._id, { maintenanceMode }, { new: true });
         } else {
-            config = await prisma.systemConfig.create({
-                data: { maintenanceMode }
-            });
+            config = await SystemConfig.create({ maintenanceMode });
         }
         res.json({ success: true, config });
     } catch (error) {
@@ -47,8 +44,9 @@ exports.updateSystemConfig = async (req, res) => {
 
 exports.getPrompts = async (req, res) => {
     try {
-        const prompts = await prisma.aIPrompt.findMany();
-        res.json({ success: true, prompts });
+        const prompts = await AIPrompt.find().lean();
+        const formattedPrompts = prompts.map(p => ({ ...p, id: p._id.toString() }));
+        res.json({ success: true, prompts: formattedPrompts });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -59,13 +57,16 @@ exports.updatePrompt = async (req, res) => {
         const { key } = req.params;
         const { content, isActive } = req.body;
 
-        const prompt = await prisma.aIPrompt.upsert({
-            where: { key },
-            update: { content, isActive },
-            create: { key, content, isActive: isActive ?? true }
-        });
+        const prompt = await AIPrompt.findOneAndUpdate(
+            { key },
+            { content, isActive: isActive ?? true },
+            { new: true, upsert: true }
+        );
 
-        res.json({ success: true, prompt });
+        const promptObj = prompt.toObject();
+        promptObj.id = promptObj._id.toString();
+
+        res.json({ success: true, prompt: promptObj });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -75,10 +76,9 @@ exports.updatePrompt = async (req, res) => {
 
 exports.getTracks = async (req, res) => {
     try {
-        const tracks = await prisma.jobTrack.findMany({
-            where: { isActive: true }
-        });
-        res.json({ success: true, tracks });
+        const tracks = await JobTrack.find({ isActive: true }).lean();
+        const formattedTracks = tracks.map(t => ({ ...t, id: t._id.toString() }));
+        res.json({ success: true, tracks: formattedTracks });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -87,26 +87,28 @@ exports.getTracks = async (req, res) => {
 exports.createTrack = async (req, res) => {
     try {
         const { name, skills } = req.body;
-        const track = await prisma.jobTrack.create({
-            data: { name, skills, isActive: true }
-        });
-        res.json({ success: true, track });
+        const track = await JobTrack.create({ name, skills, isActive: true });
+        const trackObj = track.toObject();
+        trackObj.id = trackObj._id.toString();
+        res.json({ success: true, track: trackObj });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 };
 
+// Update Track
 exports.updateTrack = async (req, res) => {
     try {
         const { id } = req.params;
         const { name, skills, isActive } = req.body;
 
-        const track = await prisma.jobTrack.update({
-            where: { id },
-            data: { name, skills, isActive }
-        });
+        const track = await JobTrack.findByIdAndUpdate(id, { name, skills, isActive }, { new: true });
+        if (!track) return res.status(404).json({ error: "Track not found" });
 
-        res.json({ success: true, track });
+        const trackObj = track.toObject();
+        trackObj.id = trackObj._id.toString();
+
+        res.json({ success: true, track: trackObj });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -115,10 +117,8 @@ exports.updateTrack = async (req, res) => {
 exports.deleteTrack = async (req, res) => {
     try {
         const { id } = req.params;
-        await prisma.jobTrack.update({
-            where: { id: id },
-            data: { isActive: false }
-        });
+        const track = await JobTrack.findByIdAndUpdate(id, { isActive: false });
+        if (!track) return res.status(404).json({ error: "Track not found" });
         res.json({ success: true, message: "Track deactivated successfully" });
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -130,15 +130,13 @@ exports.deleteTrack = async (req, res) => {
 exports.purgePlatformData = async (req, res) => {
     try {
         // 1. Delete all dependencies first
-        await prisma.analysis.deleteMany({});
-        await prisma.application.deleteMany({});
-        await prisma.helpTicket.deleteMany({});
-        await prisma.resume.deleteMany({});
+        await Analysis.deleteMany({});
+        await Application.deleteMany({});
+        await HelpTicket.deleteMany({});
+        await Resume.deleteMany({});
 
         // 2. Delete all students, but keep admins
-        await prisma.user.deleteMany({
-            where: { role: "student" }
-        });
+        await User.deleteMany({ role: "student" });
 
         res.json({
             success: true,
@@ -149,4 +147,3 @@ exports.purgePlatformData = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
-
